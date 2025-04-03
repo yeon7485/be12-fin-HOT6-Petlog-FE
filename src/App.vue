@@ -1,9 +1,12 @@
 <script setup>
+import { useRoute } from "vue-router";
 import Header from "./components/common/Header.vue";
+
+const route = useRoute();
 </script>
 
 <template>
-  <Header></Header>
+  <Header v-if="!route.path.startsWith('/user')" />
   <router-view></router-view>
 </template>
 

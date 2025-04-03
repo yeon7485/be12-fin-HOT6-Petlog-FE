@@ -7,6 +7,11 @@ const routes = [
   { path: "/", component: LandingPage },
   { path: "/chat", component: Chat },
   { path: "/chatroom/:chatroomIdx", component: ChatRoom },
+  {
+    path: "/user",
+    component: { render: () => {} },
+    children: [],
+  },
 ];
 
 const router = createRouter({

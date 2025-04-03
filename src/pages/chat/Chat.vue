@@ -22,18 +22,22 @@
       </div>
       <!-- 채팅 목록 -->
       <div class="chat-list">
-        <div class="chat-card">
-          <div class="chat-title">서울숲에서 같이 멍멍이 산책시킬 사람 !!</div>
-          <div class="chat-tags">
-            <span>#산책</span>
-            <span>#멍멍</span>
-            <span>#서울숲</span>
+        <router-link to="/chatroom/1">
+          <div class="chat-card">
+            <div class="chat-title">
+              서울숲에서 같이 멍멍이 산책시킬 사람 !!
+            </div>
+            <div class="chat-tags">
+              <span>#산책</span>
+              <span>#멍멍</span>
+              <span>#서울숲</span>
+            </div>
+            <div class="chat-participants">
+              <img src="../../assets/images/fluent_people-28-filled.png" />
+              6명 참여 중
+            </div>
           </div>
-          <div class="chat-participants">
-            <img src="../../assets/images/fluent_people-28-filled.png" />
-            6명 참여 중
-          </div>
-        </div>
+        </router-link>
         <div class="chat-card">
           <div class="chat-title">서울숲에서 같이 멍멍이 산책시킬 사람 !!</div>
           <div class="chat-tags">
@@ -76,7 +80,9 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { RouterLink } from "vue-router";
+</script>
 
 <style>
 .chat-toolbar {

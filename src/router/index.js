@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LandingPage from "../pages/home/LandingPage.vue";
 import Chat from "../pages/chat/Chat.vue";
+import ChatRoom from "../pages/chat/ChatRoom.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
   { path: "/chat", component: Chat },
+  { path: "/chatroom/:chatroomIdx", component: ChatRoom },
 ];
 
 const router = createRouter({

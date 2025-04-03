@@ -45,7 +45,6 @@ const toHome = () => {
   max-width: 1200px;
   height: 100%;
   margin: auto;
-  box-sizing: border-box;
 }
 
 .header_box {
@@ -53,7 +52,10 @@ const toHome = () => {
   justify-content: space-between;
   align-items: center;
   height: 100%;
+  min-width: 700px;
   font-weight: 500;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .logo_img {
@@ -67,6 +69,7 @@ const toHome = () => {
   gap: 72px;
   flex-grow: 1;
   margin-left: 40px;
+  flex-shrink: 0;
 }
 
 .menu {
@@ -81,6 +84,7 @@ const toHome = () => {
 .user_box {
   display: flex;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .line {

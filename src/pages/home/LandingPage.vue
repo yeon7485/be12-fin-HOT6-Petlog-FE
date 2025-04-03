@@ -14,7 +14,6 @@ import logo from "/src/assets/images/logo.png";
           반려생활을 더 편리하게!
         </p>
       </div>
-
       <router-link to="/login" class="start_btn">지금 시작하기</router-link>
     </div>
   </div>
@@ -24,6 +23,7 @@ import logo from "/src/assets/images/logo.png";
 .container {
   width: 100%;
   height: 100%;
+  min-height: 700px;
   position: relative;
   background-color: #fff9f2;
 }

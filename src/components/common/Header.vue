@@ -1,10 +1,18 @@
-<script setup></script>
+<script setup>
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const toHome = () => {
+  router.push("/");
+};
+</script>
 
 <template>
   <header class="header">
     <div class="container">
       <div class="header_box">
-        <img src="/src/assets/images/logo.png" alt="logo" class="logo_img" />
+        <img src="/src/assets/images/logo.png" alt="logo" class="logo_img" @click="toHome" />
 
         <div class="menu_box">
           <router-link to="/schedule" class="menu">일정</router-link>
@@ -51,6 +59,7 @@
 .logo_img {
   height: 43px;
   margin-bottom: 6px;
+  cursor: pointer;
 }
 
 .menu_box {

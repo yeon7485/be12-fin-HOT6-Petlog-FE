@@ -81,7 +81,6 @@
   padding: 20px;
 }
 
-/* ✅ 활성화된 링크 스타일 */
 .sidebar a.active {
   color: var(--main_color_01, #6A0104);
   font-weight: 700;

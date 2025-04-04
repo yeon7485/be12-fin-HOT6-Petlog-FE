@@ -1,5 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const posts = ref([
   {
@@ -8,7 +11,8 @@ const posts = ref([
     title: '강아지 중성화 수술 고민입니다.',
     author: '닉네임',
     date: '24.8.10',
-    content: '저희 강아지가 말티즈(여아) 이제 1살이 되었고 주변에서 중성화 수술을 시켜야한다고 하는데 꼭 시켜야하는 건가요? 찾아보니 가격도 만만치 않고 엄청 아파한다고 하더라고요 ㅠㅠㅠ',
+    content:
+      '저희 강아지가 말티즈(여아) 이제 1살이 되었고 주변에서 중성화 수술을 시켜야한다고 하는데 꼭 시켜야하는 건가요? 찾아보니 가격도 만만치 않고 엄청 아파한다고 하더라고요 ㅠㅠㅠ',
     tags: ['강아지', '강아지 중성화'],
     commentCount: 2,
   },
@@ -44,6 +48,10 @@ const filteredPosts = computed(() => {
 function triggerSearch() {
   keyword.value = search.value;
 }
+
+function goToRegister() {
+  router.push('/board/qna/register');
+}
 </script>
 
 <template>
@@ -60,7 +68,7 @@ function triggerSearch() {
             @keyup.enter="triggerSearch"
           />
         </div>
-        <button class="write_button">
+        <button class="write_button" @click="goToRegister">
           <img
             src="https://cdn-icons-png.flaticon.com/512/1828/1828911.png"
             alt="글쓰기"
@@ -79,9 +87,13 @@ function triggerSearch() {
       </div>
 
       <div class="post_body">
-        <div class="status_tag" :class="post.status === '해결됨' ? 'resolved' : 'unresolved'">{{ post.status }}</div>
+        <div
+          class="status_tag"
+          :class="post.status === '해결됨' ? 'resolved' : 'unresolved'"
+        >
+          {{ post.status }}
+        </div>
 
-        <!-- 제목 클릭 시 상세 이동 -->
         <router-link :to="`/board/qna/${post.id}`" class="post_title">
           {{ post.title }}
         </router-link>

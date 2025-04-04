@@ -11,7 +11,14 @@ import MypageQuestion from "../pages/mypage/MypageQuestion.vue";
 import MypageAnswer from "../pages/mypage/MypageAnswer.vue";
 import MypagePost from "../pages/mypage/MypagePost.vue";
 import MypageComment from "../pages/mypage/MypageComment.vue";
-import ChatRoomScheculeCreate from "../pages/chat/ChatRoomScheculeCreate.vue";
+import Advertisement from "../pages/board/AdvertisementBoard.vue";
+import FreeBoard from "../pages/board/FreeBoard.vue";
+import InformationBoard from "../pages/board/InformationBoard.vue";
+import BoardSidebar from "../pages/board/BoardSidebar.vue";
+import QnaBoard from "../pages/board/QNaBoard.vue";
+import AnswerDetail from "../pages/board/AnswerDetail.vue";
+import BoardRegister from "../pages/board/BoardRegister.vue";
+import Question from "../pages/board/QuestionRegister.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -43,6 +50,21 @@ const routes = [
       { path: "answer", component: MypageAnswer },
       { path: "post", component: MypagePost },
       { path: "comment", component: MypageComment },
+    ],
+  },
+
+  {
+    path: "/board",
+    component: BoardSidebar,
+    redirect: "/board/free",
+    children: [
+      { path: "information", component: InformationBoard },
+      { path: "advertisement", component: Advertisement },
+      { path: "free", component: FreeBoard },
+      { path: "qna", component: QnaBoard },
+      { path: "qna/register", component: Question },
+      { path: "qna/:id", component: AnswerDetail },
+      { path: "register", component: BoardRegister },
     ],
   },
 ];

@@ -10,6 +10,7 @@
   --maincolor01: #6A0104;
   --maincolor02: #F4E2CA;
   --maincolor_light: #bb8378;
+  --maincolor_hover: #4D0507;
   --bgcolor: #FAFAFA;
   --gray100: #F5F5F5;
   --gray200: #EEEEEE;
@@ -27,4 +28,11 @@ body,
 #app {
   width: 100%;
   height: 100%;
+}
+
+p,
+span,
+input,
+textarea {
+  font-family: "Pretendard", sans-serif;
 }

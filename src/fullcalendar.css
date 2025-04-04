@@ -1,0 +1,12 @@
+.fc .fc-toolbar {
+  justify-content: start;
+}
+
+.fc .fc-button:disabled {
+  display: none;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 23px;
+  font-family: Cafe24Ssurround;
+}

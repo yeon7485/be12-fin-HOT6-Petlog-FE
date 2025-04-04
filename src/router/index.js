@@ -19,6 +19,10 @@ import QnaBoard from "../pages/board/QNaBoard.vue";
 import AnswerDetail from "../pages/board/AnswerDetail.vue";
 import BoardRegister from "../pages/board/BoardRegister.vue";
 import Question from "../pages/board/QuestionRegister.vue";
+import ChatRoomScheculeCreate from "../pages/chat/ChatRoomScheculeCreate.vue";
+import Admin from "../pages/admin/admin.vue";
+import AdminProfile from "../pages/admin/AdminProfile.vue";
+import AdminCategory from "../pages/admin/AdminCategory.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -65,6 +69,15 @@ const routes = [
       { path: "qna/register", component: Question },
       { path: "qna/:id", component: AnswerDetail },
       { path: "register", component: BoardRegister },
+    ],
+  },
+  {
+    path: "/admin",
+    component: Admin,
+    redirect: "/admin/profile", 
+    children: [
+      { path: "profile", component: AdminProfile },
+      { path: "category", component: AdminCategory },
     ],
   },
 ];

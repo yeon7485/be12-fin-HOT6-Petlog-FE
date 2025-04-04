@@ -1,4 +1,16 @@
 <script setup>
+import { ref } from "vue";
+const emit = defineEmits(["close"]);
+
+const currentPassword = ref("");
+const newPassword = ref("");
+const confirmNewPassword = ref("");
+
+const changePassword = () => {
+  // TODO: 유효성 검사 및 비밀번호 변경 API 호출
+  alert("비밀번호가 변경되었습니다.");
+  emit("close");
+};
 </script>
 
 <template>
@@ -6,7 +18,7 @@
     <div class="password">
       <div class="password-header">
         <h2>비밀번호 변경</h2>
-        <button class="close-btn" @click="closepassword">✖</button>
+        <button class="close-btn" @click="$emit('close')">✖</button>
       </div>
 
       <div class="password-body">
@@ -27,7 +39,7 @@
       </div>
 
       <div class="password-footer">
-        <button class="cancel-btn" @click="closepassword">취소</button>
+        <button class="cancel-btn" @click="$emit('close')">취소</button>
         <button class="save-btn" @click="changePassword">저장</button>
       </div>
     </div>
@@ -46,7 +58,6 @@
   align-items: center;
   justify-content: center;
 }
-
 .password {
   background: white;
   width: 400px;
@@ -54,35 +65,29 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
-
 .password-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
-
 .password-header h2 {
   font-size: 18px;
 }
-
 .close-btn {
   background: none;
   border: none;
   font-size: 18px;
   cursor: pointer;
 }
-
 .input-group {
   margin-bottom: 15px;
 }
-
 .input-group label {
   display: block;
   font-size: 14px;
   margin-bottom: 5px;
 }
-
 .input-group input {
   width: 100%;
   padding: 10px;
@@ -90,14 +95,12 @@
   border-radius: 5px;
   font-size: 14px;
 }
-
 .password-footer {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
 }
-
 .cancel-btn {
   background: #eee;
   border: none;
@@ -105,7 +108,6 @@
   border-radius: 5px;
   cursor: pointer;
 }
-
 .save-btn {
   background: #6A0104;
   color: white;
@@ -114,7 +116,6 @@
   border-radius: 5px;
   cursor: pointer;
 }
-
 .save-btn:hover {
   background: #8a0206;
 }

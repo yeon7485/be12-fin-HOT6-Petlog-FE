@@ -33,8 +33,11 @@ export default {
 
 <style scoped>
 .container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 왼쪽 정렬 */
   width: 100%;
-  max-width: 600px;
+  max-width: 800px; /* 카드 크기 조정 */
   margin: 20px auto;
   font-family: Arial, sans-serif;
 }
@@ -42,18 +45,18 @@ export default {
 .title {
   font-size: 32px;
   font-weight: bold;
-  margin: 20px;
-  position: absolute;
-  left: 500px; 
-  margin-top: 0px;
+  margin-bottom: 20px;
+  align-self: flex-start; 
 }
 
+
 .question-card {
-  margin-top: 70px;
+  width: 100%;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 16px;
   background: #fff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .profile {

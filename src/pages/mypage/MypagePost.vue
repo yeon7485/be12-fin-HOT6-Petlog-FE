@@ -68,10 +68,8 @@ const nextPage = () => {
 .title {
   font-size: 32px;
   font-weight: bold;
-  margin: 20px;
-  position: absolute;
-  left: 500px; 
-  margin-top: 0px;
+  margin-bottom: 20px;
+  align-self: flex-start; 
 }
 
 .post-table {

@@ -6,6 +6,7 @@ import ChatRoom from "../pages/chat/ChatRoom.vue";
 import ChatRoomInfo from "../pages/chat/ChatRoomInfo.vue";
 import ChatRoomSchecule from "../pages/chat/ChatRoomSchecule.vue";
 import ChatRoomScheculeCreate from "../pages/chat/ChatRoomScheduleCreate2.vue";
+import Schedule from "../pages/schedule/Schedule.vue";
 
 import Mypage from "../pages/mypage/MyPage.vue";
 import MypageProfile from "../pages/mypage/MypageProfile.vue";
@@ -75,75 +76,10 @@ const routes = [
       { path: "signup", component: Signup },
     ],
   },
-
   {
-    path: "/mypage",
-    component: Mypage,
-    redirect: "/mypage/profile",
-    children: [
-      { path: "profile", component: MypageProfile },
-      { path: "card", component: MypageCardList },
-      { path: "card/create", component: MypageCardCreate },
-      {
-        path: "card/detail",
-        name: "MypageCardDetail",
-        component: CardDetail,
-      },
-      {
-        path: "card/change",
-        name: "MypageCardChange",
-        component: MypageCardChange,
-      },
-      { path: "question", component: MypageQuestion },
-      { path: "answer", component: MypageAnswer },
-      { path: "post", component: MypagePost },
-      { path: "comment", component: MypageComment },
-    ],
-  },
-
-  {
-    path: "/place",
-    component: PlaceSidebar,
-    redirect: "/place/hospital",
-    children: [
-      { path: "hospital", component: Hospital },
-      { path: "beauty", component: Beauty },
-    ],
-  },
-
-  {
-    path: "/board",
-    component: BoardSidebar,
-    redirect: "/board/free",
-    children: [
-      { path: "information", component: InformationBoard },
-      { path: "free", component: FreeBoard },
-      { path: "qna", component: QnaBoard },
-      { path: "qna/register", component: Question },
-      { path: "qna/:id", component: AnswerDetail },
-      { path: "register", component: PostRegister },
-      { path: "qna/answer/register", component: Answer },
-      { path: "post/:id", component: PostDetail },
-      { path: "post/modify", component: PostModify },
-      { path: "question/modify", component: QuestionModify },
-      { path: "qna/answer/modify", component: AnswerModify },
-    ],
-  },
-
-  {
-    path: "/admin",
-    component: Admin,
-    redirect: "/admin/profile",
-    children: [
-      { path: "profile", component: AdminProfile },
-      { path: "category", component: AdminCategory },
-      { path: "category/schedule", component: ScheduleCategory },
-      { path: "category/schedule/fix", component: UpdateScheduleCategory },
-      { path: "category/record", component: Record },
-      { path: "category/record/fix", component: RecordFix },
-      { path: "category/board", component: Board },
-      { path: "category/board/fix", component: BoardFix },
-    ],
+    path: "/schedule",
+    component: Schedule,
+    children: [],
   },
 ];
 

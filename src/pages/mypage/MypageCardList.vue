@@ -44,35 +44,42 @@ const pets = [
 <style scoped>
 /* 전체 컨테이너 */
 .container {
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* 중앙 정렬 */
+  position: relative; /* 버튼 위치 조정을 위해 필요 */
+  padding-left: 20px;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between; /* 좌우 끝으로 배치 */
+  align-items: center;
+  width: 100%;
+  max-width: 1000px; /* 제목과 버튼이 너무 퍼지지 않도록 */
+  margin-bottom: 20px; /* 제목과 카드 사이 여백 */
+  position: absolute;
+  top: 0; /* 화면 위쪽에 고정 */
+}
 
 
 /* 제목 (사용자가 직접 위치 조정 가능) */
 .title {
   font-size: 32px;
   font-weight: bold;
-  margin: 20px;
-  position: absolute;
-  left: 500px; 
-  margin-top: 0px;
+  margin-left: 10px;
 }
 
 /* 추가 버튼 (사용자가 직접 위치 조정 가능) */
 .add-button {
-  width: 50px;
-  height: 50px;
-  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
   background: white;
   border: 2px solid black;
   border-radius: 50%;
   cursor: pointer;
-  position: absolute;
-  right: 300px; 
+  margin: 0 20px 0 80px; 
 }
 
 /* 카드들을 한 줄에 최대 3개씩 정렬 */
@@ -82,7 +89,7 @@ const pets = [
   gap: 20px;
   justify-content: center;
   max-width: 800px;
-  margin: 70px;
+  margin-top: 50px;
 }
 
 /* 반려동물 카드 */

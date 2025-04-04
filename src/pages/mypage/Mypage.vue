@@ -86,7 +86,7 @@
 .content {
   flex-grow: 1;
   padding: 20px;
-  margin-left: 50px;
+  margin-right: 150px;
   margin-bottom: 60px;
 }
 </style>

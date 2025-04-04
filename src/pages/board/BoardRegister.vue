@@ -212,8 +212,4 @@ button {
   color: white;
   border: none;
 }
-
-.submit:hover {
-  background-color: #7a2b2b;
-}
 </style>

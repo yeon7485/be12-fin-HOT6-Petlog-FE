@@ -36,7 +36,7 @@ const goToDetail = (postId) => {
 };
 
 const goToWritePage = () => {
-  router.push("/write");
+  router.push("/board/register");
 };
 </script>
 

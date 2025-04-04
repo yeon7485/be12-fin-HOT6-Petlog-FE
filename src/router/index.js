@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import LandingPage from "../pages/home/LandingPage.vue";
 import Chat from "../pages/chat/Chat.vue";
 import ChatRoom from "../pages/chat/ChatRoom.vue";
+import Schedule from "../pages/schedule/Schedule.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -10,6 +11,11 @@ const routes = [
   {
     path: "/user",
     component: { render: () => {} },
+    children: [],
+  },
+  {
+    path: "/schedule",
+    component: Schedule,
     children: [],
   },
 ];

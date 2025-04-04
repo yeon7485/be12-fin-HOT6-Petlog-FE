@@ -5,7 +5,7 @@ const router = useRouter();
 
 // 카드 생성 페이지로 이동하는 함수
 const goToCreateCard = () => {
-  router.push('/create');
+  router.push('/mypage/card/create');
 };
 
 // 반려동물 데이터 (예제)

@@ -11,10 +11,12 @@
     </div>
 
     <div class="schedule-wrapper">
-      <button class="schedule-button">
-        <img src="../../assets/images/calendar-icon.svg" />
-        채팅방 일정 조회
-      </button>
+      <router-link to="/chatroom/1/chatroom-schedule">
+        <button class="schedule-button">
+          <img src="../../assets/images/calendar-icon.svg" />
+          채팅방 일정 조회
+        </button>
+      </router-link>
     </div>
 
     <!-- 채팅방 정보 -->
@@ -74,7 +76,9 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { RouterLink } from "vue-router";
+</script>
 
 <style>
 /* 전체 컨테이너 */

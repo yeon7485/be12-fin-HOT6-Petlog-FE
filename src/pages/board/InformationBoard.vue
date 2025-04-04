@@ -41,8 +41,7 @@ const goToWritePage = () => {
 </script>
 
 <template>
-  <div class="board_container">
-    <!-- 제목 + 검색창을 같은 라인에 정렬 -->
+  <div>
     <div class="board_header">
       <h1>정보 공유</h1>
       <div class="search_box">
@@ -59,7 +58,6 @@ const goToWritePage = () => {
       </div>
     </div>
 
-    <!-- 게시글 리스트 -->
     <table class="board_table">
       <thead>
         <tr>
@@ -85,7 +83,6 @@ const goToWritePage = () => {
       </tbody>
     </table>
 
-    <!-- 페이지네이션 -->
     <div class="pagination">
       <button class="page_btn">◀</button>
       <span class="page_number">1</span>
@@ -94,26 +91,20 @@ const goToWritePage = () => {
       <button class="page_btn">▶</button>
     </div>
 
-    <!-- 글쓰기 버튼 -->
     <button class="write_btn" @click="goToWritePage">글쓰기</button>
   </div>
 </template>
 
 <style scoped>
-.board_container {
-  width: 80%;
-  margin: auto;
-}
-
 .board_header {
   font-size: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 40px 0;
+  padding-bottom: 40px;
 }
 
-/* 검색창 우측 정렬 및 크기 */
+/* 검색창 */
 .search_box {
   display: flex;
   justify-content: flex-end;
@@ -159,12 +150,8 @@ const goToWritePage = () => {
   text-align: left;
 }
 
-.board_table th {
-  font-weight: bold;
-}
-
 .post_link {
-  color: #000000;
+  color: #000;
   cursor: pointer;
   text-decoration: none;
 }
@@ -191,6 +178,7 @@ const goToWritePage = () => {
   padding: 8px 15px;
   border-radius: 4px;
   cursor: pointer;
+  margin-top: 20px;
 }
 
 .write_btn:hover {

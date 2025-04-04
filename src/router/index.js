@@ -7,6 +7,7 @@ import ChatRoomSchecule from "../pages/chat/ChatRoomSchecule.vue";
 import Mypage from "../pages/mypage/MyPage.vue";
 import MypageProfile from "../pages/mypage/MypageProfile.vue";
 import MypageCardList from "../pages/mypage/MypageCardList.vue";
+import MypageCardCreate from "../pages/mypage/MypageCardCreate.vue";
 import MypageQuestion from "../pages/mypage/MypageQuestion.vue";
 import MypageAnswer from "../pages/mypage/MypageAnswer.vue";
 import MypagePost from "../pages/mypage/MypagePost.vue";
@@ -23,6 +24,12 @@ import ChatRoomScheculeCreate from "../pages/chat/ChatRoomScheculeCreate.vue";
 import Admin from "../pages/admin/admin.vue";
 import AdminProfile from "../pages/admin/AdminProfile.vue";
 import AdminCategory from "../pages/admin/AdminCategory.vue";
+import Schedule from "../pages/admin/Schedule.vue";
+import ScheduleFix from "../pages/admin/ScheduleFix.vue";
+import Record from "../pages/admin/Record.vue";
+import RecordFix from "../pages/admin/RecordFix.vue";
+import Board from "../pages/admin/BoardCategory.Vue";
+import BoardFix from "../pages/admin/BoardCategoryFix.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -50,6 +57,7 @@ const routes = [
     children: [
       { path: "profile", component: MypageProfile },
       { path: "card", component: MypageCardList },
+      { path: "card/create", component: MypageCardCreate },
       { path: "question", component: MypageQuestion },
       { path: "answer", component: MypageAnswer },
       { path: "post", component: MypagePost },
@@ -78,6 +86,12 @@ const routes = [
     children: [
       { path: "profile", component: AdminProfile },
       { path: "category", component: AdminCategory },
+      { path: "category/schedule", component: Schedule },
+      { path: "category/schedule/fix", component: ScheduleFix },
+      { path: "category/record", component: Record },
+      { path: "category/record/fix", component: RecordFix },
+      { path: "category/board", component: Board },
+      { path: "category/board/fix", component: BoardFix },
     ],
   },
 ];

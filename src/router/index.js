@@ -11,6 +11,7 @@ import MypageQuestion from "../pages/mypage/MypageQuestion.vue";
 import MypageAnswer from "../pages/mypage/MypageAnswer.vue";
 import MypagePost from "../pages/mypage/MypagePost.vue";
 import MypageComment from "../pages/mypage/MypageComment.vue";
+import ChatRoomScheculeCreate from "../pages/chat/ChatRoomScheculeCreate.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -22,6 +23,10 @@ const routes = [
     component: ChatRoomSchecule,
   },
   {
+    path: "/chatroom/:chatroomIdx/chatroom-schedule/create",
+    component: ChatRoomScheculeCreate,
+  },
+  {
     path: "/user",
     component: { render: () => {} },
     children: [],
@@ -30,7 +35,7 @@ const routes = [
   {
     path: "/mypage",
     component: Mypage,
-    redirect: "/mypage/profile", 
+    redirect: "/mypage/profile",
     children: [
       { path: "profile", component: MypageProfile },
       { path: "card", component: MypageCardList },

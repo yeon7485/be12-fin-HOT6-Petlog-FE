@@ -18,11 +18,16 @@
       <div class="schedule-section">
         <div class="schedule-section-header">
           <h3 class="schedule-title">일정 목록</h3>
-          <img
-            src="../../assets/images/jam_write.svg"
-            alt="편집"
-            class="edit-icon"
-          />
+          <router-link
+            to="/chatroom/1/chatroom-schedule/create"
+            class="edit-button"
+          >
+            <img
+              src="../../assets/images/jam_write.svg"
+              alt="편집"
+              class="edit-icon"
+            />
+          </router-link>
         </div>
 
         <div class="schedule-list">

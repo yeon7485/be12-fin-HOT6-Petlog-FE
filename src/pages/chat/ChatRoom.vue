@@ -9,9 +9,11 @@
       <!-- 채팅방 헤더 -->
       <div class="chatroom-header">
         <span> 서울숲에서 같이 멍멍이 산책시킬 사람 !! </span>
-        <button class="chatroom-menu">
-          <img src="../../assets/images/material-symbols_menu-rounded.svg" />
-        </button>
+        <router-link to="/chatroom/1/chatroom-info">
+          <button class="chatroom-menu">
+            <img src="../../assets/images/material-symbols_menu-rounded.svg" />
+          </button>
+        </router-link>
       </div>
 
       <!-- ✅ 스크롤 대상 메시지 영역 -->
@@ -58,7 +60,9 @@
     </div>
   </div>
 </template>
-
+<script setup>
+import { RouterLink } from "vue-router";
+</script>
 <style>
 /* 전체 페이지 영역 */
 .chatroom-container {

@@ -60,7 +60,7 @@ export default {
 
 <style scoped>
 .qna_container {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 40px auto;
   padding: 0 20px;
   font-family: 'Arial', sans-serif;

@@ -112,7 +112,7 @@ const handleSubmit = () => {
 
 <style scoped>
 .container {
-  max-width: 700px;
+  max-width: 1200px;
   margin: 40px auto;
   padding: 20px;
   font-family: sans-serif;

@@ -60,7 +60,12 @@ function goToRegister() {
       <h1 class="title">Q&amp;A</h1>
       <div class="search_write">
         <div class="search_box">
-          <span class="icon" @click="triggerSearch">🔍</span>
+          <img
+            class="icon_img"
+            src="/src/assets/icons/search.png"
+            alt="검색 아이콘"
+            @click="triggerSearch"
+          />
           <input
             v-model="search"
             type="text"
@@ -70,8 +75,9 @@ function goToRegister() {
         </div>
         <button class="write_button" @click="goToRegister">
           <img
-            src="https://cdn-icons-png.flaticon.com/512/1828/1828911.png"
-            alt="글쓰기"
+            class="write_icon"
+            src="/src\assets\icons\write.png"
+            alt="글쓰기 아이콘"
           />
         </button>
       </div>
@@ -80,7 +86,7 @@ function goToRegister() {
     <div v-for="post in filteredPosts" :key="post.id" class="post_card">
       <div class="post_header">
         <div class="user_info">
-          <img class="avatar" src="https://i.imgur.com/1XxWysT.png" alt="유저 아바타" />
+          <img class="avatar" src="/src/assets/images/dog1.png" alt="유저 아바타" />
           <span class="author">{{ post.author }}</span>
           <span class="date">{{ post.date }}</span>
         </div>
@@ -157,8 +163,9 @@ function goToRegister() {
   margin-left: 8px;
 }
 
-.icon {
-  font-size: 16px;
+.icon_img {
+  width: 20px;
+  height: 20px;
   cursor: pointer;
 }
 
@@ -169,7 +176,7 @@ function goToRegister() {
   padding: 6px;
 }
 
-.write_button img {
+.write_icon {
   width: 22px;
   height: 22px;
 }

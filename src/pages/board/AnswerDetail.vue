@@ -1,91 +1,363 @@
 <script setup>
-import { useRoute } from 'vue-router';
-import { ref, onMounted } from 'vue';
-
-const route = useRoute();
-const postId = route.params.id;
-const post = ref(null);
-
-// 임시 mock 데이터 (실제로는 API 또는 전역 상태에서 가져오도록 구현)
-const mockPosts = [
-  {
-    id: '1',
-    title: '강아지 중성화 수술 고민입니다.',
-    author: '닉네임',
-    date: '24.8.10',
-    content: '중성화 수술 관련 고민이 있어요...',
-    status: '해결됨',
-    tags: ['강아지', '중성화'],
-    commentCount: 2,
-  },
-  {
-    id: '2',
-    title: '질문입니다',
-    author: '닉네임',
-    date: '24.8.10',
-    content: '포스트 내용입니다. 포스트 내용입니다. 포스트 내용입니다. 포스트 내용입니다...',
-    status: '미해결',
-    tags: ['강아지'],
-    commentCount: 1,
-  },
-];
-
-onMounted(() => {
-  post.value = mockPosts.find(p => p.id === postId);
-});
+import { ref } from 'vue';
 </script>
 
 <template>
-  <div v-if="post" class="detail_container">
-    <h1 class="detail_title">{{ post.title }}</h1>
-    <div class="detail_meta">
-      <span>작성자: {{ post.author }}</span>
-      <span>{{ post.date }}</span>
+  <div class="wrapper">
+    <div class="post_box">
+      <!-- ✅ 목록으로 버튼 추가 -->
+      <router-link to="/board/qna" class="list_button">목록으로</router-link>
+
+      <!-- 질문 제목 -->
+      <div class="post_title">
+        <img class="icon_img" src="/src/assets/icons/question.png" alt="질문 아이콘" />
+        <span class="text">강아지 중성화 수술 고민입니다.</span>
+      </div>
+
+      <!-- 사용자 정보 -->
+      <div class="user_info_line">
+        <div class="user_info">
+          <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
+          <span class="nickname">닉네임</span>
+          <span class="divider">ㅣ</span>
+          <span class="date">24.8.10</span>
+        </div>
+        <div class="icons">
+          <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" />
+          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" />
+        </div>
+      </div>
+
+      <hr class="divider_line" />
+
+      <!-- 질문 본문 -->
+      <div class="content_area">
+        <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
+        <p class="description">
+          저희 강아지가 말티즈(여아) 이제 1살이 되었고 주변에서 중성화 수술을 시켜야한다고 하는데 꼭 시켜야하는 건가요?
+          찾아보니 가격도 만만치 않고 엄청 아파한다고 하더라구요 ㅠㅠㅠ
+        </p>
+        <div class="hashtags">
+          <span># 강아지</span>
+          <span># 강아지 중성화</span>
+        </div>
+      </div>
+
+      <div class="action_area">
+        <button class="reply_btn">답변하기</button>
+      </div>
+
+      <!-- AI 답변 -->
+      <div class="ai_answer_v2">
+        <div class="ai_header_v2">
+          <img class="ai_icon_img" src="/src/assets/icons/Ai.png" alt="전구 아이콘" />
+          <div class="ai_title_v2">AI 우선 답변 - 제가 먼저 도와드릴게요!</div>
+        </div>
+
+        <div class="ai_card">
+          <div class="ai_card_header">
+            <div class="ai_card_left">
+              <img class="ai_profile_img" src="/src/assets/icons/chatGPS.png" alt="ChatGPS 프로필" />
+              <span class="ai_card_name">ChatGPS</span>
+            </div>
+            <div class="ai_card_date">24.8.10</div>
+          </div>
+
+          <div class="ai_card_body">
+            <div class="ai_section_v2">
+              <p class="emoji_title">📌 <strong>중성화 수술, 왜 필요할까?</strong></p>
+              <p>첫째로, 유기동물 문제 해결을 들 수 있다...</p>
+            </div>
+
+            <div class="ai_section_v2">
+              <p class="emoji_title">📌 <strong>그러나 윤리적 딜레마도 존재한다</strong></p>
+              <p>생명체에게 인위적으로 생식 능력을 박탈한다는 점에서...</p>
+            </div>
+
+            <div class="ai_section_v2">
+              <p class="emoji_title">✅ <strong>결론</strong></p>
+              <p>중성화 수술은 선택이자 책임이다...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 사용자 답변 -->
+      <div class="answer_wrapper">
+        <div class="answer_count">
+          <img src="/src/assets/icons/answer.png" class="answer_icon" alt="답변 아이콘" />
+          2개 답변
+        </div>
+
+        <div class="answer_card selected">
+          <div class="user_header">
+            <div class="left_info">
+              <img class="profile_img" src="/src/assets/images/dog2.jpeg" alt="유저 이미지" />
+              <span class="nickname">구름봄맘</span>
+              <span class="date">24.8.10</span>
+            </div>
+            <div class="selected_badge">
+              <img src="/src/assets/icons/select.png" class="badge_icon" alt="채택 아이콘" />
+              <span class="selected_text">질문자가 채택한 답변</span>
+            </div>
+          </div>
+          <div class="comment_body">
+            중성화 안 하면 자궁축농증이나 유선종양 등 질병에 걸릴 가능성이 아주 큽니다...
+          </div>
+        </div>
+
+        <div class="answer_card">
+          <div class="user_header">
+            <div class="left_info">
+              <img class="profile_img" src="/src/assets/images/dog2.jpeg" alt="유저 이미지" />
+              <span class="nickname">눈가을맘</span>
+              <span class="date">24.8.10</span>
+            </div>
+          </div>
+          <div class="comment_body">
+            중성화는 명백한 동물학대입니다!!!
+          </div>
+        </div>
+      </div>
     </div>
-    <p class="detail_content">{{ post.content }}</p>
-    <div class="tags">
-      <span v-for="tag in post.tags" :key="tag" class="tag">#{{ tag }}</span>
-    </div>
-  </div>
-  <div v-else>
-    <p>존재하지 않는 게시글입니다.</p>
   </div>
 </template>
 
 <style scoped>
-.detail_container {
-  padding: 40px;
+.wrapper {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
   background: #fff;
-  border-radius: 16px;
-  border: 1px solid #eee;
+}
+.post_box {
+  position: relative;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-.detail_title {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 12px;
-}
-
-.detail_meta {
+/* ✅ 목록 버튼 스타일 */
+.list_button {
+  position: absolute;
+  top: 16px;
+  right: 20px;
   font-size: 14px;
   color: #666;
-  margin-bottom: 20px;
+  text-decoration: none;
+  background: #f0f0f0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+.list_button:hover {
+  background: #e0e0e0;
+}
+
+.post_title {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
 }
-
-.detail_content {
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 20px;
+.icon_img {
+  width: 50px;
+  height: 50px;
+  margin-right: 15px;
 }
-
-.tags {
+.user_info_line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.user_info {
+  display: flex;
+  align-items: center;
   font-size: 14px;
+  color: #444;
+}
+.profile_img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+.nickname {
+  font-weight: 600;
+  color: #333;
+}
+.divider {
+  margin: 0 6px;
   color: #999;
 }
+.date,
+.ai_card_date {
+  color: #888;
+  font-size: 13px;
+}
+.icons {
+  display: flex;
+  gap: 10px;
+}
+.icon_btn {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+.divider_line {
+  border-top: 1px solid #e0e0e0;
+  margin: 10px 0 20px;
+}
+.content_area {
+  margin-bottom: 20px;
+}
+.dog_img {
+  width: 260px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+.description {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.hashtags span {
+  font-size: 14px;
+  color: #666;
+  margin-right: 8px;
+}
+.action_area {
+  display: flex;
+  justify-content: flex-end;
+}
+.reply_btn {
+  background: white;
+  color: #800000;
+  border: 1px solid #800000;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
 
-.tag {
-  margin-right: 10px;
+.ai_answer_v2 {
+  margin-top: 30px;
+  border-top: 2px dashed #ccc;
+  padding-top: 24px;
+}
+.ai_header_v2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+.ai_icon_img {
+  width: 50px;
+  height: 50px;
+}
+.ai_title_v2 {
+  font-size: 20px;
+}
+.ai_card {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.ai_card_header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 14px;
+  align-items: center;
+}
+.ai_card_left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ai_profile_img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+.ai_card_name {
+  font-weight: 600;
+  color: #333;
+}
+.ai_card_body {
+  font-size: 15px;
+  color: #333;
+  line-height: 1.6;
+}
+.ai_section_v2 {
+  margin-bottom: 20px;
+}
+.emoji_title {
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #d00;
+}
+
+.answer_wrapper {
+  margin-top: 40px;
+}
+.answer_count {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+.answer_icon {
+  width: 50px;
+  height: 50px;
+  margin-right: 18px;
+}
+.answer_card {
+  background: #f6f6f6;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.answer_card.selected {
+  border-left: 5px solid #4caf50;
+}
+.user_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.left_info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.selected_badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #4caf50;
+  font-weight: 500;
+}
+.badge_icon {
+  width: 25px;
+  height: 25px;
+}
+.comment_body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #444;
 }
 </style>

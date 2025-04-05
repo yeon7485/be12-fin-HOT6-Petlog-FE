@@ -20,6 +20,7 @@ import QnaBoard from "../pages/board/QNaBoard.vue";
 import AnswerDetail from "../pages/board/AnswerDetail.vue";
 import BoardRegister from "../pages/board/BoardRegister.vue";
 import Question from "../pages/board/QuestionRegister.vue";
+import Answer from "../pages/board/AnswerRegister.vue";
 import ChatRoomScheculeCreate from "../pages/chat/ChatRoomScheculeCreate.vue";
 import Admin from "../pages/admin/admin.vue";
 import AdminProfile from "../pages/admin/AdminProfile.vue";
@@ -77,6 +78,7 @@ const routes = [
       { path: "qna/register", component: Question },
       { path: "qna/:id", component: AnswerDetail },
       { path: "register", component: BoardRegister },
+      { path: "qna/answer/register", component: Answer },
     ],
   },
   {

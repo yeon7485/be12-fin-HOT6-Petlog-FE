@@ -51,9 +51,12 @@ const goToWritePage = () => {
             placeholder="제목, 작성자, 카테고리 검색 ..."
             @keyup.enter="triggerSearch"
           />
-          <button class="search_icon" @click="triggerSearch">
-            🔍
-          </button>
+          <img
+            class="search_icon_img"
+            src="/src/assets/icons/search.png"
+            alt="검색 아이콘"
+            @click="triggerSearch"
+          />
         </div>
       </div>
     </div>
@@ -126,17 +129,14 @@ const goToWritePage = () => {
   outline: none;
 }
 
-.search_icon {
+.search_icon_img {
   position: absolute;
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
-  border: none;
-  font-size: 14px;
-  color: #888;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
-  padding: 0;
 }
 
 .board_table {

@@ -44,7 +44,9 @@ import { ref } from 'vue';
       </div>
 
       <div class="action_area">
-        <button class="reply_btn">답변하기</button>
+       <router-link to="/board/qna/answer/register" class="reply_btn">
+          답변하기
+        </router-link>
       </div>
 
       <!-- AI 답변 -->
@@ -66,17 +68,18 @@ import { ref } from 'vue';
           <div class="ai_card_body">
             <div class="ai_section_v2">
               <p class="emoji_title">📌 <strong>중성화 수술, 왜 필요할까?</strong></p>
-              <p>첫째로, 유기동물 문제 해결을 들 수 있다...</p>
+              <p>첫째로, 유기동물 문제 해결을 들 수 있다. 해마다 수만 마리의 유기동물이 거리로 내몰리고 있고, 그중 상당수는 계획되지 않은 번식에서 기인한다. 중성화 수술은 이 같은 악순환을 막는 가장 직접적인 방법이다.  둘째로, 건강상의 이점도 무시할 수 없다. 암컷의 경우 자궁축농증이나 유선종양, 수컷의 경우 전립선 질환 예방에 도움이 된다는 연구들이 다수 존재한다.</p>
             </div>
 
             <div class="ai_section_v2">
               <p class="emoji_title">📌 <strong>그러나 윤리적 딜레마도 존재한다</strong></p>
-              <p>생명체에게 인위적으로 생식 능력을 박탈한다는 점에서...</p>
+              <p>생명체에게 인위적으로 생식 능력을 박탈한다는 점에서 동물의 자기결정권을 침해하는 행위로 보는 시각도 있다. 동물이 고통을 느끼는 존재라는 점에서, 단순히 인간의 편의를 위해 수술을 강제하는 건 동물권을 침해하는 행위일 수 있다는 것이다.
+또한 수술 이후의 행동 변화나 호르몬 불균형으로 인한 부작용도 간과해선 안 된다. 특히 어릴 때 수술할 경우 성장판 폐쇄 지연 등의 문제가 보인다. 중성화 수술은 단순히 '우리 집 반려동물을 위한 선택'을 넘어서, 전체 반려동물 생태계를 위한 책임 있는 결정이기도 하다. 불필요한 번식을 줄이고, 유기와 안락사로 이어지는 고리를 끊는 것은 단순 한 동정심이 아니라 시민으로서의 의무일 수 있다. 하지만 이 결정은 강요되어서는 안 된다. 국가와 지자체의 지원 정책, 수의학적 정보 제공, 그리고 시민들의 인식 개선이 균형 있게 이루어질 때, 중성화 수술은 보다 건강한 사회적 합의를 통해 자리 잡을 수 있다.</p>
             </div>
 
             <div class="ai_section_v2">
               <p class="emoji_title">✅ <strong>결론</strong></p>
-              <p>중성화 수술은 선택이자 책임이다...</p>
+              <p>중성화 수술은 선택이자 책임이다. 우리는 반려동물을 사랑한다면, 그들의 삶의 질과 사회 전체 동물 복지의 관점에서 신중히 판단하고 행동해야 한다. 개인의 감정에만 치우치기보다는, 생명에 대한 책임 있는 자세가 필요한 시점이다.</p>
             </div>
           </div>
         </div>
@@ -114,7 +117,9 @@ import { ref } from 'vue';
               <span class="date">24.8.10</span>
             </div>
           </div>
-          <div class="comment_body">
+            <div class="comment_body">
+            <!-- ✅ 여기에 이미지 삽입 -->
+            <img class="answer_img" src="/src/assets/images/dog1.png" alt="답변 이미지" />
             중성화는 명백한 동물학대입니다!!!
           </div>
         </div>
@@ -200,7 +205,7 @@ import { ref } from 'vue';
 }
 .icons {
   display: flex;
-  gap: 10px;
+  gap: 15px;
 }
 .icon_btn {
   width: 18px;
@@ -242,6 +247,9 @@ import { ref } from 'vue';
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .ai_answer_v2 {
@@ -359,5 +367,13 @@ import { ref } from 'vue';
   font-size: 15px;
   line-height: 1.6;
   color: #444;
+}
+
+.answer_img {
+  width: 100%;
+  max-width: 120px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: block;
 }
 </style>

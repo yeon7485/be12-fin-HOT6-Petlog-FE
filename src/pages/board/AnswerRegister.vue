@@ -96,10 +96,10 @@ function handleSubmit() {
 <style scoped>
 /* 전체 컨테이너 */
 .container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 24px;
+  max-width: 1200px;
+  margin: 10px auto 0 auto;;
 }
+  
 
 /* 질문 카드 스타일 */
 .post_box {
@@ -273,8 +273,12 @@ function handleSubmit() {
 }
 
 .btn.submit {
-  background: #800000;
+  background: #6A0104;
   color: #fff;
   border: 1px solid #800000;
+}
+
+.btn.submit:hover {
+  background: #8b0000;
 }
 </style>

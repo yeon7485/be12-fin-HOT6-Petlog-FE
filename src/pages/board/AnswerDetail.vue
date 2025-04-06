@@ -5,16 +5,13 @@ import { ref } from 'vue';
 <template>
   <div class="wrapper">
     <div class="post_box">
-      <!-- ✅ 목록으로 버튼 추가 -->
       <router-link to="/board/qna" class="list_button">목록으로</router-link>
 
-      <!-- 질문 제목 -->
       <div class="post_title">
         <img class="icon_img" src="/src/assets/icons/question.png" alt="질문 아이콘" />
         <span class="text">강아지 중성화 수술 고민입니다.</span>
       </div>
 
-      <!-- 사용자 정보 -->
       <div class="user_info_line">
         <div class="user_info">
           <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
@@ -30,7 +27,6 @@ import { ref } from 'vue';
 
       <hr class="divider_line" />
 
-      <!-- 질문 본문 -->
       <div class="content_area">
         <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
         <p class="description">
@@ -44,12 +40,9 @@ import { ref } from 'vue';
       </div>
 
       <div class="action_area">
-       <router-link to="/board/qna/answer/register" class="reply_btn">
-          답변하기
-        </router-link>
+        <router-link to="/board/qna/answer/register" class="reply_btn">답변하기</router-link>
       </div>
 
-      <!-- AI 답변 -->
       <div class="ai_answer_v2">
         <div class="ai_header_v2">
           <img class="ai_icon_img" src="/src/assets/icons/Ai.png" alt="전구 아이콘" />
@@ -85,7 +78,6 @@ import { ref } from 'vue';
         </div>
       </div>
 
-      <!-- 사용자 답변 -->
       <div class="answer_wrapper">
         <div class="answer_count">
           <img src="/src/assets/icons/answer.png" class="answer_icon" alt="답변 아이콘" />
@@ -117,8 +109,7 @@ import { ref } from 'vue';
               <span class="date">24.8.10</span>
             </div>
           </div>
-            <div class="comment_body">
-            <!-- ✅ 여기에 이미지 삽입 -->
+          <div class="comment_body">
             <img class="answer_img" src="/src/assets/images/dog1.png" alt="답변 이미지" />
             중성화는 명백한 동물학대입니다!!!
           </div>
@@ -131,7 +122,7 @@ import { ref } from 'vue';
 <style scoped>
 .wrapper {
   max-width: 1000px;
-  margin: 30px auto;
+  margin: 0 auto; 
   padding: 20px;
   background: #fff;
 }
@@ -139,16 +130,15 @@ import { ref } from 'vue';
   position: relative;
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 20px;
+  padding: 40px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* ✅ 목록 버튼 스타일 */
 .list_button {
   position: absolute;
   top: 16px;
   right: 20px;
-  font-size: 14px;
+  font-size: 16px;
   color: #666;
   text-decoration: none;
   background: #f0f0f0;
@@ -239,17 +229,21 @@ import { ref } from 'vue';
   justify-content: flex-end;
 }
 .reply_btn {
-  background: white;
-  color: #800000;
+  background: #6A0104;
+  color: #fff;
   border: 1px solid #800000;
   border-radius: 8px;
-  padding: 6px 14px;
-  font-size: 16px;
-  font-weight: 500;
+  padding: 7px 14px;
+  font-size: 15px;
+  font-weight: 300;
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
   text-align: center;
+}
+
+.reply_btn:hover {
+  background: #8b0000;
 }
 
 .ai_answer_v2 {
@@ -368,7 +362,6 @@ import { ref } from 'vue';
   line-height: 1.6;
   color: #444;
 }
-
 .answer_img {
   width: 100%;
   max-width: 120px;

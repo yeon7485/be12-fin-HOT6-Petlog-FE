@@ -172,7 +172,7 @@ const goToWritePage = () => {
 
 .write_btn {
   float: right;
-  background: #b71c1c;
+  background: #6A0104;
   color: white;
   border: none;
   padding: 8px 15px;

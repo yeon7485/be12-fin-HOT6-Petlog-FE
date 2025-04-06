@@ -25,6 +25,7 @@ export default {
   },
 };
 </script>
+
 <template>
   <div class="qna_container">
     <h1 class="title">Q&A</h1>
@@ -42,7 +43,7 @@ export default {
 
       <div class="form_group">
         <label for="tags">태그 (1개 이상)</label>
-        <input type="text" id="tags" v-model="form.tags"/>
+        <input type="text" id="tags" v-model="form.tags" />
       </div>
 
       <div class="form_group">
@@ -61,15 +62,19 @@ export default {
 <style scoped>
 .qna_container {
   max-width: 1200px;
-  margin: 40px auto;
-  padding: 0 20px;
+  margin: 0 auto 40px auto; /* 상단 여백 제거 */
+  padding: 40px; /* 테두리와 내용 간 여백 */
   font-family: 'Arial', sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
 }
 
 .title {
-  font-size: 28px;
+  font-size: 35px;
   font-weight: bold;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
 }
 
 .form_group {
@@ -83,12 +88,19 @@ label {
 }
 
 input[type="text"],
-input[type="file"],
 textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+/* 👇 파일 선택 input 테두리 제거 */
+input[type="file"] {
+  width: 100%;
+  padding: 6px 0;
+  border: none;
+  background-color: transparent;
 }
 
 textarea {
@@ -117,7 +129,11 @@ textarea {
 }
 
 .submit_button {
-  background-color: #a14f4f;
+  background-color: #6A0104;
   color: #fff;
 }
+.submit_button:hover {
+  background: #8b0000;
+}
+
 </style>

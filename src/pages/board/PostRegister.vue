@@ -45,11 +45,12 @@ const handleCancel = () => {
 }
 
 const handleSubmit = () => {
-  const payload = {
-    ...form.value,
-    imageCount: form.value.images.length
+  const confirmed = window.confirm('게시글을 등록하시겠습니까?');
+  if (confirmed) {
+    alert('게시글이 등록되었습니다');
   }
-}
+};
+
 
 </script>
 <template>

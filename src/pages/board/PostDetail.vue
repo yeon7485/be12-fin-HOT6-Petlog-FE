@@ -34,6 +34,24 @@ const addComment = () => {
   });
   newComment.value = '';
 };
+const editCommentId = ref(null);
+const editedText = ref('');
+
+const startEdit = (comment) => {
+  editCommentId.value = comment.id;
+  editedText.value = comment.text;
+};
+
+const cancelEdit = () => {
+  editCommentId.value = null;
+  editedText.value = '';
+};
+
+const saveEdit = (id) => {
+  const target = comments.value.find((c) => c.id === id);
+  if (target) target.text = editedText.value;
+  cancelEdit();
+};
 </script>
 
 <template>
@@ -88,20 +106,36 @@ const addComment = () => {
     </div>
 
     <div class="comment_card" v-for="comment in comments" :key="comment.id">
-      <div class="comment_header">
-        <img class="avatar" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
-        <span class="nickname">{{ comment.author }}</span>
-        <span class="divider">ㅣ</span>
-        <span class="date">{{ comment.date }}</span>
-        <template v-if="comment.editable">
-          <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정" />
-          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제" />
-        </template>
-      </div>
-      <div class="comment_text">
-        {{ comment.text }}
-      </div>
+  <div class="comment_header">
+    <img class="avatar" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
+    <span class="nickname">{{ comment.author }}</span>
+    <span class="divider">ㅣ</span>
+    <span class="date">{{ comment.date }}</span>
+    <template v-if="comment.editable">
+      <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정" @click="startEdit(comment)" />
+      <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제" />
+    </template>
+  </div>
+
+  <!-- 수정 모드일 때 -->
+  <div v-if="editCommentId === comment.id">
+    <input
+      type="text"
+      v-model="editedText"
+      class="edit_input"
+    />
+    <div class="edit_buttons">
+      <span class="edit_save" @click="saveEdit(comment.id)">수정</span>
+      <span class="edit_cancel" @click="cancelEdit">취소</span>
     </div>
+  </div>
+
+  <!-- 일반 모드일 때 -->
+  <div v-else class="comment_text">
+    {{ comment.text }}
+  </div>
+</div>
+
   </div>
 
   
@@ -272,6 +306,27 @@ const addComment = () => {
   margin-left: 3px;
   vertical-align: middle;
 }
+.edit_input {
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  margin-top: 10px;
+}
 
+.edit_buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.edit_save,
+.edit_cancel {
+  font-size: 13px;
+  color: #4b63cc;
+  cursor: pointer;
+}
 
 </style>

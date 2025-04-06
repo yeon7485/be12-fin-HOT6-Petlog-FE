@@ -12,6 +12,7 @@ import MypageQuestion from "../pages/mypage/MypageQuestion.vue";
 import MypageAnswer from "../pages/mypage/MypageAnswer.vue";
 import MypagePost from "../pages/mypage/MypagePost.vue";
 import MypageComment from "../pages/mypage/MypageComment.vue";
+import ChatRoomScheculeCreate from "../pages/chat/ChatRoomScheduleCreate2.vue";
 import Advertisement from "../pages/board/AdvertisementBoard.vue";
 import FreeBoard from "../pages/board/FreeBoard.vue";
 import InformationBoard from "../pages/board/InformationBoard.vue";

@@ -16,7 +16,10 @@ export default {
       this.form.file = event.target.files[0];
     },
     handle_cancel() {
-      this.$router.go(-1);
+      const confirmed = window.confirm('작성 중인 내용을 취소하시겠습니까?');
+      if (confirmed) {
+        this.$router.go(-1);
+      }
     },
     handle_submit() {
       const confirmed = window.confirm('질문을 등록하시겠습니까?');

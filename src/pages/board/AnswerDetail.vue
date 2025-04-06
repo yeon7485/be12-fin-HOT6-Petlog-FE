@@ -1,12 +1,15 @@
 <script setup>
-import { ref } from 'vue';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const handleDelete = () => {
-  const confirmed = window.confirm('게시글을 삭제하시겠습니까?');
+  const confirmed = window.confirm('게시글을 삭제하시겠습니까?')
   if (confirmed) {
-    alert('게시글이 삭제되었습니다.');
+    alert('게시글이 삭제되었습니다.')
   }
-};
+}
 
 const handleSelectAnswer = () => {
   const confirmed = window.confirm('현재 답변을 채택하시겠습니까?')
@@ -15,8 +18,20 @@ const handleSelectAnswer = () => {
   }
 }
 
+// 댓글(답변) 삭제용 핸들러
+const confirmDeleteAnswer = () => {
+  const confirmed = window.confirm('정말 답변을 삭제하시겠습니까?')
+  if (confirmed) {
+    alert('답변이 삭제되었습니다.')
+  }
+}
 
+// 댓글(답변) 수정 이동
+const goToModifyAnswer = () => {
+  router.push('/board/qna/answer/modify')
+}
 </script>
+
 
 <template>
   <div class="wrapper">
@@ -127,6 +142,21 @@ const handleSelectAnswer = () => {
       <span class="nickname">눈가을맘</span>
       <span class="date">24.8.10</span>
     </div>
+            <div class="icons">
+  <img
+    src="/src/assets/icons/write.png"
+    class="icon_btn"
+    alt="수정 아이콘"
+    @click="goToModifyAnswer"
+  />
+  <img
+    src="/src/assets/icons/x-button.png"
+    class="icon_btn"
+    alt="삭제 아이콘"
+    @click="confirmDeleteAnswer"
+  />
+</div>
+
   </div>
   <div class="comment_body">
     <img class="answer_img" src="/src/assets/images/dog1.png" alt="답변 이미지" />

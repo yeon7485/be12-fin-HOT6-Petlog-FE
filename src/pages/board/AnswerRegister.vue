@@ -57,6 +57,11 @@ function handleSubmit() {
       </div>
     </div>
 
+    <!-- 가운데 링크 아이콘 -->
+    <div class="link">
+      <img class="link_icon" src="/src/assets/icons/link.png" alt="링크 아이콘" />
+    </div>
+
     <!-- 답변 입력 폼 -->
     <div class="answer_form">
       <div class="form_box">
@@ -175,6 +180,18 @@ function handleSubmit() {
 .hashtags span {
   font-size: 14px;
   color: #666;
+}
+
+/* 링크 아이콘 */
+.link {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+}
+.link_icon {
+  width: 48px;
+  height: auto;
+  opacity: 0.5;
 }
 
 /* 답변 폼 스타일 */

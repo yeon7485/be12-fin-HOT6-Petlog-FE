@@ -19,7 +19,8 @@ import InformationBoard from "../pages/board/InformationBoard.vue";
 import BoardSidebar from "../pages/board/BoardSidebar.vue";
 import QnaBoard from "../pages/board/QNaBoard.vue";
 import AnswerDetail from "../pages/board/AnswerDetail.vue";
-import BoardRegister from "../pages/board/BoardRegister.vue";
+import PostRegister from "../pages/board/PostRegister.vue";
+import PostDetail from "../pages/board/PostDetail.vue";
 import Question from "../pages/board/QuestionRegister.vue";
 import Answer from "../pages/board/AnswerRegister.vue";
 import ChatRoomScheculeCreate from "../pages/chat/ChatRoomScheculeCreate.vue";
@@ -78,8 +79,9 @@ const routes = [
       { path: "qna", component: QnaBoard },
       { path: "qna/register", component: Question },
       { path: "qna/:id", component: AnswerDetail },
-      { path: "register", component: BoardRegister },
+      { path: "register", component: PostRegister },
       { path: "qna/answer/register", component: Answer },
+      { path: "post/:id", component: PostDetail },
     ],
   },
   {

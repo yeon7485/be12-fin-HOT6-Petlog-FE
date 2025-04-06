@@ -113,20 +113,26 @@ const handleSubmit = () => {
 <style scoped>
 .container {
   max-width: 1200px;
-  margin: 40px auto;
-  padding: 20px;
+  margin: 0 auto 40px auto;           /* ⬅︎ 상단 여백 완전 제거 */
+  padding: 40px;
   font-family: sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
+
+
 
 .section_title {
   font-weight: bold;
-  font-size: 16px;
-  margin-bottom: 20px;
+  font-size: 30px;
+  margin-bottom: 40px;
   display: block;
 }
 
 .board_select {
-  margin-bottom: 24px;
+  margin-bottom: 30px;
   border-bottom: 1px solid #ccc;
   padding-bottom: 12px;
 }
@@ -150,9 +156,13 @@ const handleSubmit = () => {
   flex-direction: column;
 }
 
+select {
+  width: 40%;
+}
+
 label {
   font-weight: bold;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 input[type="text"],

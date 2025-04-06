@@ -28,7 +28,7 @@ const handleFileChange = (e) => {
 const handleCancel = () => {
   const confirmed = window.confirm('작성 중인 내용을 취소하시겠습니까?')
   if (confirmed) {
-    router.push('/board/qna')
+    router.push('/board/qna/1')
   }
 }
 

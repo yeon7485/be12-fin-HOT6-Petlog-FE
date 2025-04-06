@@ -19,6 +19,7 @@ import InformationBoard from "../pages/board/InformationBoard.vue";
 import BoardSidebar from "../pages/board/BoardSidebar.vue";
 import QnaBoard from "../pages/board/QNaBoard.vue";
 import AnswerDetail from "../pages/board/AnswerDetail.vue";
+import AnswerModify from "../pages/board/AnswerModify.vue";
 import PostRegister from "../pages/board/PostRegister.vue";
 import PostDetail from "../pages/board/PostDetail.vue";
 import PostModify from "../pages/board/PostModify.vue";
@@ -86,6 +87,7 @@ const routes = [
       { path: "post/:id", component: PostDetail },
       { path: "post/modify", component: PostModify },
       { path: "question/modify", component: QuestionModify },
+      { path: "qna/answer/modify", component: AnswerModify },
     ],
   },
   {

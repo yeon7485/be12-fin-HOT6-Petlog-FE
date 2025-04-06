@@ -36,9 +36,12 @@ const handleSelectAnswer = () => {
           <span class="date">24.8.10</span>
         </div>
         <div class="icons">
-          <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" />
-          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="handleDelete"/>
-        </div>
+  <router-link to="/board/question/modify">
+    <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" />
+  </router-link>
+  <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="handleDelete" />
+</div>
+
       </div>
 
       <hr class="divider_line" />

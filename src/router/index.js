@@ -23,6 +23,7 @@ import PostRegister from "../pages/board/PostRegister.vue";
 import PostDetail from "../pages/board/PostDetail.vue";
 import PostModify from "../pages/board/PostModify.vue";
 import Question from "../pages/board/QuestionRegister.vue";
+import QuestionModify from "../pages/board/QuestionModify.vue";
 import Answer from "../pages/board/AnswerRegister.vue";
 // import ChatRoomScheculeCreate from "../pages/chat/ChatRoomScheculeCreate.vue"; 에러나서 주석처리!
 import Admin from "../pages/admin/admin.vue";
@@ -84,6 +85,7 @@ const routes = [
       { path: "qna/answer/register", component: Answer },
       { path: "post/:id", component: PostDetail },
       { path: "post/modify", component: PostModify },
+      { path: "question/modify", component: QuestionModify },
     ],
   },
   {

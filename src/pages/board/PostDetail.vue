@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const newComment = ref('');
 const comments = ref([
@@ -27,6 +30,7 @@ const addComment = () => {
     alert('댓글이 등록되었습니다');
   }
 };
+
 const editCommentId = ref(null);
 const editedText = ref('');
 
@@ -59,6 +63,10 @@ const confirmDeleteComment = () => {
     alert('댓글이 삭제되었습니다.');
   }
 };
+
+const goToModify = () => {
+  router.push('/board/post/modify');
+};
 </script>
 
 <template>
@@ -77,8 +85,8 @@ const confirmDeleteComment = () => {
           <span class="date">24.8.10</span>
         </div>
         <div class="icons">
-          <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" />
-          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="confirmDeletePost">
+          <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="goToModify" />
+          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="confirmDeletePost" />
         </div>
       </div>
 
@@ -96,11 +104,11 @@ const confirmDeleteComment = () => {
     </div>
   </div>
 
-    <div class="comment_section">
+  <div class="comment_section">
     <label class="comment_label">
-  <img class="label_icon" src="/src/assets/icons/write-letter.png" alt="댓글 아이콘" />
-  댓글
-</label>
+      <img class="label_icon" src="/src/assets/icons/write-letter.png" alt="댓글 아이콘" />
+      댓글
+    </label>
 
     <div class="input_area">
       <input
@@ -113,42 +121,34 @@ const confirmDeleteComment = () => {
     </div>
 
     <div class="comment_card" v-for="comment in comments" :key="comment.id">
-  <div class="comment_header">
-    <img class="avatar" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
-    <span class="nickname">{{ comment.author }}</span>
-    <span class="divider">ㅣ</span>
-    <span class="date">{{ comment.date }}</span>
-    <template v-if="comment.editable">
-      <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정" @click="startEdit(comment)" />
-      <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제" @click="confirmDeleteComment"/>
-    </template>
+      <div class="comment_header">
+        <img class="avatar" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
+        <span class="nickname">{{ comment.author }}</span>
+        <span class="divider">ㅣ</span>
+        <span class="date">{{ comment.date }}</span>
+        <template v-if="comment.editable">
+          <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정" @click="startEdit(comment)" />
+          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제" @click="confirmDeleteComment" />
+        </template>
+      </div>
+
+      <div v-if="editCommentId === comment.id">
+        <div class="edit_buttons">
+          <span class="edit_save" @click="saveEdit(comment.id)">수정</span>
+          <span class="edit_cancel" @click="cancelEdit">취소</span>
+        </div>
+        <input
+          type="text"
+          v-model="editedText"
+          class="edit_input"
+        />
+      </div>
+
+      <div v-else class="comment_text">
+        {{ comment.text }}
+      </div>
+    </div>
   </div>
-
-  <!-- 수정 모드일 때 -->
-<!-- 수정 모드일 때 -->
-<div v-if="editCommentId === comment.id">
-  <div class="edit_buttons">
-    <span class="edit_save" @click="saveEdit(comment.id)">수정</span>
-    <span class="edit_cancel" @click="cancelEdit">취소</span>
-  </div>
-  <input
-    type="text"
-    v-model="editedText"
-    class="edit_input"
-  />
-</div>
-
-
-  <!-- 일반 모드일 때 -->
-  <div v-else class="comment_text">
-    {{ comment.text }}
-  </div>
-</div>
-
-  </div>
-
-  
-  
 </template>
 
 <style scoped>
@@ -246,9 +246,9 @@ const confirmDeleteComment = () => {
 
 /* ⬇ 댓글 영역 */
 .comment_section {
-  width: 1800%;
+  width: 100%;
   max-width: 1000px;
-  margin: 0 auto;          /* 가운데 정렬 */
+  margin: 0 auto;
   padding: 20px;
 }
 
@@ -315,6 +315,7 @@ const confirmDeleteComment = () => {
   margin-left: 3px;
   vertical-align: middle;
 }
+
 .edit_input {
   width: 100%;
   padding: 14px 16px;
@@ -339,6 +340,4 @@ const confirmDeleteComment = () => {
   color: #6c7dc6;
   cursor: pointer;
 }
-
-
 </style>

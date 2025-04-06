@@ -18,9 +18,10 @@ function handleCancel() {
 }
 
 function handleSubmit() {
-  console.log('답변 내용:', content.value)
-  console.log('파일 이름:', fileName.value)
-  // 실제 업로드 로직 작성 예정
+  const confirmed = window.confirm('답변을 등록하시겠습니까?')
+  if (confirmed) {
+    alert('답변이 등록되었습니다')
+  }
 }
 </script>
 
@@ -94,14 +95,11 @@ function handleSubmit() {
 </template>
 
 <style scoped>
-/* 전체 컨테이너 */
 .container {
   max-width: 1200px;
   margin: 10px auto 0 auto;;
 }
-  
 
-/* 질문 카드 스타일 */
 .post_box {
   background: #fff;
   border: 1px solid #ddd;
@@ -182,7 +180,6 @@ function handleSubmit() {
   color: #666;
 }
 
-/* 링크 아이콘 */
 .link {
   display: flex;
   justify-content: center;
@@ -194,7 +191,6 @@ function handleSubmit() {
   opacity: 0.5;
 }
 
-/* 답변 폼 스타일 */
 .answer_form {
   background: #fff;
   border: 1px solid #ddd;

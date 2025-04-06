@@ -1,5 +1,13 @@
 <script setup>
 import { ref } from 'vue';
+
+const handleDelete = () => {
+  const confirmed = window.confirm('게시글을 삭제하시겠습니까?');
+  if (confirmed) {
+    alert('게시글이 삭제되었습니다');
+  }
+};
+
 </script>
 
 <template>
@@ -21,7 +29,7 @@ import { ref } from 'vue';
         </div>
         <div class="icons">
           <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" />
-          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" />
+          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="handleDelete"/>
         </div>
       </div>
 

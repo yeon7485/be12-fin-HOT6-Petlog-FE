@@ -21,18 +21,11 @@ const comments = ref([
 
 const addComment = () => {
   if (newComment.value.trim() === '') return;
-  comments.value.push({
-    id: Date.now(),
-    author: '익명',
-    date: new Date().toLocaleDateString('ko-KR', {
-      year: '2-digit',
-      month: '2-digit',
-      day: '2-digit',
-    }).replace(/\. /g, '.').replace(/\./g, '.'),
-    text: newComment.value,
-    editable: true,
-  });
-  newComment.value = '';
+
+  const confirmed = window.confirm('댓글을 등록하시겠습니까?');
+  if (confirmed) {
+    alert('댓글이 등록되었습니다');
+  }
 };
 const editCommentId = ref(null);
 const editedText = ref('');
@@ -51,6 +44,20 @@ const saveEdit = (id) => {
   const target = comments.value.find((c) => c.id === id);
   if (target) target.text = editedText.value;
   cancelEdit();
+};
+
+const confirmDeletePost = () => {
+  const confirmed = window.confirm('게시글을 삭제하시겠습니까?');
+  if (confirmed) {
+    alert('게시글이 삭제되었습니다.');
+  }
+};
+
+const confirmDeleteComment = () => {
+  const confirmed = window.confirm('댓글을 삭제하시겠습니까?');
+  if (confirmed) {
+    alert('댓글이 삭제되었습니다.');
+  }
 };
 </script>
 
@@ -71,7 +78,7 @@ const saveEdit = (id) => {
         </div>
         <div class="icons">
           <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" />
-          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" />
+          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="confirmDeletePost">
         </div>
       </div>
 
@@ -113,22 +120,24 @@ const saveEdit = (id) => {
     <span class="date">{{ comment.date }}</span>
     <template v-if="comment.editable">
       <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정" @click="startEdit(comment)" />
-      <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제" />
+      <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제" @click="confirmDeleteComment"/>
     </template>
   </div>
 
   <!-- 수정 모드일 때 -->
-  <div v-if="editCommentId === comment.id">
-    <input
-      type="text"
-      v-model="editedText"
-      class="edit_input"
-    />
-    <div class="edit_buttons">
-      <span class="edit_save" @click="saveEdit(comment.id)">수정</span>
-      <span class="edit_cancel" @click="cancelEdit">취소</span>
-    </div>
+<!-- 수정 모드일 때 -->
+<div v-if="editCommentId === comment.id">
+  <div class="edit_buttons">
+    <span class="edit_save" @click="saveEdit(comment.id)">수정</span>
+    <span class="edit_cancel" @click="cancelEdit">취소</span>
   </div>
+  <input
+    type="text"
+    v-model="editedText"
+    class="edit_input"
+  />
+</div>
+
 
   <!-- 일반 모드일 때 -->
   <div v-else class="comment_text">
@@ -308,25 +317,28 @@ const saveEdit = (id) => {
 }
 .edit_input {
   width: 100%;
-  padding: 10px;
+  padding: 14px 16px;
   font-size: 15px;
   border-radius: 6px;
-  border: 1px solid #ddd;
-  margin-top: 10px;
+  border: 1px solid #ccc;
+  margin-top: 6px;
+  box-sizing: border-box;
 }
 
 .edit_buttons {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 6px;
+  gap: 12px;
+  margin-bottom: 6px;
 }
 
 .edit_save,
 .edit_cancel {
-  font-size: 13px;
-  color: #4b63cc;
+  font-size: 14px;
+  font-weight: bold;
+  color: #6c7dc6;
   cursor: pointer;
 }
+
 
 </style>

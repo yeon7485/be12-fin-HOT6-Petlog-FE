@@ -218,8 +218,13 @@ button {
 }
 
 .submit {
-  background-color: #963a3a;
+  background-color: #6A0104;
   color: white;
   border: none;
+}
+
+.submit:hover {
+  background-color: #7a2b2b;
+  color: white;
 }
 </style>

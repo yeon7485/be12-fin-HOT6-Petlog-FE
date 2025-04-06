@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const boardTypes = [
   { value: 'free', label: '자유 게시판' },
@@ -34,25 +37,20 @@ const handleFileChange = (event) => {
 }
 
 const handleCancel = () => {
-  form.value = {
-    boardType: '',
-    category: '',
-    title: '',
-    content: '',
-    images: []
+  const confirmed = window.confirm('작성 중인 내용을 취소하시겠습니까?')
+  if (confirmed) {
+    router.push('/board/free')
   }
-  previewImages.value = []
 }
 
 const handleSubmit = () => {
-  const confirmed = window.confirm('게시글을 등록하시겠습니까?');
+  const confirmed = window.confirm('게시글을 등록하시겠습니까?')
   if (confirmed) {
-    alert('게시글이 등록되었습니다');
+    alert('게시글이 등록되었습니다')
   }
-};
-
-
+}
 </script>
+
 <template>
   <div class="container">
     <!-- 게시판 선택 -->

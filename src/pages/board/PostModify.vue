@@ -1,5 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const postId = 1
 
 const boardTypes = [
   { value: 'free', label: '자유 게시판' },
@@ -13,9 +17,7 @@ const form = ref({
   boardType: 'free',
   category: '강아지',
   title: '강아지 키울 때 꿀팁 공유!',
-  content: `강아지 1마리 키우시는 분들 약간 꿀팁아닌 꿀팁 드리자면 한 마리 키우면
-
-애기가 너무 외로워할 수 있으니 한 마리 더 키우면 즐거움 2배 + 행복 2배 + 사료값 2배`,
+  content: `강아지 1마리 키우시는 분들 약간 꿀팁아닌 꿀팁 드리자면 한 마리 키우면 애기가 너무 외로워할 수 있으니 한 마리 더 키우면 즐거움 2배 + 행복 2배 + 사료값 2배`,
   images: []
 })
 
@@ -40,20 +42,16 @@ onMounted(() => {
 })
 
 const handleCancel = () => {
-  form.value = {
-    boardType: 'free',
-    category: '강아지',
-    title: '강아지 키울 때 꿀팁 공유!',
-    content: `강아지 1마리 키우시는 분들 약간 꿀팁아닌 꿀팁 드리자면 한 마리 키우면 애기가 너무 외로워할 수 있으니 한 마리 더 키우면 즐거움 2배 + 행복 2배 + 사료값 2배`,
-    images: []
+  const confirmed = window.confirm('작성 중인 내용을 취소하시겠습니까?')
+  if (confirmed) {
+    router.push(`/board/post/${postId}`)
   }
-  previewImages.value = ['/src/assets/images/dog1.png']
 }
 
 const handleModify = () => {
-  const confirmed = window.confirm('변경 내용을 수정하시겠습니까?');
+  const confirmed = window.confirm('변경 내용을 수정하시겠습니까?')
   if (confirmed) {
-    alert('수정이 완료되었습니다');
+    alert('수정이 완료되었습니다')
   }
 }
 </script>

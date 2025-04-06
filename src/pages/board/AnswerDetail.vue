@@ -4,9 +4,17 @@ import { ref } from 'vue';
 const handleDelete = () => {
   const confirmed = window.confirm('게시글을 삭제하시겠습니까?');
   if (confirmed) {
-    alert('게시글이 삭제되었습니다');
+    alert('게시글이 삭제되었습니다.');
   }
 };
+
+const handleSelectAnswer = () => {
+  const confirmed = window.confirm('현재 답변을 채택하시겠습니까?')
+  if (confirmed) {
+    alert('채택이 완료되었습니다.')
+  }
+}
+
 
 </script>
 
@@ -110,18 +118,22 @@ const handleDelete = () => {
         </div>
 
         <div class="answer_card">
-          <div class="user_header">
-            <div class="left_info">
-              <img class="profile_img" src="/src/assets/images/dog2.jpeg" alt="유저 이미지" />
-              <span class="nickname">눈가을맘</span>
-              <span class="date">24.8.10</span>
-            </div>
-          </div>
-          <div class="comment_body">
-            <img class="answer_img" src="/src/assets/images/dog1.png" alt="답변 이미지" />
-            중성화는 명백한 동물학대입니다!!!
-          </div>
-        </div>
+  <div class="user_header">
+    <div class="left_info">
+      <img class="profile_img" src="/src/assets/images/dog2.jpeg" alt="유저 이미지" />
+      <span class="nickname">눈가을맘</span>
+      <span class="date">24.8.10</span>
+    </div>
+  </div>
+  <div class="comment_body">
+    <img class="answer_img" src="/src/assets/images/dog1.png" alt="답변 이미지" />
+    중성화는 명백한 동물학대입니다!!!
+  </div>
+  <div class="select_btn_area">
+    <button class="select_btn" @click="handleSelectAnswer">채택하기</button>
+  </div>
+</div>
+
       </div>
     </div>
   </div>
@@ -377,4 +389,27 @@ const handleDelete = () => {
   margin-bottom: 10px;
   display: block;
 }
+
+.select_btn_area {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.select_btn {
+  background: #6A0104;
+  border: 2px solid #6A0104;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select_btn:hover {
+  background-color: #800000;
+}
+
 </style>

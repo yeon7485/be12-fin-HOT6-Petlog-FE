@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const content = ref('')
 const fileName = ref('')
@@ -12,9 +15,10 @@ function handleFileChange(e) {
 }
 
 function handleCancel() {
-  content.value = ''
-  fileName.value = ''
-  document.getElementById('fileInput').value = ''
+  const confirmed = window.confirm('작성 중인 내용을 취소하시겠습니까?')
+  if (confirmed) {
+    router.push('/board/qna/1')
+  }
 }
 
 function handleSubmit() {
@@ -24,6 +28,7 @@ function handleSubmit() {
   }
 }
 </script>
+
 
 <template>
   <div class="container">

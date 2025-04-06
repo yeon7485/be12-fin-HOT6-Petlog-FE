@@ -32,7 +32,7 @@ const triggerSearch = () => {
 };
 
 const goToDetail = (postId) => {
-  router.push(`/detail/${postId}`);
+  router.push(`/board/post/${postId}`);
 };
 
 const goToWritePage = () => {

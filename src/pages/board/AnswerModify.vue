@@ -75,12 +75,10 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- 가운데 링크 아이콘 -->
     <div class="link">
       <img class="link_icon" src="/src/assets/icons/link.png" alt="링크 아이콘" />
     </div>
 
-    <!-- 답변 입력 폼 -->
     <div class="answer_form">
       <div class="form_box">
         <img class="answer_icon" src="/src/assets/icons/answerRegister.png" alt="답변 아이콘" />

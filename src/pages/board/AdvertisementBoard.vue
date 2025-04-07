@@ -107,7 +107,6 @@ const goToWritePage = () => {
   padding-bottom: 40px;
 }
 
-/* 검색창 */
 .search_box {
   display: flex;
   justify-content: flex-end;

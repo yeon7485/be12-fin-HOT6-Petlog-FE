@@ -58,7 +58,6 @@ const handleModify = () => {
 
 <template>
   <div class="container">
-    <!-- 게시판 선택 -->
     <div class="board_select">
       <label class="section_title">게시판 선택</label>
       <div class="radio_group">
@@ -74,7 +73,6 @@ const handleModify = () => {
       </div>
     </div>
 
-    <!-- 카테고리 선택 -->
     <div class="form_group">
       <label>카테고리</label>
       <select v-model="form.category">
@@ -83,19 +81,16 @@ const handleModify = () => {
       </select>
     </div>
 
-    <!-- 제목 입력 -->
     <div class="form_group">
       <label>제목</label>
       <input type="text" v-model="form.title" placeholder="제목을 입력해주세요." />
     </div>
 
-    <!-- 내용 입력 -->
     <div class="form_group">
       <label>내용</label>
       <textarea v-model="form.content" placeholder="내용을 입력해주세요." rows="8" />
     </div>
 
-    <!-- 이미지 업로드 -->
     <div class="form_group">
       <label>사진 등록</label>
       <input type="file" multiple @change="handleFileChange" />
@@ -106,7 +101,6 @@ const handleModify = () => {
       </div>
     </div>
 
-    <!-- 버튼 영역 -->
     <div class="actions">
       <button @click="handleCancel" class="cancel">취소</button>
       <button @click="handleModify" class="submit">수정</button>

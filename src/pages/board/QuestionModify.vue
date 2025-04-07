@@ -37,7 +37,6 @@ const handleSubmit = () => {
   if (confirmed) {
     alert('질문이 등록되었습니다.')
     console.log('등록된 데이터:', form.value)
-    // TODO: 서버 전송 로직
   }
 }
 </script>

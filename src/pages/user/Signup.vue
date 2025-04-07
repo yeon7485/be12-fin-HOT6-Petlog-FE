@@ -169,6 +169,9 @@ input[type="text"] {
   margin-bottom: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.signup_btn:hover {
+  background-color: #700000;
+}
 
 .kakao_btn {
   width: 100%;

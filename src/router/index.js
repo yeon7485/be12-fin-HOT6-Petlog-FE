@@ -38,6 +38,9 @@ import Board from "../pages/admin/BoardCategory.Vue";
 import BoardFix from "../pages/admin/BoardCategoryFix.vue";
 import Login from "../pages/user/Login.vue";
 import Signup from "../pages/user/Signup.vue";
+import PlaceSidebar from "../pages/place/PlaceSidebar.vue";
+import Hospital from "../pages/place/SearchHospital.vue";
+import Beauty from "../pages/place/SearchBeauty.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -74,6 +77,16 @@ const routes = [
   },
 
   {
+    path: "/place",
+    component: PlaceSidebar,
+    redirect: "/place/hospital",
+    children: [
+      { path: "hospital", component: Hospital},
+      { path: "beauty", component: Beauty },
+    ],
+  },
+
+  {
     path: "/board",
     component: BoardSidebar,
     redirect: "/board/free",
@@ -92,10 +105,11 @@ const routes = [
       { path: "qna/answer/modify", component: AnswerModify },
     ],
   },
+
   {
     path: "/admin",
     component: Admin,
-    redirect: "/admin/profile", 
+    redirect: "/admin/profile",
     children: [
       { path: "profile", component: AdminProfile },
       { path: "category", component: AdminCategory },

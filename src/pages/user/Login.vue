@@ -70,12 +70,12 @@ const toHome = () => {
 }
 
 .form_group {
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
 label {
   display: block;
-  margin-bottom: 17px;
+  margin-bottom: 15px;
   font-weight: bold;
   font-size: 15px;
 }

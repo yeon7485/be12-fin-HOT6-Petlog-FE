@@ -37,6 +37,7 @@ import RecordFix from "../pages/admin/RecordFix.vue";
 import Board from "../pages/admin/BoardCategory.Vue";
 import BoardFix from "../pages/admin/BoardCategoryFix.vue";
 import Login from "../pages/user/Login.vue";
+import Signup from "../pages/user/Signup.vue";
 
 const routes = [
   { path: "/", component: LandingPage },

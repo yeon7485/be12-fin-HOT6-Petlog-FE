@@ -146,6 +146,7 @@ export default {
   flex: 1;
   padding: 20px;
   background-color: #f9f9f9;
+  max-width: 700px;
 }
 
 .header {

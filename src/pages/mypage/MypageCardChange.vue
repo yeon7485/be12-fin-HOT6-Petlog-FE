@@ -1,251 +1,150 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from 'vue';
 
-// 프로필 이미지 상태 (기본 이미지 설정)
-const profileImage = ref("/src/assets/images/cat2.jpg");
-
-// 카드 정보
 const card = ref({
-  name: "빙봉",
-  gender: "female",
-  neutered: true,
-  birthDate: "2017-04-01", // 기본 날짜 설정
-  breed: "코리안숏헤어",
-  notes: "성격 다정함\n꼬리가 짧아요",
+  name: '',
+  breed: '',
+  gender: '',
+  birthdate: '',
+  neutered: false,
+  notes: '',
+  status: '',
 });
 
-// 파일 입력 요소 참조
-const fileInput = ref(null);
+onMounted(() => {
+  card.value = {
+    name: '빙빙',
+    breed: '코리안숏헤어',
+    gender: '♀️',
+    birthdate: '2017-04-01',
+    neutered: true,
+    notes: '성격 더러움\n꼬리가 잘려있음',
+    status: '정상',
+  };
+});
 
-// 저장 버튼 클릭 시 실행될 함수
-const saveCard = () => {
-  console.log("카드 저장됨:", card.value);
-};
-
-// 취소 버튼 클릭 시 실행될 함수
-const cancel = () => {
-  console.log("취소됨");
-};
-
-// 파일 선택 창 열기
-const triggerFileInput = () => {
-  fileInput.value.click(); // input 요소 클릭
-};
-
-// 파일 업로드 함수
-const uploadImage = (event) => {
-  const file = event.target.files[0]; // 사용자가 선택한 파일
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      profileImage.value = e.target.result; // 이미지 미리보기 적용
-    };
-    reader.readAsDataURL(file);
-  }
-};
+const statuses = ['정상', '실종', '파양', '사망'];
 </script>
 
 <template>
-  <div class="card-form">
-    <h2 class="title">반려동물 카드 수정</h2>
-    <div class="form-container">
-      <!-- 프로필 사진 -->
-      <div class="profile-section">
-        <img :src="profileImage" alt="프로필 이미지" class="profile-img" />
-        <input type="file" ref="fileInput" accept="image/*" @change="uploadImage" hidden />
-        <button class="upload-btn" @click="triggerFileInput">📷</button>
-      </div>
+  <h1 class ="title">반려동물 정보 수정</h1>
+  <div class="form-container">
+    
 
-      <!-- 이름 -->
-      <label>이름</label>
-      <input type="text" v-model="card.name" placeholder="이름 입력" />
+    <div class="profile-section">
+      <img src="/src/assets/images/cat1.jpg" class="profile-img" />
+    </div>
 
-      <!-- 성별 + 중성화 여부 (한 줄 배치) -->
-      <div class="gender-neuter-group">
-        <!-- 성별 -->
-        <div class="gender-section">
-          <label>성별</label>
-          <div class="gender-buttons">
-            <label>
-              <input type="radio" v-model="card.gender" value="male" />
-              <span>♂️</span>
-            </label>
-            <label>
-              <input type="radio" v-model="card.gender" value="female" />
-              <span>♀️</span>
-            </label>
-          </div>
-        </div>
+    <input v-model="card.name" placeholder="이름" class="input" />
 
-        <!-- 중성화 여부 -->
-        <div class="neuter-section">
-          <label>중성화 여부</label>
-          <label class="neutered">
-            <input type="checkbox" v-model="card.neutered" />
-            <span></span>
-          </label>
-        </div>
-      </div>
+    <div class="gender-section">
+      <label><input type="radio" value="♂️" v-model="card.gender" /> ♂️</label>
+      <label><input type="radio" value="♀️" v-model="card.gender" /> ♀️</label>
+      <label><input type="checkbox" v-model="card.neutered" /> 중성화 유무</label>
+    </div>
 
-      <!-- 생일 (달력 입력) -->
-      <label>생일</label>
-      <input type="date" v-model="card.birthDate" class="birth-input" />
+    <div class="birthdate-section">
+      <input type="date" v-model="card.birthdate" />
+    </div>
 
-      <!-- 품종 -->
-      <label>품종</label>
-      <input type="text" v-model="card.breed" placeholder="예: 코리안숏헤어" />
+    <input v-model="card.breed" placeholder="품종" class="input" />
+    <textarea v-model="card.notes" placeholder="특이사항" class="textarea" />
 
-      <!-- 특이사항 -->
-      <label>특이사항</label>
-      <textarea v-model="card.notes" placeholder="특이사항 입력"></textarea>
+    <div class="status-section">
+      <label v-for="s in statuses" :key="s" class="status-option">
+        <input type="radio" :value="s" v-model="card.status" />
+        {{ s }}
+      </label>
+    </div>
 
-      <!-- 버튼 그룹 -->
-      <div class="button-group">
-        <button class="cancel-btn" @click="cancel">취소</button>
-        <button class="save-btn" @click="saveCard">저장</button>
-      </div>
+    <div class="button-group">
+      <button class="cancel-btn">취소</button>
+      <button class="save-btn">저장</button>
     </div>
   </div>
 </template>
 
 <style scoped>
 .title {
-  padding: 10px;
-  text-align: left;
-  width: 130px;
-  margin-right: 400px;
+  margin-bottom: 30px;
+  margin-left: auto;
+  margin-right: 410px;
+  width: fit-content;
 }
 
-/* 전체 컨테이너 */
-.card-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-}
-
-/* 폼 컨테이너 */
 .form-container {
-  background: #f8f1ea;
-  border-radius: 12px;
-  padding: 25px;
+  background: #fdf6e3;
   width: 400px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* 프로필 사진 */
-.profile-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 15px;
+  margin: 30px auto;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .profile-img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+  width: 100px;
+  height: 100px;
   object-fit: cover;
-}
-
-.upload-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 25px;
-  margin-top: 5px;
-}
-
-/* 입력 필드 스타일 */
-label {
+  border-radius: 50%;
   display: block;
-  font-weight: bold;
-  font-size: 14px;
-  margin-top: 12px;
+  margin: 0 auto 20px;
 }
 
-input,
-textarea {
+.input {
   width: 100%;
-  padding: 8px;
-  margin-top: 5px;
+  padding: 10px;
+  margin: 8px 0;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
-/* 성별 + 중성화 여부 한 줄 정렬 */
-.gender-neuter-group {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-  gap: 70px;
-}
-
-/* 성별 */
-.gender-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-right: 10px;
-}
-
-.gender-buttons {
-  display: flex;
-  gap: 10px;
-}
-.gender-buttons span {
-  font-size: 30px; /* 성별 아이콘 크기 증가 */
-}
-
-.gender-buttons label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-/* 중성화 여부 */
-.neuter-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.neutered {
-  display: flex;
-  align-items: center;
-}
-
-
-/* 생일 입력 */
-.birth-input {
-  padding: 8px;
+.textarea {
   width: 100%;
+  height: 80px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin: 8px 0;
+  resize: none;
 }
 
-/* 버튼 그룹 */
+.gender-section,
+.status-section,
+.birthdate-section {
+  margin: 10px 0;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.status-option {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 4px 10px;
+}
+
 .button-group {
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 15px;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.cancel-btn,
+.save-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .cancel-btn {
-  background: none;
-  border: 1px solid #b33a3a;
-  color: #b33a3a;
-  padding: 8px 20px;
-  border-radius: 5px;
-  cursor: pointer;
+  background: #eee;
 }
 
 .save-btn {
-  background: #b33a3a;
-  color: white;
-  padding: 8px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  background: #800000;
+  color: #fff;
 }
-</style>
+</style

@@ -3,12 +3,17 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-// 카드 생성 페이지로 이동하는 함수
+// 카드 생성 페이지로 이동
 const goToCreateCard = () => {
   router.push('/mypage/card/create');
 };
 
-// 반려동물 데이터 (예제)
+// 모든 카드 클릭 시 디테일 페이지로 이동
+const goToDetail = () => {
+  router.push('/mypage/card/detail');
+};
+
+// 반려동물 더미 데이터
 const pets = [
   { id: 1, name: '봄', age: '8살', breed: '말티즈', gender: 'female', image: '/src/assets/images/dog1.png' },
   { id: 2, name: '구름', age: '8살', breed: '말티즈', gender: 'male', image: '/src/assets/images/dog2.jpeg' },
@@ -27,10 +32,16 @@ const pets = [
 
     <div class="pet-cards">
       <div v-for="pet in pets" :key="pet.id" class="pet-card">
-        <img :src="pet.image" alt="반려동물 사진" class="pet-image" />
+        <img
+          :src="pet.image"
+          alt="반려동물 사진"
+          class="pet-image"
+          @click="goToDetail"
+          style="cursor: pointer;"
+        />
         <h3 class="pet-name">
           {{ pet.name }}
-          <span :class="{ 'male': pet.gender === 'male', 'female': pet.gender === 'female' }">
+          <span :class="{ male: pet.gender === 'male', female: pet.gender === 'female' }">
             {{ pet.gender === 'male' ? '♂' : '♀' }}
           </span>
         </h3>
@@ -42,35 +53,31 @@ const pets = [
 </template>
 
 <style scoped>
-/* 전체 컨테이너 */
 .container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* 중앙 정렬 */
-  position: relative; /* 버튼 위치 조정을 위해 필요 */
+  align-items: center;
+  position: relative;
   padding-left: 20px;
 }
 
 .header {
   display: flex;
-  justify-content: space-between; /* 좌우 끝으로 배치 */
+  justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 1000px; /* 제목과 버튼이 너무 퍼지지 않도록 */
-  margin-bottom: 20px; /* 제목과 카드 사이 여백 */
+  max-width: 1000px;
+  margin-bottom: 20px;
   position: absolute;
-  top: 0; /* 화면 위쪽에 고정 */
+  top: 0;
 }
 
-
-/* 제목 (사용자가 직접 위치 조정 가능) */
 .title {
   font-size: 32px;
   font-weight: bold;
   margin-left: 10px;
 }
 
-/* 추가 버튼 (사용자가 직접 위치 조정 가능) */
 .add-button {
   width: 40px;
   height: 40px;
@@ -82,17 +89,15 @@ const pets = [
   margin: 0 20px 0 80px; 
 }
 
-/* 카드들을 한 줄에 최대 3개씩 정렬 */
 .pet-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 한 줄에 3개 */
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   justify-content: center;
   max-width: 800px;
   margin-top: 50px;
 }
 
-/* 반려동물 카드 */
 .pet-card {
   width: 230px;
   height: 250px;
@@ -107,7 +112,6 @@ const pets = [
   justify-content: center;
 }
 
-/* 반려동물 사진 */
 .pet-image {
   width: 90px;
   height: 90px;
@@ -115,7 +119,6 @@ const pets = [
   object-fit: cover;
 }
 
-/* 반려동물 이름 */
 .pet-name {
   font-size: 18px;
   font-weight: bold;
@@ -125,14 +128,12 @@ const pets = [
   justify-content: center;
 }
 
-/* 반려동물 추가 정보 (나이, 품종) */
 .pet-info {
   font-size: 16px;
   color: #444;
-  margin: 10px 0; /* 간격 넓힘 */
+  margin: 10px 0;
 }
 
-/* 성별 아이콘 색상 */
 .male {
   color: blue;
 }

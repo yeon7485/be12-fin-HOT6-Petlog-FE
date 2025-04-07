@@ -86,7 +86,7 @@ const changePassword = () => {
 .input-group label {
   display: block;
   font-size: 14px;
-  margin-bottom: 5px;
+  margin-bottom: 5px; 
 }
 .input-group input {
   width: 100%;

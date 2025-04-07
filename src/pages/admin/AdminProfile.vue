@@ -1,18 +1,36 @@
 <script setup>
 import { ref } from 'vue';
+import AdminPassword from "./AdminPassword.vue";
 
-// 사용자 정보 (예제)
+// 사용자 정보
 const user = ref({
   name: '관리자01',
   email: 'test@example.com'
 });
 
-// 비밀번호 변경 함수 (예제)
-const changePassword = () => {
-  alert('비밀번호 변경 페이지로 이동');
+// 이름 수정 상태
+const editingName = ref(false);
+
+// 이름 수정 토글
+const toggleEditName = () => {
+  editingName.value = true;
 };
 
-// 회원 탈퇴 함수 (예제)
+// 이름 저장 (Enter 또는 blur)
+const saveName = () => {
+  editingName.value = false;
+};
+
+// 모달 상태 관리
+const isPasswordModalOpen = ref(false);
+const changePassword = () => {
+  isPasswordModalOpen.value = true;
+};
+const closePasswordModal = () => {
+  isPasswordModalOpen.value = false;
+};
+
+// 회원 탈퇴
 const deleteAccount = () => {
   if (confirm('정말 회원 탈퇴를 하시겠습니까?')) {
     alert('회원 탈퇴가 완료되었습니다.');
@@ -26,8 +44,20 @@ const deleteAccount = () => {
 
     <div class="profile">
       <h3 class="username">
-        <strong>{{ user.name }}</strong> 님
-        <span class="edit-icon">✏️</span>
+        <!-- 이름 수정 중일 때 input 필드 -->
+        <template v-if="editingName">
+          <input
+            v-model="user.name"
+            class="name-input"
+            @keyup.enter="saveName"
+            @blur="saveName"
+          />
+        </template>
+        <!-- 수정 중이 아닐 때 텍스트와 연필 아이콘 -->
+        <template v-else>
+          <strong>{{ user.name }}</strong> 님
+          <span class="edit-icon" @click="toggleEditName">✏️</span>
+        </template>
       </h3>
     </div>
 
@@ -41,10 +71,12 @@ const deleteAccount = () => {
 
     <p class="delete" @click="deleteAccount">회원탈퇴</p>
   </div>
+
+  <!-- 비밀번호 변경 모달 -->
+  <AdminPassword v-if="isPasswordModalOpen" @close="closePasswordModal" />
 </template>
 
 <style scoped>
-/* 전체 레이아웃 */
 .title {
   font-size: 32px;
   font-weight: bold;
@@ -52,8 +84,6 @@ const deleteAccount = () => {
   left: 20px;
   margin-right: 500px;
 }
-
-/* 전체 컨테이너 */
 .container {
   display: flex;
   flex-direction: column;
@@ -64,13 +94,10 @@ const deleteAccount = () => {
   border-radius: 12px;
   position: relative;
 }
-
-/* 사용자 프로필 */
 .profile {
   margin-top: 40px;
   text-align: center;
 }
-
 .username {
   font-size: 22px;
   font-weight: bold;
@@ -78,25 +105,26 @@ const deleteAccount = () => {
   display: inline-block;
   padding-bottom: 8px;
 }
-
+.name-input {
+  font-size: 22px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
 .edit-icon {
   font-size: 16px;
   cursor: pointer;
   margin-left: 5px;
 }
-
-/* 입력 폼 스타일 */
 .info {
   margin-top: 10px;
   width: 50%;
 }
-
 .label {
   display: block;
   font-size: 18px;
   margin-top: 15px;
 }
-
 .input {
   width: 100%;
   padding: 12px;
@@ -104,8 +132,6 @@ const deleteAccount = () => {
   border-radius: 8px;
   font-size: 16px;
 }
-
-/* 버튼 스타일 */
 .btn {
   margin-top: 15px;
   padding: 12px 16px;
@@ -115,12 +141,9 @@ const deleteAccount = () => {
   cursor: pointer;
   border-radius: 8px;
 }
-
 .btn:hover {
   background: #f0f0f0;
 }
-
-/* 회원 탈퇴 버튼 */
 .delete {
   margin-top: 30px;
   font-size: 14px;
@@ -128,7 +151,6 @@ const deleteAccount = () => {
   cursor: pointer;
   text-decoration: underline;
 }
-
 .delete:hover {
   color: red;
 }

@@ -23,6 +23,19 @@ const goToEdit = () => {
 const goToList = () => {
   router.push('/mypage/card');
 };
+
+// ✅ 삭제 함수 추가
+const deleteCard = () => {
+  const confirmDelete = window.confirm('정말 삭제하시겠습니까?');
+  if (confirmDelete) {
+    // 실제 API가 있다면 여기서 호출
+    // await axios.delete(`/api/cards/${cardId}`)
+
+    // 일단 로컬에서 삭제 시뮬레이션
+    alert('삭제되었습니다.');
+    router.push('/mypage/card'); // 목록으로 이동
+  }
+};
 </script>
 
 <template>
@@ -32,7 +45,7 @@ const goToList = () => {
     <div class="card-container">
       <div class="card-actions">
         <button class="edit-btn" @click="goToEdit">✏️</button>
-        <button class="delete-btn">🗑️</button>
+        <button class="delete-btn" @click="deleteCard">🗑️</button>
       </div>
 
       <div class="profile-section">

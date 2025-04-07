@@ -47,6 +47,7 @@ import Signup from "../pages/user/Signup.vue";
 import PlaceSidebar from "../pages/place/PlaceSidebar.vue";
 import Hospital from "../pages/place/SearchHospital.vue";
 import Beauty from "../pages/place/SearchBeauty.vue";
+import ChatRoomScheduleDetail from "../pages/chat/ChatRoomScheduleDetail.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -60,6 +61,10 @@ const routes = [
   {
     path: "/chatroom/:chatroomIdx/chatroom-schedule/create",
     component: ChatRoomScheculeCreate,
+  },
+  {
+    path: "/chatroom/:chatroomIdx/chatroom-schedule/:scheduleIdx",
+    component: ChatRoomScheduleDetail,
   },
 
   {

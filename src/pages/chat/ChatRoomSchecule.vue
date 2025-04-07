@@ -31,7 +31,22 @@
         </div>
 
         <div class="schedule-list">
-          <div class="schedule-card" @click="openModal">
+          <router-link
+            :to="`/chatroom/${chatroomIdx}/chatroom-schedule/${schedule.idx}`"
+            class="schedule-card-link"
+          >
+            <div class="schedule-card">
+              <div class="schedule-time">
+                <strong>{{ schedule.time }}</strong>
+              </div>
+              <div class="schedule-desc">{{ schedule.desc }}</div>
+            </div>
+          </router-link>
+          <div class="schedule-card">
+            <div class="schedule-time"><strong>11:00</strong></div>
+            <div class="schedule-desc">병원 검진 예약</div>
+          </div>
+          <div class="schedule-card">
             <div class="schedule-time"><strong>11:00</strong></div>
             <div class="schedule-desc">병원 검진 예약</div>
           </div>
@@ -43,82 +58,33 @@
             <div class="schedule-time"><strong>11:00</strong></div>
             <div class="schedule-desc">병원 검진 예약</div>
           </div>
-          <div class="schedule-card" @click="openModal">
+          <div class="schedule-card">
             <div class="schedule-time"><strong>11:00</strong></div>
             <div class="schedule-desc">병원 검진 예약</div>
           </div>
-          <div class="schedule-card" @click="openModal">
-            <div class="schedule-time"><strong>11:00</strong></div>
-            <div class="schedule-desc">병원 검진 예약</div>
-          </div>
-          <div class="schedule-card" @click="openModal">
-            <div class="schedule-time"><strong>11:00</strong></div>
-            <div class="schedule-desc">병원 검진 예약</div>
-          </div>
-          <div class="schedule-card" @click="openModal">
+          <div class="schedule-card">
             <div class="schedule-time"><strong>11:00</strong></div>
             <div class="schedule-desc">병원 검진 예약</div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 모달 오버레이 (v-if로 조건부 렌더링) -->
-  <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-    <div class="schedule-modal">
-      <!-- 모달 내용 -->
-      <div class="modal-header">
-        <span class="modal-category">🏥 병원</span>
-        <div class="modal-actions">
-          <img
-            src="../../assets/images/fluent_edit-12-regular.svg"
-            class="icon"
-          />
-          <img src="../../assets/images/mi_delete.svg" class="icon" />
-        </div>
-      </div>
-
-      <h2 class="modal-title">병원 검진 예약</h2>
-
-      <div class="modal-item">
-        <strong>시간</strong> <span>11:00 ~ 12:00</span>
-      </div>
-      <div class="modal-item">
-        <strong>장소</strong>
-        <span class="location-text">
-          <img src="../../assets/images/uil_map-marker.svg" class="icon" />
-          서울멍냥병원
-        </span>
-      </div>
-
-      <div class="modal-memo">
-        <strong>방문 목적:</strong> 정기검진
-        <p>
-          진료 결과 다른 곳은 양호한데 과체중 진단을 받아서 다이어트가
-          필요하다고 하셨다.
-        </p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
-
+const route = useRoute();
+const chatroomIdx = route.params.chatroomIdx;
 function goBack() {
   router.back();
 }
-const showModal = ref(false);
 
-const openModal = () => {
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
+const schedule = {
+  idx: 1,
+  time: "11:00",
+  desc: "병원 검진 예약",
 };
 </script>
 
@@ -275,72 +241,5 @@ const closeModal = () => {
   display: flex;
   flex-direction: column;
   gap: 24px; /* ✅ 요소 간 간격도 넉넉하게 */
-}
-
-/* 상단 카테고리 + 아이콘들 */
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.modal-category {
-  font-size: 14px;
-  color: #555;
-}
-
-.modal-actions .icon {
-  width: 20px;
-  height: 20px;
-  margin-left: 12px;
-  cursor: pointer;
-}
-
-/* 타이틀 */
-.modal-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-
-/* 항목 (시간, 장소) */
-.modal-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 14px;
-  color: #222;
-}
-
-/* 아이콘 있는 줄 */
-.modal-item span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* 메모 */
-.modal-memo {
-  background: #f5f5f5;
-  border-radius: 8px;
-  padding: 14px 16px;
-  font-size: 14px;
-  color: #333;
-  line-height: 1.5;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.location-text {
-  color: var(--gray900, #212121);
-  font-feature-settings: "liga" off, "clig" off;
-  font-family: Inter;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  letter-spacing: 0.46px;
 }
 </style>

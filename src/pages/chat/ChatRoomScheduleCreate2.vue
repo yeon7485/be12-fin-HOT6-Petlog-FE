@@ -134,19 +134,10 @@ const goBack = () => {
   margin: 40px auto;
   background-color: #f4eee7;
   border-radius: 20px;
-  padding: 32px 16px; /* ✅ 상하 + 좌우 패딩 통일 */
   display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-/* 내부 전용 네이밍으로 범위 한정해도 좋음 */
-.chatroom-info-container .schedule-create-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+  justify-content: center; /* ✅ 자식들을 수평 가운데로 */
   padding: 24px;
-  border-radius: 12px; /* 💡 내부 박스도 라운딩 통일하면 부드럽습니다 */
+  gap: 24px;
 }
 
 .room-title {
@@ -183,9 +174,14 @@ const goBack = () => {
   height: 24px;
 }
 
+.schedule-create-container {
+  display: flex;
+  justify-content: center; /* ✅ 자식들을 수평 가운데로 */
+}
+
 .schedule-create-card {
   width: 100%;
-  max-width: 400px;
+  max-width: 500px; /* ✅ 가운데 정렬되도록 제한 폭 추가 */
   background-color: #fff;
   border-radius: 12px;
   padding: 28px;

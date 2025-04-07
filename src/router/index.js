@@ -36,6 +36,7 @@ import Record from "../pages/admin/Record.vue";
 import RecordFix from "../pages/admin/RecordFix.vue";
 import Board from "../pages/admin/BoardCategory.Vue";
 import BoardFix from "../pages/admin/BoardCategoryFix.vue";
+import Login from "../pages/user/Login.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -104,6 +105,15 @@ const routes = [
       { path: "category/board", component: Board },
       { path: "category/board/fix", component: BoardFix },
     ],
+  },
+  {
+    path: "/login",
+    component: Login,
+    redirect: "/user/login",
+    children: [
+      { path: "login", component: Login },
+    ]
+
   },
 ];
 

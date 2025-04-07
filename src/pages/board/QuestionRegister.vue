@@ -26,7 +26,6 @@ export default {
       if (confirmed) {
         alert('질문이 등록되었습니다.');
         console.log("등록된 데이터:", this.form);
-        // 실제 등록 로직 추가
       }
     },
   },
@@ -70,8 +69,8 @@ export default {
 <style scoped>
 .qna_container {
   max-width: 1200px;
-  margin: 0 auto 40px auto; /* 상단 여백 제거 */
-  padding: 40px; /* 테두리와 내용 간 여백 */
+  margin: 0 auto 40px auto; 
+  padding: 40px; 
   font-family: 'Arial', sans-serif;
   border: 1px solid #ddd;
   border-radius: 12px;
@@ -103,7 +102,6 @@ textarea {
   border-radius: 4px;
 }
 
-/* 👇 파일 선택 input 테두리 제거 */
 input[type="file"] {
   width: 100%;
   padding: 6px 0;

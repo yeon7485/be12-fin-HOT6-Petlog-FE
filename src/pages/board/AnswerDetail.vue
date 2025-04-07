@@ -18,7 +18,6 @@ const handleSelectAnswer = () => {
   }
 }
 
-// 댓글(답변) 삭제용 핸들러
 const confirmDeleteAnswer = () => {
   const confirmed = window.confirm('정말 답변을 삭제하시겠습니까?')
   if (confirmed) {
@@ -26,7 +25,6 @@ const confirmDeleteAnswer = () => {
   }
 }
 
-// 댓글(답변) 수정 이동
 const goToModifyAnswer = () => {
   router.push('/board/qna/answer/modify')
 }
@@ -131,7 +129,7 @@ const goToModifyAnswer = () => {
             </div>
           </div>
           <div class="comment_body">
-            중성화 안 하면 자궁축농증이나 유선종양 등 질병에 걸릴 가능성이 아주 큽니다...
+            중성화 안 하면 자궁축농증이나 유선종양 등 질병에 걸릴 가능성이 아주 큽니다 노견 되어서나 걸리는줄 알았는데 6살인데도 자궁축농증 걸린 강아지도 봤어요. 강아지생리는 사람이 일주일 정도 하는 것과는 달리 3~4주나 하고요(6개월에 1번 정도 하긴합니다) 그 기간에는 예민해지기도 하고 입맛이 없어 밥을 잘 먹지 않을 수도 있어요 생리 끝나고 상상임신도 한다면 예민한 시기가 길어지고요 중성화해주는게 좋습니다.  
           </div>
         </div>
 

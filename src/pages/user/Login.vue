@@ -35,9 +35,9 @@ const toHome = () => {
         카카오로 로그인
       </button>
 
-      <p class="register_text">
+      <p class="signup_text">
         아직 회원이 아니신가요?
-        <a href="#" class="register_link">회원가입</a>
+        <router-link to="/signup" class="signup_link">회원가입</router-link>
       </p>
     </div>
   </div>
@@ -130,17 +130,18 @@ input {
   height: 18px;
 }
 
-.register_text {
+.signup_text {
   margin-top: 22px;
   font-size: 14px;
   text-align: center;
   color: #333;
 }
 
-.register_link {
+.signup_link {
   color: #800000;
   font-weight: bold;
   text-decoration: none;
   margin-left: 6px;
+  text-decoration: underline;
 }
 </style>

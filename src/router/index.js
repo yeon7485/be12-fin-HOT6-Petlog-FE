@@ -106,15 +106,6 @@ const routes = [
       { path: "category/board/fix", component: BoardFix },
     ],
   },
-  {
-    path: "/login",
-    component: Login,
-    redirect: "/user/login",
-    children: [
-      { path: "login", component: Login },
-    ]
-
-  },
 ];
 
 const router = createRouter({

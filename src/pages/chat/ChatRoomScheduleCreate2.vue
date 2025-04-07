@@ -1,54 +1,186 @@
 <template>
-  <div class="schedule-create-container">
-    <div class="schedule-create-card">
-      <!-- 상단 -->
-      <div class="header">
-        <button class="back-button">
-          <img src="../../assets/images/arrow.svg" alt="뒤로가기" />
-        </button>
-        <div class="tag-wrapper">
-          <span class="tag tag-blue">병원</span>
-          <span class="tag tag-pink">미용실</span>
-        </div>
-        <span class="complete-button">완료</span>
-      </div>
-
-      <!-- 입력 폼 -->
-      <div class="form-section">
-        <input
-          type="text"
-          class="input-title"
-          placeholder="제목을 입력해주세요."
+  <div class="chatroom-info-container">
+    <div class="info-header">
+      <div class="back-wrapper">
+        <img
+          class="back-icon"
+          src="../../assets/images/arrow.svg"
+          @click="goBack"
         />
-
-        <label class="input-label">시작 시간</label>
-        <input type="datetime-local" class="input-box" />
-
-        <label class="input-label">종료 시간</label>
-        <input type="datetime-local" class="input-box" />
-
-        <label class="input-label">방문 목적</label>
-        <input type="text" class="input-box" />
-
-        <label class="input-label">병원명</label>
-        <input type="text" class="input-box" />
-
-        <label class="input-label">메모</label>
-        <textarea class="memo-box" rows="5"></textarea>
+        <!-- <button class="back-button" >뒤로</button> -->
       </div>
+
+      <span class="room-title">서울숲에서 같이 멍멍이 산책시킬 사람 !!</span>
+    </div>
+    <div class="schedule-create-container">
+      <div class="schedule-create-card">
+        <div class="content_header">
+          <!-- 카테고리 선택 드롭다운 -->
+          <div class="category_box">
+            <div class="cate_dropdown_btn" @click.stop="toggleCategory">
+              <div class="selected_cate">
+                <div v-if="selectedCate.name" class="cate_item">
+                  <div
+                    class="color_box"
+                    :style="{ backgroundColor: selectedCate.color }"
+                  ></div>
+                  <span>{{ selectedCate.name }}</span>
+                </div>
+                <div v-else class="placeholder">카테고리 선택</div>
+              </div>
+              <img
+                src="../../assets/icons/Ai.png"
+                alt="down"
+                class="dropdown_icon"
+              />
+            </div>
+
+            <!-- 카테고리 드롭다운 메뉴 (옵션들) -->
+            <div
+              v-if="isCateDropdownOpen"
+              class="cate_dropdown_menu"
+              @click.stop
+            >
+              <ul>
+                <li
+                  v-for="option in planCategories"
+                  :key="option.name"
+                  @click="selectCate(option)"
+                >
+                  <div class="cate_item">
+                    <div
+                      class="color_box"
+                      :style="{ backgroundColor: option.color }"
+                    ></div>
+                    <span>{{ option.name }}</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 입력 폼 -->
+        <div class="form-section">
+          <input
+            type="text"
+            class="input-title"
+            placeholder="제목을 입력해주세요."
+          />
+
+          <label class="input-label">시작 시간</label>
+          <input type="datetime-local" class="input-box" />
+
+          <label class="input-label">종료 시간</label>
+          <input type="datetime-local" class="input-box" />
+
+          <label class="input-label">장소</label>
+          <input type="text" class="input-box" />
+
+          <label class="input-label">메모</label>
+          <textarea class="memo-box" rows="5"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="cancel-button" @click="goBack">취소</button>
+      <button class="confirm-button" @click="goComplete">저장</button>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+
+//url 에서 idx 값 가져오기
+const route = useRoute();
+const router = useRouter();
+
+const chatroomIdx = route.params.chatroomIdx; // 👉 '1'이 들어옵니다
+
+const goComplete = () => {
+  router.push(`/chatroom/${chatroomIdx}/chatroom-schedule`); // 이동할 경로로 바꿔주세요
+};
+
+const isCateDropdownOpen = ref(false);
+const selectedCate = ref({});
+const planCategories = ref([
+  { color: "#00C9CD", name: "병원" },
+  { color: "#E6B0BD", name: "미용실" },
+  { color: "#65924D", name: "산책" },
+  { color: "#BDBDBD", name: "기타" },
+]);
+
+const toggleCategory = () => {
+  isCateDropdownOpen.value = !isCateDropdownOpen.value;
+};
+
+const selectCate = (category) => {
+  selectedCate.value = category;
+  isCateDropdownOpen.value = false;
+};
+
+// 뒤로 가기
+const goBack = () => {
+  router.go(-1); // 또는 window.history.back()
+};
+</script>
 
 <style>
-.schedule-create-container {
+.chatroom-info-container {
+  width: 100%;
+  max-width: 720px;
+  margin: 40px auto;
+  background-color: #f4eee7;
+  border-radius: 20px;
+  padding: 32px 16px; /* ✅ 상하 + 좌우 패딩 통일 */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* 내부 전용 네이밍으로 범위 한정해도 좋음 */
+.chatroom-info-container .schedule-create-container {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 40px 16px;
-  background-color: #f9f9f9;
+  padding: 24px;
+  border-radius: 12px; /* 💡 내부 박스도 라운딩 통일하면 부드럽습니다 */
+}
+
+.room-title {
+  color: #000;
+
+  font-family: Inter;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+/* 헤더: 가운데 정렬 */
+.info-header {
+  position: relative;
+  display: flex;
+  justify-content: center; /* ✅ 타이틀 가운데 정렬 */
+  align-items: center;
+  height: 40px; /* 필요시 명시 */
+}
+
+/* 뒤로 가기 */
+
+.back-wrapper {
+  position: absolute;
+  left: 28px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.back-icon {
+  cursor: pointer;
+  width: 24px; /* 원하는 크기로 조절 */
+  height: 24px;
 }
 
 .schedule-create-card {
@@ -67,11 +199,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.back-button {
-  all: unset;
-  cursor: pointer;
 }
 
 .tag-wrapper {
@@ -95,12 +222,6 @@
   background-color: #fce3e3;
   color: #c24c4c;
 }
-
-.complete-button {
-  font-size: 14px;
-  color: #999;
-}
-
 .form-section {
   display: flex;
   flex-direction: column;
@@ -136,5 +257,73 @@
   border: 1px solid #ddd;
   background-color: #f5f5f5;
   resize: none;
+}
+
+/* 카테고리 선택 드롭다운 */
+.category_box {
+  width: 120px;
+}
+
+.cate_dropdown_btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 13px;
+  border: 1px solid var(--gray300);
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #fff;
+  height: 30px;
+  box-sizing: border-box;
+}
+
+.cate_dropdown_btn > span {
+  flex-shrink: 0;
+}
+
+.dropdown_icon {
+  width: 12px;
+  height: 12px;
+}
+
+.cate_item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+}
+
+.color_box {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.placeholder {
+  color: var(--gray500);
+  font-size: 13px;
+}
+
+.cate_dropdown_menu {
+  position: absolute;
+  width: 120px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.25);
+}
+
+.cate_dropdown_menu li {
+  display: flex;
+  align-items: center;
+  padding: 7px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.cate_dropdown_menu li:hover {
+  background-color: var(--gray200);
 }
 </style>

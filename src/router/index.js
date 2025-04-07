@@ -53,8 +53,14 @@ const routes = [
   { path: "/chat", component: Chat },
   { path: "/chatroom/:chatroomIdx", component: ChatRoom },
   { path: "/chatroom/:chatroomIdx/chatroom-info", component: ChatRoomInfo },
-  { path: "/chatroom/:chatroomIdx/chatroom-schedule", component: ChatRoomSchecule },
-  { path: "/chatroom/:chatroomIdx/chatroom-schedule/create", component: ChatRoomScheculeCreate },
+  {
+    path: "/chatroom/:chatroomIdx/chatroom-schedule",
+    component: ChatRoomSchecule,
+  },
+  {
+    path: "/chatroom/:chatroomIdx/chatroom-schedule/create",
+    component: ChatRoomScheculeCreate,
+  },
 
   {
     path: "/user",
@@ -92,7 +98,7 @@ const routes = [
     component: PlaceSidebar,
     redirect: "/place/hospital",
     children: [
-      { path: "hospital", component: Hospital},
+      { path: "hospital", component: Hospital },
       { path: "beauty", component: Beauty },
     ],
   },

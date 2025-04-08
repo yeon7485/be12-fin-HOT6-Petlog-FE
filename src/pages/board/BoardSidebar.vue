@@ -8,7 +8,6 @@
         <ul>
           <li><router-link to="/board/free" active-class="active">자유 게시판</router-link></li>
           <li><router-link to="/board/information" active-class="active">정보 공유</router-link></li>
-          <li><router-link to="/board/advertisement" active-class="active">분양 홍보</router-link></li>
           <li><router-link to="/board/qna" active-class="active">Q&A</router-link></li>
         </ul>
       </nav>
@@ -34,7 +33,7 @@
 
 .sidebar {
   width: 160px;
-  height: 250px;;
+  height: 200px;;
   background: #ffffff;
   padding: 30px 0;
   border: 1px solid #ddd;

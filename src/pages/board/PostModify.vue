@@ -7,8 +7,7 @@ const postId = 1
 
 const boardTypes = [
   { value: 'free', label: '자유 게시판' },
-  { value: 'info', label: '정보 공유' },
-  { value: 'promotion', label: '분양 홍보' }
+  { value: 'info', label: '정보 공유' }
 ]
 
 const categories = ['강아지', '고양이', '물고기', '햄스터', '도마뱀']

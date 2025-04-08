@@ -6,8 +6,7 @@ const router = useRouter()
 
 const boardTypes = [
   { value: 'free', label: '자유 게시판' },
-  { value: 'info', label: '정보 공유' },
-  { value: 'promotion', label: '분양 홍보' }
+  { value: 'info', label: '정보 공유' }
 ]
 
 const categories = ['강아지', '고양이', '물고기', '햄스터', '도마뱀']
@@ -53,7 +52,6 @@ const handleSubmit = () => {
 
 <template>
   <div class="container">
-    <!-- 게시판 선택 -->
     <div class="board_select">
       <label class="section_title">게시판 선택</label>
       <div class="radio_group">
@@ -69,7 +67,6 @@ const handleSubmit = () => {
       </div>
     </div>
 
-    <!-- 카테고리 선택 -->
     <div class="form_group">
       <label>카테고리</label>
       <select v-model="form.category">

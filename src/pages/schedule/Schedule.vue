@@ -4,6 +4,7 @@ import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import koLocale from "@fullcalendar/core/locales/ko";
+import Calendar from "./components/Calendar.vue";
 
 const calendarOptions = ref({
   plugins: [dayGridPlugin, interactionPlugin],
@@ -130,7 +131,8 @@ watch([startTime, endTime], ([start, end]) => {
       </button>
     </div>
     <div class="calendar">
-      <FullCalendar :options="calendarOptions"></FullCalendar>
+      <Calendar />
+      <!-- <FullCalendar :options="calendarOptions"></FullCalendar> -->
     </div>
 
     <!-- 모달 -->

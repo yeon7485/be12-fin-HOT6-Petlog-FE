@@ -18,7 +18,6 @@ import MypageComment from "../pages/mypage/MypageComment.vue";
 import CardDetail from "../pages/mypage/MypageCardDetail.vue";
 import MypageCardChange from "../pages/mypage/MypageCardChange.vue";
 
-import Advertisement from "../pages/board/AdvertisementBoard.vue";
 import FreeBoard from "../pages/board/FreeBoard.vue";
 import InformationBoard from "../pages/board/InformationBoard.vue";
 import BoardSidebar from "../pages/board/BoardSidebar.vue";
@@ -114,7 +113,6 @@ const routes = [
     redirect: "/board/free",
     children: [
       { path: "information", component: InformationBoard },
-      { path: "advertisement", component: Advertisement },
       { path: "free", component: FreeBoard },
       { path: "qna", component: QnaBoard },
       { path: "qna/register", component: Question },

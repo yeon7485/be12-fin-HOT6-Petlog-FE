@@ -23,13 +23,13 @@ import FreeBoard from "../pages/board/FreeBoard.vue";
 import InformationBoard from "../pages/board/InformationBoard.vue";
 import BoardSidebar from "../pages/board/BoardSidebar.vue";
 import QnaBoard from "../pages/board/QNaBoard.vue";
-import AnswerDetail from "../pages/board/AnswerDetail.vue";
+import QuestionDetail from "../pages/board/QuestionDetail.vue";
 import AnswerModify from "../pages/board/AnswerModify.vue";
 import PostRegister from "../pages/board/PostRegister.vue";
 import PostDetail from "../pages/board/PostDetail.vue";
-import Question from "../pages/board/QuestionRegister.vue";
+import QuestionRegister from "../pages/board/QuestionRegister.vue";
 import QuestionModify from "../pages/board/QuestionModify.vue";
-import Answer from "../pages/board/AnswerRegister.vue";
+import AnswerRegister from "../pages/board/AnswerRegister.vue";
 
 import Admin from "../pages/admin/Admin.vue";
 import AdminProfile from "../pages/admin/AdminProfile.vue";
@@ -125,10 +125,10 @@ const routes = [
       { path: "information", component: InformationBoard },
       { path: "free", component: FreeBoard },
       { path: "qna", component: QnaBoard },
-      { path: "qna/register", component: Question },
-      { path: "qna/:id", component: AnswerDetail },
+      { path: "qna/register", component: QuestionRegister },
+      { path: "qna/:id", component: QuestionDetail },
       { path: ":boardType/post/:id/modify", component: PostRegister },
-      { path: "qna/answer/register", component: Answer },
+      { path: "qna/answer/register", component: AnswerRegister },
       { path: ":boardType/post/:id", component: PostDetail },
       { path: "question/modify", component: QuestionModify },
       { path: "qna/answer/modify", component: AnswerModify },

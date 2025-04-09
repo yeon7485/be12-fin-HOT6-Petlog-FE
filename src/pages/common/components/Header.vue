@@ -20,11 +20,15 @@ const toHome = () => {
           <router-link to="/board" class="menu">게시판</router-link>
           <router-link to="/chat" class="menu">채팅</router-link>
         </div>
-
+        <!-- 
         <div class="user_box">
-          <router-link to="/signup" class="signup">회원가입</router-link>
+          <router-link to="/user/signup" class="signup">회원가입</router-link>
           <div class="line"></div>
-          <router-link to="/login" class="login">로그인</router-link>
+          <router-link to="/user/login" class="login">로그인</router-link>
+        </div> -->
+        <div class="user_box">
+          <img src="/src/assets/icons/alart.png" alt="alart" class="alart_icon" />
+          <span>구름봄 님</span>
         </div>
       </div>
     </div>
@@ -42,9 +46,9 @@ const toHome = () => {
 }
 
 .container {
-  max-width: 1200px;
+  width: 100%;
   height: 100%;
-  margin: auto;
+  margin: 0 10%;
 }
 
 .header_box {
@@ -52,6 +56,7 @@ const toHome = () => {
   justify-content: space-between;
   align-items: center;
   height: 100%;
+
   min-width: 700px;
   font-weight: 500;
   padding: 0 20px;
@@ -101,5 +106,10 @@ const toHome = () => {
 .login {
   text-decoration: none;
   color: inherit;
+}
+
+.alart_icon {
+  width: 16px;
+  height: 16px;
 }
 </style>

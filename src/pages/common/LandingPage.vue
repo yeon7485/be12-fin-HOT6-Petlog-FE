@@ -62,9 +62,9 @@ import logo from "/src/assets/images/logo.png";
 .start_btn {
   text-decoration: none;
   font-family: Cafe24Ssurround;
-  color: var(--maincolor01);
+  color: var(--main-color-brown);
   font-size: 20px;
-  background-color: var(--maincolor02);
+  background-color: var(--main-color-light);
   padding: 15px 36px;
   box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.25);
   border-radius: 8px;

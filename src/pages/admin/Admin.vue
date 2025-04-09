@@ -1,6 +1,5 @@
 <!-- admin.vue -->
-<script setup>
-</script>
+<script setup></script>
 
 <template>
   <div class="admin-container">
@@ -26,7 +25,7 @@
   display: flex;
   min-height: 100px;
   padding: 80px;
-  justify-content: space-between; 
+  justify-content: space-between;
 }
 
 .sidebar {
@@ -40,7 +39,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-right: 0px; 
+  margin-right: 0px;
   margin-left: 120px;
 }
 
@@ -75,7 +74,7 @@
 }
 
 .sidebar a.active {
-  color: var(--main_color_01, #6A0104);
+  color: var(--main-color-brown);
   font-weight: 700;
 }
 
@@ -86,4 +85,3 @@
   margin-bottom: 60px;
 }
 </style>
-

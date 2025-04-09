@@ -27,18 +27,15 @@
           <span class="chat-time">10:46</span>
           <!-- 시간 왼쪽 -->
           <div class="chat-bubble">
-            언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가
-            괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요?
+            언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가
+            괜찮으세요?
           </div>
         </div>
 
         <!-- 반려동물 카드 메시지 -->
         <div class="chat-message pet-message my-message">
           <div class="pet-chat-card">
-            <img
-              src="../../assets/images/Ellipse 12.png"
-              class="pet-chat-img"
-            />
+            <img src="../../assets/images/Ellipse 12.png" class="pet-chat-img" />
             <div class="pet-chat-info">
               <div class="pet-chat-name">봄 <span class="gender">♀</span></div>
               <div class="pet-chat-detail">시바견 / 3살</div>
@@ -73,10 +70,7 @@
               petDetailModalOpen = true;
             "
           >
-            <img
-              src="../../assets/images/Ellipse 12.png"
-              class="pet-chat-img"
-            />
+            <img src="../../assets/images/Ellipse 12.png" class="pet-chat-img" />
             <div class="pet-chat-info">
               <div class="pet-chat-name">봄 <span class="gender">♀</span></div>
               <div class="pet-chat-detail">시바견 3살</div>
@@ -100,11 +94,7 @@
     </div>
   </div>
 
-  <div
-    v-if="isModalOpen"
-    class="modal-overlay"
-    @click.self="isModalOpen = false"
-  >
+  <div v-if="isModalOpen" class="modal-overlay" @click.self="isModalOpen = false">
     <div class="modal-content">
       <h3>반려동물 목록</h3>
 
@@ -124,15 +114,9 @@
   </div>
 
   <!-- 반려동물 상세 모달 -->
-  <div
-    v-if="petDetailModalOpen"
-    class="modal-overlay"
-    @click.self="petDetailModalOpen = false"
-  >
+  <div v-if="petDetailModalOpen" class="modal-overlay" @click.self="petDetailModalOpen = false">
     <div class="pet-detail-modal">
-      <button class="modal-close-icon" @click="petDetailModalOpen = false">
-        ✕
-      </button>
+      <button class="modal-close-icon" @click="petDetailModalOpen = false">✕</button>
       <img :src="selectedPet.image" class="detail-pet-img" />
       <h2>
         {{ selectedPet.name }}
@@ -152,9 +136,7 @@
         </div>
         <div class="info-row">
           <span class="label">특이사항</span>
-          <span style="white-space: pre-line">{{
-            selectedPet.specialNote
-          }}</span>
+          <span style="white-space: pre-line">{{ selectedPet.specialNote }}</span>
         </div>
       </div>
     </div>
@@ -219,7 +201,7 @@ const isModalOpen = ref(false);
   height: 100%;
   max-height: 720px;
   border-radius: 20px;
-  background-color: var(--main_color_03, #f4eee7);
+  background-color: var(--bg-chatroom, #f4eee7);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }

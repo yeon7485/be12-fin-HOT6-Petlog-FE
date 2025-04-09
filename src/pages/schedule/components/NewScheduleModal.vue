@@ -239,11 +239,6 @@ watch([startTime, endTime], ([start, end]) => {
   z-index: 1000;
 }
 
-.modal_body {
-  height: 450px;
-  overflow-y: auto;
-}
-
 .modal_content {
   background-color: var(--background-color);
   padding: 28px 31px;
@@ -276,6 +271,11 @@ watch([startTime, endTime], ([start, end]) => {
 
 .line {
   margin: 4px 0;
+}
+
+.modal_body {
+  height: 450px;
+  overflow-y: auto;
 }
 
 .content_box {

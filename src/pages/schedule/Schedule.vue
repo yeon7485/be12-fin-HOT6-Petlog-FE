@@ -1,34 +1,61 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import Calendar from "./components/Calendar.vue";
 import NewScheduleModal from "./components/NewScheduleModal.vue";
+import SelectPetModal from "../common/components/SelectPetModal.vue";
 
-const isModalOpen = ref(false);
+const isNewScheduleModalOpen = ref(false);
+const isPetModalOpen = ref(false);
+
+const selectedPet = ref({});
 
 // 모달 열기
-const openModal = () => {
-  isModalOpen.value = true;
+const openNewScheduleModal = () => {
+  isNewScheduleModalOpen.value = true;
+};
+
+const openPetModal = () => {
+  isPetModalOpen.value = true;
 };
 
 // 모달 닫기
-const closeModal = () => {
-  isModalOpen.value = false;
+const closeNewScheduleModal = () => {
+  isNewScheduleModalOpen.value = false;
+};
+
+const closePetModal = () => {
+  isPetModalOpen.value = false;
+};
+
+// 펫 변경 함수
+const handlePetSelect = (pet) => {
+  selectedPet.value = pet;
+  closePetModal();
 };
 </script>
 
 <template>
   <div class="container">
     <div class="title_box">
-      <div class="profile_img"></div>
-      <p class="title">내 일정</p>
-      <img class="arrow_down" src="/src/assets/icons/arrow_down.png" alt="아래쪽" />
+      <div
+        class="profile_img"
+        :style="{
+          backgroundImage: selectedPet?.imageUrl ? `url(${selectedPet.imageUrl})` : `url('/src/assets/images/profile_1.jpg')`,
+        }"
+      ></div>
+
+      <p class="title">
+        {{ selectedPet?.name ? `${selectedPet.name}이의 일정` : "내 일정" }}
+      </p>
+      <img class="arrow_down" src="/src/assets/icons/arrow_down.png" alt="아래쪽" @click="openPetModal" />
     </div>
     <div class="calendar">
-      <Calendar @open-modal="openModal" />
+      <Calendar @open-modal="openNewScheduleModal" />
     </div>
 
     <!-- 모달 -->
-    <NewScheduleModal v-if="isModalOpen" :onClose="closeModal" />
+    <NewScheduleModal v-if="isNewScheduleModalOpen" :onClose="closeNewScheduleModal" />
+    <SelectPetModal v-if="isPetModalOpen" :onClose="closePetModal" :onSelect="handlePetSelect" :fromSchedule="true" />
   </div>
 </template>
 

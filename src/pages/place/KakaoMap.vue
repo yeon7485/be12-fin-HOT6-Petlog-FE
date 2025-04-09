@@ -113,7 +113,8 @@ const placesSearchCB = (data, status) => {
       })
 
       kakao.maps.event.addListener(marker, 'click', () => {
-        infowindow.setContent(`<div style="padding:5px;font-size:12px;">${place.place_name}</div>`)
+        const phone = place.phone ? `<br/>📞 ${place.phone}` : ''
+        infowindow.setContent(`<div style="padding:5px;font-size:12px;">${place.place_name}${phone}</div>`)
         infowindow.open(map, marker)
       })
 
@@ -137,7 +138,8 @@ const clickPlace = (place, index) => {
   const position = new kakao.maps.LatLng(place.y, place.x)
   map.setCenter(position)
 
-  infowindow.setContent(`<div style="padding:5px;font-size:12px;">${place.place_name}</div>`)
+  const phone = place.phone ? `<br/>📞 ${place.phone}` : ''
+  infowindow.setContent(`<div style="padding:5px;font-size:12px;">${place.place_name}${phone}</div>`)
   infowindow.open(map, markers[index])
 }
 </script>
@@ -147,7 +149,7 @@ const clickPlace = (place, index) => {
     <h1 class="title">위치 검색</h1>
     <div class="map-wrapper">
       <div class="side">
-        <h3 class = "place">📍 반경 2km 내 장소</h3>
+        <h3 class="place">📍 반경 2km 내 장소</h3>
         <div class="search-bar">
           <input v-model="keyword" placeholder="검색어 입력" @keyup.enter="searchPlaces" />
           <button @click="searchPlaces">검색</button>
@@ -159,7 +161,8 @@ const clickPlace = (place, index) => {
             @click="clickPlace(place, index)"
           >
             <strong>{{ place.place_name }}</strong><br />
-            <small>{{ place.road_address_name || place.address_name }}</small>
+            <small>{{ place.road_address_name || place.address_name }}</small><br />
+            <small v-if="place.phone">📞 {{ place.phone }}</small>
           </li>
         </ul>
       </div>
@@ -188,7 +191,7 @@ const clickPlace = (place, index) => {
   line-height: 1.2;
 }
 
-.place{
+.place {
   margin-bottom: 15px;
 }
 

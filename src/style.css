@@ -7,11 +7,16 @@
 
 
   /* variable */
-  --maincolor01: #6A0104;
-  --maincolor02: #F4E2CA;
-  --maincolor_light: #bb8378;
-  --maincolor_hover: #4D0507;
-  --bgcolor: #FAFAFA;
+  --main-color-brown: #6A0104;
+  --main-color-light: #F4E2CA;
+  --main-color-mid: #bb8378;
+  --main-color-hover: #4D0507;
+
+  --main-color-red: #FB615D;
+  --main-color-blue: #6750E9;
+
+  --background-color: #FAFAFA;
+
   --gray100: #F5F5F5;
   --gray200: #EEEEEE;
   --gray300: #E0E0E0;

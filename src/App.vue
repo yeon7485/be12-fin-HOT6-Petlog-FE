@@ -1,6 +1,6 @@
 <script setup>
 import { RouterView, useRoute } from "vue-router";
-import Header from "./components/common/Header.vue";
+import Header from "./pages/common/components/Header.vue";
 import admin from "./pages/admin/Admin.vue";
 
 const route = useRoute();
@@ -8,7 +8,7 @@ const route = useRoute();
 
 <template>
   <Header v-if="!route.path.startsWith('/user')" />
-  <RouterView></RouterView>
+  <router-view></router-view>
 </template>
 
 <style scoped></style>

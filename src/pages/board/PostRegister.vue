@@ -71,19 +71,7 @@ const handleSubmit = () => {
   if (!confirmed) return
 
   const action = isEdit ? '수정' : '등록'
-  const postData = {
-    id: postId || Date.now(),
-    boardType: form.value.boardType,
-    category: form.value.category,
-    title: form.value.title,
-    content: form.value.content,
-    images: form.value.images
-  }
-
-  console.log(`📦 게시글 ${action}:`, postData)
-
-  alert(`${action}이 완료되었습니다`)
-  router.push(`/board/${form.value.boardType}/post/${postData.id}`)
+  alert(`${action}이 완료되었습니다`) 
 }
 </script>
 

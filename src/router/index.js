@@ -132,6 +132,7 @@ const routes = [
       { path: ":boardType/post/:id", component: PostDetail },
       { path: "question/modify", component: QuestionModify },
       { path: "qna/answer/modify", component: AnswerModify },
+      { path: ":boardType/register", component: PostRegister },
     ],
   },
 

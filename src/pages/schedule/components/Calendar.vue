@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
+import { startOfMonth, endOfMonth, subMonths, addMonths, getDay, getDate, getDaysInMonth, format, parseISO } from "date-fns";
 
 const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const currentDate = new Date();
@@ -7,28 +8,52 @@ const currentYear = ref(currentDate.getFullYear());
 const currentMonth = ref(currentDate.getMonth());
 
 const events = ref([
-  { date: "2025-03-22", title: "산책 가기", color: "#d9e8d4" },
-  { date: "2025-03-27", title: "병원 검진 예약", color: "#cce7ee" },
-  { date: "2025-03-27", title: "미용 예약", color: "#f6d6dd" },
+  { date: "2025-04-05T11:00:00", title: "산책 가기", color: "#d9e8d4" },
+  { date: "2025-04-07T11:00:00", title: "병원 검진 예약병원 검진 예약", color: "#cce7ee" },
+  { date: "2025-03-27T17:00:00", title: "미용 예약", color: "#f6d6dd" },
 ]);
+const emit = defineEmits(["open-modal"]);
 
 const calendarDates = computed(() => {
-  const start = new Date(currentYear.value, currentMonth.value, 1);
-  const end = new Date(currentYear.value, currentMonth.value + 1, 0);
+  const year = currentYear.value;
+  const month = currentMonth.value;
 
-  const startDay = start.getDay();
-  const totalDays = end.getDate();
+  const start = startOfMonth(new Date(year, month));
+  const end = endOfMonth(start);
+
+  const startDay = getDay(start); // 0 (Sunday) ~ 6 (Saturday)
+  const totalDays = getDaysInMonth(start);
+
+  const prevMonth = subMonths(start, 1);
+  const nextMonth = addMonths(start, 1);
+  const prevMonthDays = getDaysInMonth(prevMonth);
 
   const calendar = [];
 
-  // 빈 셀 추가 (이전 달)
-  for (let i = 0; i < startDay; i++) {
-    calendar.push(new Date(NaN));
+  // 이전 달 날짜들
+  for (let i = startDay - 1; i >= 0; i--) {
+    const day = prevMonthDays - i;
+    calendar.push({
+      date: new Date(prevMonth.getFullYear(), prevMonth.getMonth(), day),
+      isCurrentMonth: false,
+    });
   }
 
-  // 현재 달 날짜
+  // 현재 달 날짜들
   for (let i = 1; i <= totalDays; i++) {
-    calendar.push(new Date(currentYear.value, currentMonth.value, i));
+    calendar.push({
+      date: new Date(year, month, i),
+      isCurrentMonth: true,
+    });
+  }
+
+  // 다음 달 날짜들 (총 42개 되게)
+  while (calendar.length < 42) {
+    const nextDay = calendar.length - (startDay + totalDays) + 1;
+    calendar.push({
+      date: new Date(nextMonth.getFullYear(), nextMonth.getMonth(), nextDay),
+      isCurrentMonth: false,
+    });
   }
 
   return calendar;
@@ -36,10 +61,14 @@ const calendarDates = computed(() => {
 
 const getEventsForDate = (date) => {
   if (isNaN(date)) return [];
-  const dateStr = date.toISOString().split("T")[0];
-  return events.value.filter((event) => event.date === dateStr);
-};
 
+  const dateStr = format(date, "yyyy-MM-dd");
+
+  return events.value.filter((event) => {
+    const eventDateStr = format(parseISO(event.date), "yyyy-MM-dd");
+    return eventDateStr === dateStr;
+  });
+};
 const isSunday = (index) => index % 7 === 0;
 const isSaturday = (index) => index % 7 === 6;
 
@@ -60,30 +89,63 @@ const nextMonth = () => {
     currentMonth.value++;
   }
 };
+
+const handleRegisterClick = () => {
+  emit("open-modal");
+};
 </script>
 
 <template>
-  <div class="calendar-wrapper">
-    <div class="calendar-header">
-      <span class="month-year">{{ currentYear }}년 {{ currentMonth + 1 }}월</span>
-      <div class="nav-buttons">
-        <button @click="prevMonth">&#60;</button>
-        <button @click="nextMonth">&#62;</button>
+  <div class="calendar_wrapper">
+    <div class="calendar_header">
+      <div>
+        <span class="month_year">{{ currentYear }}년 {{ currentMonth + 1 }}월</span>
+        <div class="nav_buttons">
+          <div @click="prevMonth" class="prev_btn">
+            <img src="/src/assets/icons/arrow_left.svg" alt="prev" />
+          </div>
+          <div @click="nextMonth" class="next_btn">
+            <img src="/src/assets/icons/arrow_right.svg" alt="next" />
+          </div>
+        </div>
       </div>
+      <button class="create_btn" @click="handleRegisterClick">
+        <img src="/src/assets/icons/plus.png" alt="+" />
+        만들기
+      </button>
     </div>
 
-    <div class="calendar-grid">
-      <div class="day-label" v-for="(day, index) in days" :key="index" :class="{ sunday: index === 0, saturday: index === 6 }">
+    <div class="calendar_grid">
+      <div class="day_label" v-for="(day, index) in days" :key="index" :class="{ sunday: index === 0, saturday: index === 6 }">
         {{ day }}
       </div>
 
-      <div class="calendar-cell" v-for="(date, index) in calendarDates" :key="index">
-        <div class="date-number" :class="{ red: isSunday(index), purple: isSaturday(index) }">
-          {{ date.getDate() }}
+      <div
+        class="calendar_cell"
+        v-for="(item, index) in calendarDates"
+        :key="item.date.toISOString()"
+        :class="{ 'not-this-month': !item.isCurrentMonth }"
+      >
+        <div
+          class="date_number"
+          :class="{
+            red: isSunday(index),
+            blue: isSaturday(index),
+            today: format(item.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd'),
+          }"
+        >
+          {{ item.date.getDate() }}
         </div>
-
-        <div class="event" v-for="event in getEventsForDate(date)" :key="event.title" :style="{ backgroundColor: event.color }">
-          {{ event.title }}
+        <div class="event_wrapper">
+          <div
+            class="event"
+            v-for="event in getEventsForDate(item.date)"
+            :key="event.title"
+            :style="{ backgroundColor: event.color }"
+            :title="event.title"
+          >
+            {{ event.title }}
+          </div>
         </div>
       </div>
     </div>
@@ -91,70 +153,161 @@ const nextMonth = () => {
 </template>
 
 <style scoped>
-.calendar-wrapper {
-  width: 700px;
-  margin: 0 auto;
-  font-family: "Pretendard";
+.calendar_wrapper {
+  margin-bottom: 50px;
 }
-
-.calendar-header {
+.calendar_header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
-.nav-buttons button {
-  background: none;
-  border: none;
-  font-size: 20px;
+.calendar_header > div {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.month_year {
+  font-family: Cafe24SSurround;
+  width: 145px;
+}
+
+.nav_buttons {
+  display: flex;
+}
+
+.nav_buttons img {
+  width: 17px;
+  height: 17px;
+}
+
+.nav_buttons > div {
+  border: 1px solid var(--gray300);
+  padding: 1px 5px;
+  transition: all 0.3s;
+}
+
+.nav_buttons > div:hover {
+  background-color: var(--gray200);
+}
+
+.prev_btn {
+  border-radius: 5px 0 0 5px;
+}
+
+.next_btn {
+  border-radius: 0 5px 5px 0;
+}
+
+.create_btn {
+  border-radius: 8px;
+  border: 1px solid var(--gray400);
+  background: #fff;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+  padding: 10px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  transition: all 0.3s;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.create_btn:hover {
+  background-color: var(--gray300);
+}
+
+.create_btn > img {
+  width: 12px;
+  height: 12px;
+}
+
+.calendar_grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid var(--gray200);
+  border-radius: 16px;
+}
+
+.day_label {
+  text-align: center;
+  padding: 12px 0;
+  color: var(--gray900);
+  font-family: Cafe24Ssurround;
+  font-size: 14px;
+  background-color: #f7f5f3;
+}
+
+.day_label.sunday {
+  border-top-left-radius: 16px;
+  color: var(--main-color-red);
+}
+
+.day_label.saturday {
+  border-top-right-radius: 16px;
+  color: var(--main-color-blue);
+}
+
+.calendar_cell {
+  min-height: 90px;
+  background-color: #fff;
+  position: relative;
+  font-size: 14px;
+  border: 0.5px solid var(--gray200);
+
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.date_number {
+  font-size: 14px;
+  width: fit-content;
+  padding: 5px;
+  margin: 3px 5px;
+  border-radius: 99px;
   cursor: pointer;
 }
 
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-}
-
-.day-label {
-  text-align: center;
-  font-weight: 500;
-  padding: 8px 0;
-  color: #aaa;
-}
-
-.calendar-cell {
-  min-height: 90px;
-  border-radius: 10px;
-  background-color: #fff;
-  padding: 4px 6px;
-  position: relative;
-  font-size: 14px;
-}
-
-.date-number {
-  font-weight: 500;
-  font-size: 14px;
-  margin-bottom: 2px;
+.date_number:hover {
+  background-color: var(--main-color-light);
 }
 
 .red {
-  color: #f44336;
+  color: var(--main-color-red);
 }
-.purple {
-  color: #7e57c2;
+.blue {
+  color: var(--main-color-blue);
+}
+
+.today {
+  color: var(--main-col);
+}
+.event_wrapper {
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 .event {
-  margin-top: 3px;
-  padding: 2px 6px;
-  font-size: 12px;
-  border-radius: 4px;
+  display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  margin-top: 1px;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.not-this-month {
+  opacity: 0.3;
 }
 </style>

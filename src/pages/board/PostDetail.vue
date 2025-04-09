@@ -1,10 +1,34 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useBoardStore } from '/src/stores/useBoardStore'
 
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
+const boardStore = useBoardStore()
 
-const newComment = ref('');
+const boardType = route.params.boardType
+const postId = Number(route.params.id)
+const post = ref(null)
+
+onMounted(async () => {
+  await boardStore.fetchPosts(boardType)
+  post.value = boardStore.posts.find(p => p.id === postId)
+})
+
+const goToModify = () => {
+  router.push(`/board/${boardType}/post/${postId}/modify`)
+}
+
+const confirmDeletePost = () => {
+  if (window.confirm('게시글을 삭제하시겠습니까?')) {
+    alert('게시글이 삭제되었습니다.')
+    router.push(`/board/${boardType}`)
+  }
+}
+
+// 댓글 관련
+const newComment = ref('')
 const comments = ref([
   {
     id: 1,
@@ -20,69 +44,66 @@ const comments = ref([
     text: '뒤에 사료값 2배는 뭔가요 ㅋㅋ',
     editable: true,
   },
-]);
+])
 
 const addComment = () => {
-  if (newComment.value.trim() === '') return;
+  if (newComment.value.trim() === '') return
 
-  const confirmed = window.confirm('댓글을 등록하시겠습니까?');
+  const confirmed = window.confirm('댓글을 등록하시겠습니까?')
   if (confirmed) {
-    alert('댓글이 등록되었습니다');
+    alert('댓글이 등록되었습니다')
+    comments.value.push({
+      id: Date.now(),
+      author: '새 댓글',
+      date: new Date().toLocaleDateString(),
+      text: newComment.value,
+      editable: true,
+    })
+    newComment.value = ''
   }
-};
+}
 
-const editCommentId = ref(null);
-const editedText = ref('');
+const editCommentId = ref(null)
+const editedText = ref('')
 
 const startEdit = (comment) => {
-  editCommentId.value = comment.id;
-  editedText.value = comment.text;
-};
+  editCommentId.value = comment.id
+  editedText.value = comment.text
+}
 
 const cancelEdit = () => {
-  editCommentId.value = null;
-  editedText.value = '';
-};
+  editCommentId.value = null
+  editedText.value = ''
+}
 
 const saveEdit = (id) => {
-  const target = comments.value.find((c) => c.id === id);
-  if (target) target.text = editedText.value;
-  cancelEdit();
-};
+  const target = comments.value.find(c => c.id === id)
+  if (target) target.text = editedText.value
+  cancelEdit()
+}
 
-const confirmDeletePost = () => {
-  const confirmed = window.confirm('게시글을 삭제하시겠습니까?');
+const confirmDeleteComment = (id) => {
+  const confirmed = window.confirm('댓글을 삭제하시겠습니까?')
   if (confirmed) {
-    alert('게시글이 삭제되었습니다.');
+    comments.value = comments.value.filter(c => c.id !== id)
+    alert('댓글이 삭제되었습니다.')
   }
-};
-
-const confirmDeleteComment = () => {
-  const confirmed = window.confirm('댓글을 삭제하시겠습니까?');
-  if (confirmed) {
-    alert('댓글이 삭제되었습니다.');
-  }
-};
-
-const goToModify = () => {
-  router.push('/board/post/modify');
-};
+}
 </script>
 
 <template>
-  <div class="wrapper">
+  <div v-if="post" class="wrapper">
     <div class="post_box">
-      
       <div class="post_title">
-        <span class="text">강아지 키울 때 꿀팁 공유!</span>
+        <span class="text">{{ post.title }}</span>
       </div>
 
       <div class="user_info_line">
         <div class="user_info">
           <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
-          <span class="nickname">닉네임</span>
+          <span class="nickname">{{ post.writer }}</span>
           <span class="divider">ㅣ</span>
-          <span class="date">24.8.10</span>
+          <span class="date">{{ post.date }}</span>
         </div>
         <div class="icons">
           <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="goToModify" />
@@ -94,12 +115,7 @@ const goToModify = () => {
 
       <div class="content_area">
         <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
-        <p class="description">
-          강아지 1마리 키우시는 분들 약간 꿀팁아닌 꿀팁 드리자면 한 마리 키우면 
-        </p>
-        <p class="description">
-          애기가 너무 외로워할 수 있으니 한 마리 더 키우면 즐거움 2배 + 행복 2배 + 사료값 2배
-        </p>
+        <p class="description">{{ post.contents || '게시글 내용이 없습니다.' }}</p>
       </div>
     </div>
   </div>
@@ -120,7 +136,11 @@ const goToModify = () => {
       <button class="submit_btn" @click="addComment">등록</button>
     </div>
 
-    <div class="comment_card" v-for="comment in comments" :key="comment.id">
+    <div
+      class="comment_card"
+      v-for="comment in comments"
+      :key="comment.id"
+    >
       <div class="comment_header">
         <img class="avatar" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
         <span class="nickname">{{ comment.author }}</span>
@@ -128,7 +148,7 @@ const goToModify = () => {
         <span class="date">{{ comment.date }}</span>
         <template v-if="comment.editable">
           <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정" @click="startEdit(comment)" />
-          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제" @click="confirmDeleteComment" />
+          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제" @click="confirmDeleteComment(comment.id)" />
         </template>
       </div>
 
@@ -341,3 +361,4 @@ const goToModify = () => {
   cursor: pointer;
 }
 </style>
+

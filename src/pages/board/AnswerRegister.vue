@@ -6,11 +6,18 @@ const router = useRouter()
 
 const content = ref('')
 const fileName = ref('')
+const previewImage = ref('')
 
 function handleFileChange(e) {
   const file = e.target.files[0]
   if (file) {
     fileName.value = file.name
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      previewImage.value = e.target.result
+    }
+    reader.readAsDataURL(file)
   }
 }
 
@@ -28,7 +35,6 @@ function handleSubmit() {
   }
 }
 </script>
-
 
 <template>
   <div class="container">
@@ -88,6 +94,7 @@ function handleSubmit() {
             @change="handleFileChange"
           />
           <span v-if="fileName" class="file_name">{{ fileName }}</span>
+          <img v-if="previewImage" :src="previewImage" alt="미리보기 이미지" class="preview_img" />
         </div>
 
         <div class="btn_area">
@@ -102,7 +109,7 @@ function handleSubmit() {
 <style scoped>
 .container {
   max-width: 1200px;
-  margin: 10px auto 0 auto;;
+  margin: 10px auto 0 auto;
 }
 
 .post_box {
@@ -250,6 +257,13 @@ function handleSubmit() {
   margin-top: 4px;
   color: #555;
   font-size: 13px;
+}
+
+.preview_img {
+  margin-top: 10px;
+  width: 120px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
 .btn_area {

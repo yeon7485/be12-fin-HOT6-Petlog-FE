@@ -2,22 +2,37 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBoardStore } from '/src/stores/useBoardStore'
+import { useCommentStore } from '/src/stores/useCommentStore'
+import CommentCard from './components/CommentCard.vue'
 
 const route = useRoute()
 const router = useRouter()
 const boardStore = useBoardStore()
+const commentStore = useCommentStore()
 
 const boardType = route.params.boardType
 const postId = Number(route.params.id)
 const post = ref(null)
 
 onMounted(async () => {
-  await boardStore.fetchPosts(boardType)
-  post.value = boardStore.posts.find(p => p.id === postId)
+  const statePost = route?.state?.post
+  if (statePost) {
+    post.value = statePost
+  } else {
+    await boardStore.fetchPosts(boardType)
+    post.value = boardStore.posts.find(p => p.id === postId)
+  }
+
+  commentStore.fetchComments(postId)
 })
 
 const goToModify = () => {
-  router.push(`/board/${boardType}/post/${postId}/modify`)
+  router.push({
+    path: `/board/${boardType}/post/${postId}/modify`,
+    state: {
+      post: post.value
+    }
+  })
 }
 
 const confirmDeletePost = () => {
@@ -27,66 +42,17 @@ const confirmDeletePost = () => {
   }
 }
 
-// 댓글 관련
 const newComment = ref('')
-const comments = ref([
-  {
-    id: 1,
-    author: '댓글작성',
-    date: '24.8.10',
-    text: '저희집 콩이가 더 귀엽네유',
-    editable: false,
-  },
-  {
-    id: 2,
-    author: '닉네임',
-    date: '24.8.10',
-    text: '뒤에 사료값 2배는 뭔가요 ㅋㅋ',
-    editable: true,
-  },
-])
-
 const addComment = () => {
   if (newComment.value.trim() === '') return
 
   const confirmed = window.confirm('댓글을 등록하시겠습니까?')
   if (confirmed) {
-    alert('댓글이 등록되었습니다')
-    comments.value.push({
-      id: Date.now(),
-      author: '새 댓글',
-      date: new Date().toLocaleDateString(),
-      text: newComment.value,
-      editable: true,
+    commentStore.addComment({
+      postId,
+      text: newComment.value
     })
     newComment.value = ''
-  }
-}
-
-const editCommentId = ref(null)
-const editedText = ref('')
-
-const startEdit = (comment) => {
-  editCommentId.value = comment.id
-  editedText.value = comment.text
-}
-
-const cancelEdit = () => {
-  editCommentId.value = null
-  editedText.value = ''
-}
-
-const saveEdit = (id) => {
-  const target = comments.value.find(c => c.id === id)
-  if (target) target.text = editedText.value
-  cancelEdit()
-}
-
-const confirmDeleteComment = (id) => {
-  const confirmed = window.confirm('댓글을 삭제하시겠습니까?')
-  if (confirmed) {
-    comments.value = comments.value.filter(c => c.id !== id)
-    alert('댓글이 삭제되었습니다.')
   }
 }
 </script>
@@ -136,38 +102,12 @@ const confirmDeleteComment = (id) => {
       <button class="submit_btn" @click="addComment">등록</button>
     </div>
 
-    <div
-      class="comment_card"
-      v-for="comment in comments"
+    <CommentCard
+      v-for="comment in commentStore.comments"
       :key="comment.id"
-    >
-      <div class="comment_header">
-        <img class="avatar" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
-        <span class="nickname">{{ comment.author }}</span>
-        <span class="divider">ㅣ</span>
-        <span class="date">{{ comment.date }}</span>
-        <template v-if="comment.editable">
-          <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정" @click="startEdit(comment)" />
-          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제" @click="confirmDeleteComment(comment.id)" />
-        </template>
-      </div>
-
-      <div v-if="editCommentId === comment.id">
-        <div class="edit_buttons">
-          <span class="edit_save" @click="saveEdit(comment.id)">수정</span>
-          <span class="edit_cancel" @click="cancelEdit">취소</span>
-        </div>
-        <input
-          type="text"
-          v-model="editedText"
-          class="edit_input"
-        />
-      </div>
-
-      <div v-else class="comment_text">
-        {{ comment.text }}
-      </div>
-    </div>
+      :comment="comment"
+      :post-id="postId"
+    />
   </div>
 </template>
 

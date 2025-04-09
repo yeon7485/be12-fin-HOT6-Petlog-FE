@@ -17,7 +17,7 @@ import MypageAnswer from "../pages/mypage/MypageAnswer.vue";
 import MypagePost from "../pages/mypage/MypagePost.vue";
 import MypageComment from "../pages/mypage/MypageComment.vue";
 import CardDetail from "../pages/mypage/MypageCardDetail.vue";
-import MypageCardChange from "../pages/mypage/MypageCardChange.vue";
+import MypageCardChange from "../pages/mypage/ModifyMypageCard.vue";
 
 import FreeBoard from "../pages/board/FreeBoard.vue";
 import InformationBoard from "../pages/board/InformationBoard.vue";
@@ -36,10 +36,10 @@ import AdminProfile from "../pages/admin/AdminProfile.vue";
 import AdminCategory from "../pages/admin/AdminCategory.vue";
 import ScheduleCategory from "../pages/admin/ScheduleCategory.vue";
 import UpdateScheduleCategory from "../pages/admin/ModifyScheduleCategory.vue";
-import Record from "../pages/admin/Record.vue";
-import RecordFix from "../pages/admin/RecordFix.vue";
+import Record from "../pages/admin/RecordCategory.vue";
+import RecordFix from "../pages/admin/ModifyRecordCategory.vue";
 import Board from "../pages/admin/BoardCategory.Vue";
-import BoardFix from "../pages/admin/BoardCategoryFix.vue";
+import BoardFix from "../pages/admin/ModifyBoardCategory.vue";
 
 import Login from "../pages/user/Login.vue";
 import Signup from "../pages/user/Signup.vue";

@@ -15,15 +15,16 @@ export const useBoardStore = defineStore("board", () => {
         writer: "구름봄",
         contents: "너무너무 귀엽고 깜찍해요 이 세상에서 제일 귀여워요",
         date: "04/01",
-        hasImage: true,
+        imageUrl: "/src/assets/images/dog1.png",
       },
       information: {
         title: "강아지 키울 때 꿀팁 공유!",
         category: "강아지",
         writer: "구름봄",
-        contents: "강아지 1마리 키우시는 분들 약간 꿀팁아닌 꿀팁 드리자면 한 마리 키우면 애기가 너무 외로워할 수 있으니 한 마리 더 키우면 즐거움 2배 + 행복 2배 + 사료값 2배",
+        contents:
+          "강아지 1마리 키우시는 분들 약간 꿀팁아닌 꿀팁 드리자면 한 마리 키우면 애기가 너무 외로워할 수 있으니 한 마리 더 키우면 즐거움 2배 + 행복 2배 + 사료값 2배",
         date: "04/03",
-        hasImage: false,
+        imageUrl: "",
       },
     };
 

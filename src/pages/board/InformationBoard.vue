@@ -8,9 +8,12 @@ const router = useRouter()
 const boardStore = useBoardStore()
 
 const searchQuery = ref("")
+const selectedCategory = ref("")
+
+const categories = ['강아지', '고양이', '햄스터', '도마뱀', '물고기']
 
 const triggerSearch = () => {
-  boardStore.searchPosts(searchQuery.value)
+  boardStore.searchPosts(searchQuery.value, selectedCategory.value)
 }
 
 const goToWritePage = () => {
@@ -27,10 +30,15 @@ onMounted(() => {
     <div class="board_header">
       <h1>정보 공유</h1>
       <div class="search_box">
+        <select v-model="selectedCategory" class="category_dropdown" @change="triggerSearch">
+          <option value="">카테고리를 선택하세요.</option>
+          <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+        </select>
+
         <div class="search_input_wrap">
           <input
             v-model="searchQuery"
-            placeholder="제목, 작성자, 카테고리 검색 ..."
+            placeholder="제목, 작성자 검색 ..."
             @keyup.enter="triggerSearch"
           />
           <img
@@ -86,16 +94,28 @@ onMounted(() => {
 
 .search_box {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.category_dropdown {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: white;
+  width: 180px;
 }
 
 .search_input_wrap {
   position: relative;
-  width: 300px;
+  width: 320px;
 }
 
 .search_input_wrap input {
-  width: 250px;
+  width: 100%;
   padding: 10px 12px 10px 36px;
   border: none;
   border-radius: 999px;

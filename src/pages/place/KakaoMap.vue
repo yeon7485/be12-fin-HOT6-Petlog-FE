@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 
 const mapContainer = ref(null)
-const keyword = ref('애견 미용')
+const keyword = ref('')
 const places = ref([])
 const myLat = ref(null)
 const myLng = ref(null)
@@ -55,7 +55,6 @@ const loadKakaoMap = (container) => {
 
       infowindow = new kakao.maps.InfoWindow({ zIndex: 1 })
 
-      // ✅ 내 위치 마커
       const imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png'
       const imageSize = new kakao.maps.Size(30, 42)
       const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize)
@@ -145,10 +144,10 @@ const clickPlace = (place, index) => {
 
 <template>
   <div class="page-container">
-    <h1 class="title">주변 미용실</h1>
+    <h1 class="title">위치 검색</h1>
     <div class="map-wrapper">
       <div class="side">
-        <h3 class="place">📍 반경 2km 내 장소</h3>
+        <h3 class = "place">📍 반경 2km 내 장소</h3>
         <div class="search-bar">
           <input v-model="keyword" placeholder="검색어 입력" @keyup.enter="searchPlaces" />
           <button @click="searchPlaces">검색</button>

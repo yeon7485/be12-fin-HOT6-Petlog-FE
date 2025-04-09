@@ -17,7 +17,7 @@
       </div>
 
       <!-- ✅ 스크롤 대상 메시지 영역 -->
-      <div class="chatroom-messages">
+      <div class="scrollable chatroom-messages">
         <div class="chat-message my-message">
           <span class="chat-time">10:46</span>
           <!-- 시간 왼쪽 -->
@@ -66,7 +66,13 @@
 
         <!-- 반려동물 카드 메시지 -->
         <div class="chat-message pet-message other-message">
-          <div class="pet-chat-card">
+          <div
+            class="pet-chat-card"
+            @click="
+              selectedPet = examplePet;
+              petDetailModalOpen = true;
+            "
+          >
             <img
               src="../../assets/images/Ellipse 12.png"
               class="pet-chat-img"
@@ -116,10 +122,62 @@
       <button class="modal-close" @click="isModalOpen = false">닫기</button>
     </div>
   </div>
+
+  <!-- 반려동물 상세 모달 -->
+  <div
+    v-if="petDetailModalOpen"
+    class="modal-overlay"
+    @click.self="petDetailModalOpen = false"
+  >
+    <div class="pet-detail-modal">
+      <button class="modal-close-icon" @click="petDetailModalOpen = false">
+        ✕
+      </button>
+      <img :src="selectedPet.image" class="detail-pet-img" />
+      <h2>
+        {{ selectedPet.name }}
+        <span class="gender" v-if="selectedPet.gender === '여'">♀</span>
+        <span class="gender" v-else>♂</span>
+      </h2>
+      <p class="pet-subinfo">{{ selectedPet.age }} {{ selectedPet.breed }}</p>
+
+      <div class="pet-info-box">
+        <div class="info-row">
+          <span class="label">생일</span>
+          <span>{{ selectedPet.birth }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">중성화 여부</span>
+          <span>{{ selectedPet.neutered ? "✅" : "❌" }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">특이사항</span>
+          <span style="white-space: pre-line">{{
+            selectedPet.specialNote
+          }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script setup>
 import { ref } from "vue";
 import { RouterLink } from "vue-router";
+
+const petDetailModalOpen = ref(false);
+const selectedPet = ref(null);
+
+// 더미 테스트용 객체 예시 (실제 데이터와 연결 시 수정 가능)
+const examplePet = {
+  name: "봄",
+  gender: "여",
+  birth: "2017.04.01",
+  breed: "말티즈",
+  age: "8살",
+  neutered: false,
+  specialNote: "슬개골 수술\n온순하고 착하고 귀여움",
+  image: "../../assets/images/Ellipse12.png",
+};
 
 const isModalOpen = ref(false);
 </script>
@@ -425,5 +483,64 @@ const isModalOpen = ref(false);
 .pet-card:hover {
   background-color: #f0f0f0; /* 밝은 회색으로 변경 */
   cursor: pointer; /* 마우스 포인터 변경 */
+}
+
+.pet-detail-modal {
+  background: #fff4ec;
+  border-radius: 20px;
+  padding: 24px;
+  width: 320px;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-close-icon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.detail-pet-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+}
+
+.gender {
+  color: #d04b4b;
+  font-size: 16px;
+  margin-left: 4px;
+}
+
+.pet-subinfo {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.pet-info-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  font-size: 14px;
+  color: #333;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.label {
+  font-weight: 600;
+  color: #777;
 }
 </style>

@@ -21,13 +21,16 @@
 <style scoped>
 .board_layout {
   display: flex;
-  padding: 130px;
+  padding: 40px 40px 40px 240px; /* ✅ 패딩 줄이고 왼쪽 여백 확보 */
   gap: 60px;
 }
 
 .sidebar {
+  position: fixed; /* ✅ 고정 */
+  top: 130px;
+  left: 130px;
   width: 160px;
-  height: 200px;;
+  height: 200px;
   background: #ffffff;
   padding: 30px 0;
   border: 1px solid #ddd;
@@ -36,6 +39,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  z-index: 10;
 }
 
 .sidebar ul {

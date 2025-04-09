@@ -81,6 +81,11 @@ const routes = [
     component: Schedule,
     children: [],
   },
+  {
+    path: "/schedule",
+    component: Schedule,
+    children: [],
+  },
 ];
 
 const router = createRouter({

@@ -1,23 +1,18 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import NoticeDropdown from "./NoticeDropdown.vue"; // ✅ 알림 드롭다운 컴포넌트 import
 
 const router = useRouter();
 
-const toHome = () => {
-  router.push("/");
-};
-
+const toHome = () => router.push("/");
 const dropdownOpen = ref(false);
+const alertOpen = ref(false); // ✅ 알림 드롭다운 상태
 
-const toggleDropdown = () => {
-  dropdownOpen.value = !dropdownOpen.value;
-};
+const toggleDropdown = () => dropdownOpen.value = !dropdownOpen.value;
+const toggleAlert = () => alertOpen.value = !alertOpen.value;
 
-const goToMyPage = () => {
-  router.push("/mypage");
-};
-
+const goToMyPage = () => router.push("/mypage");
 const logout = () => {
   alert("로그아웃 되었습니다.");
   router.push("/user/login");
@@ -38,7 +33,12 @@ const logout = () => {
         </div>
 
         <div class="user_box">
-          <img src="/src/assets/icons/alart.png" alt="alart" class="alart_icon" />
+          <!-- ✅ 알림 아이콘 클릭 시 드롭다운 토글 -->
+          <div class="alert-wrapper" @click="toggleAlert">
+            <img src="/src/assets/icons/alart.png" alt="alart" class="alart_icon" />
+            <NoticeDropdown v-if="alertOpen" class="notice_dropdown" />
+          </div>
+
           <div class="nickname_wrapper" @click="toggleDropdown">
             <span :class="['nickname', { active: dropdownOpen }]">구름봄 님</span>
             <div v-if="dropdownOpen" class="dropdown">
@@ -73,7 +73,6 @@ const logout = () => {
   justify-content: space-between;
   align-items: center;
   height: 100%;
-
   min-width: 700px;
   font-weight: 500;
   padding: 0 20px;
@@ -110,11 +109,27 @@ const logout = () => {
   position: relative;
 }
 
-.alart_icon {
-  width: 16px;
-  height: 16px;
+.alert-wrapper {
+  position: relative;
 }
 
+.alart_icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.notice_dropdown {
+  position: absolute;
+  top: 28px;
+  right: 0;
+  z-index: 100;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  width: 360px;
+  padding: 12px 0;
+}
 .nickname_wrapper {
   position: relative;
   cursor: pointer;
@@ -126,7 +141,7 @@ const logout = () => {
 }
 
 .nickname.active {
-  color: #8b4513; /* 갈색 */
+  color: #8b4513;
   font-weight: bold;
 }
 

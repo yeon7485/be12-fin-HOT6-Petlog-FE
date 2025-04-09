@@ -6,6 +6,7 @@ import ChatRoom from "../pages/chat/ChatRoom.vue";
 import ChatRoomInfo from "../pages/chat/ChatRoomInfo.vue";
 import ChatRoomSchecule from "../pages/chat/ChatRoomSchecule.vue";
 import ChatRoomScheculeCreate from "../pages/chat/ChatRoomScheduleCreate2.vue";
+import Schedule from "../pages/schedule/Schedule.vue";
 
 import Mypage from "../pages/mypage/MyPage.vue";
 import MypageProfile from "../pages/mypage/MypageProfile.vue";
@@ -74,40 +75,15 @@ const routes = [
       { path: "signup", component: Signup },
     ],
   },
-
   {
-    path: "/mypage",
-    component: Mypage,
-    redirect: "/mypage/profile",
-    children: [
-      { path: "profile", component: MypageProfile },
-      { path: "card", component: MypageCardList },
-      { path: "card/create", component: MypageCardCreate },
-      {
-        path: "card/detail",
-        name: "MypageCardDetail",
-        component: CardDetail,
-      },
-      {
-        path: "card/change",
-        name: "MypageCardChange",
-        component: MypageCardChange,
-      },
-      { path: "question", component: MypageQuestion },
-      { path: "answer", component: MypageAnswer },
-      { path: "post", component: MypagePost },
-      { path: "comment", component: MypageComment },
-    ],
+    path: "/schedule",
+    component: Schedule,
+    children: [],
   },
-
   {
-    path: "/place",
-    component: PlaceSidebar,
-    redirect: "/place/hospital",
-    children: [
-      { path: "hospital", component: Hospital },
-      { path: "beauty", component: Beauty },
-    ],
+    path: "/schedule",
+    component: Schedule,
+    children: [],
   },
 
   {

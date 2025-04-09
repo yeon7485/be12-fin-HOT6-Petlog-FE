@@ -30,7 +30,7 @@
           </router-link>
         </div>
 
-        <div class="schedule-list">
+        <div class="scrollable schedule-list">
           <router-link
             :to="`/chatroom/${chatroomIdx}/chatroom-schedule/${schedule.idx}`"
             class="schedule-card-link"
@@ -89,6 +89,7 @@ const schedule = {
 </script>
 
 <style>
+@import "./chat-base.css";
 .schedule-container {
   width: 100%;
   max-width: 720px;
@@ -177,20 +178,6 @@ const schedule = {
   background-color: #f4eee7; /* ✅ 주변 배경과 맞춤 */
   padding: 12px;
   border-radius: 12px;
-}
-
-/* ✅ WebKit 스크롤바 스타일 */
-.schedule-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.schedule-list::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2); /* ✅ 부드러운 회색 */
-  border-radius: 3px;
-}
-
-.schedule-list::-webkit-scrollbar-track {
-  background-color: transparent; /* ✅ 배경색과 어울리도록 */
 }
 
 .schedule-card {

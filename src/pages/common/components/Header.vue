@@ -1,11 +1,27 @@
 <script setup>
-import { useRouter } from "vue-router";
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 
 const toHome = () => {
-  router.push("/");
-};
+  router.push('/')
+}
+
+const dropdownOpen = ref(false)
+
+const toggleDropdown = () => {
+  dropdownOpen.value = !dropdownOpen.value
+}
+
+const goToMyPage = () => {
+  router.push('/mypage')
+}
+
+const logout = () => {
+  alert('로그아웃 되었습니다.')
+  router.push('/user/login')
+}
 </script>
 
 <template>
@@ -20,15 +36,16 @@ const toHome = () => {
           <router-link to="/board" class="menu">게시판</router-link>
           <router-link to="/chat" class="menu">채팅</router-link>
         </div>
-        <!-- 
-        <div class="user_box">
-          <router-link to="/user/signup" class="signup">회원가입</router-link>
-          <div class="line"></div>
-          <router-link to="/user/login" class="login">로그인</router-link>
-        </div> -->
+
         <div class="user_box">
           <img src="/src/assets/icons/alart.png" alt="alart" class="alart_icon" />
-          <span>구름봄 님</span>
+          <div class="nickname_wrapper" @click="toggleDropdown">
+            <span :class="['nickname', { active: dropdownOpen }]">구름봄 님</span>
+            <div v-if="dropdownOpen" class="dropdown">
+              <div class="dropdown_item" @click="goToMyPage">마이페이지</div>
+              <div class="dropdown_item" @click="logout">로그아웃</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -90,26 +107,49 @@ const toHome = () => {
   display: flex;
   gap: 12px;
   flex-shrink: 0;
-}
-
-.line {
-  width: 1px;
-  height: 16px;
-  background-color: var(--gray500);
-}
-
-.signup {
-  text-decoration: none;
-  color: var(--maincolor01);
-}
-
-.login {
-  text-decoration: none;
-  color: inherit;
+  position: relative;
 }
 
 .alart_icon {
   width: 16px;
   height: 16px;
+}
+
+.nickname_wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.nickname {
+  color: black;
+  transition: color 0.3s;
+}
+
+.nickname.active {
+  color: #8B4513; /* 갈색 */
+  font-weight: bold;
+}
+
+.dropdown {
+  position: absolute;
+  top: 28px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  padding: 8px 0;
+  z-index: 100;
+  min-width: 120px;
+}
+
+.dropdown_item {
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dropdown_item:hover {
+  background-color: #f5f5f5;
 }
 </style>

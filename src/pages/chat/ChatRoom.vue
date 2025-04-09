@@ -32,6 +32,21 @@
           </div>
         </div>
 
+        <!-- 반려동물 카드 메시지 -->
+        <div class="chat-message pet-message my-message">
+          <div class="pet-chat-card">
+            <img
+              src="../../assets/images/Ellipse 12.png"
+              class="pet-chat-img"
+            />
+            <div class="pet-chat-info">
+              <div class="pet-chat-name">봄 <span class="gender">♀</span></div>
+              <div class="pet-chat-detail">시바견 / 3살</div>
+            </div>
+          </div>
+          <span class="chat-time">10:50</span>
+        </div>
+
         <div class="chat-message other-message">
           <div class="user-info">
             <img src="../../assets/images/Ellipse 12.png" class="profile-img" />
@@ -48,10 +63,29 @@
             <!-- 시간 왼쪽 -->
           </div>
         </div>
+
+        <!-- 반려동물 카드 메시지 -->
+        <div class="chat-message pet-message other-message">
+          <div class="pet-chat-card">
+            <img
+              src="../../assets/images/Ellipse 12.png"
+              class="pet-chat-img"
+            />
+            <div class="pet-chat-info">
+              <div class="pet-chat-name">봄 <span class="gender">♀</span></div>
+              <div class="pet-chat-detail">시바견 3살</div>
+            </div>
+          </div>
+          <span class="chat-time">10:50</span>
+        </div>
       </div>
 
       <!-- 하단 입력창 -->
       <div class="chatroom-input">
+        <!-- ✅ 펫 아이콘 버튼 -->
+        <button class="chatroom-pet-icon" @click="isModalOpen = true">
+          <img src="../../assets/images/mdi_pets.svg" alt="펫 버튼" />
+        </button>
         <input type="text" placeholder="메시지 입력" />
         <button class="chatroom-send">
           <img src="../../assets/images/lucide_send.png" alt="보내기" />
@@ -59,11 +93,38 @@
       </div>
     </div>
   </div>
+
+  <div
+    v-if="isModalOpen"
+    class="modal-overlay"
+    @click.self="isModalOpen = false"
+  >
+    <div class="modal-content">
+      <h3>반려동물 목록</h3>
+
+      <!-- ✅ 스크롤 영역 -->
+      <div class="scrollable pet-list-scroll">
+        <div v-for="i in 10" :key="i" class="pet-card">
+          <img src="../../assets/images/Ellipse 12.png" class="pet-img" />
+          <div class="pet-info">
+            <div class="pet-name">멍멍이 {{ i }}</div>
+            <div class="pet-detail">시바견 / 3살</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="modal-close" @click="isModalOpen = false">닫기</button>
+    </div>
+  </div>
 </template>
 <script setup>
+import { ref } from "vue";
 import { RouterLink } from "vue-router";
+
+const isModalOpen = ref(false);
 </script>
 <style>
+@import "./chat-base.css";
 /* 전체 페이지 영역 */
 .chatroom-container {
   height: 100vh;
@@ -206,6 +267,48 @@ import { RouterLink } from "vue-router";
   margin-right: 8px;
 }
 
+/* ✅ 채팅방 내 반려동물 카드 메시지 */
+.pet-message {
+  display: flex;
+  gap: 8px;
+}
+.pet-chat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  width: 30%; /* ✅ 전체 너비 차지 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ddd;
+}
+
+/* 이미지 크게 */
+.pet-chat-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+
+.pet-chat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* ✅ 요소 간 세로 간격 */
+}
+
+/* 텍스트 크게 */
+.pet-chat-name {
+  font-weight: bold;
+  font-size: 18px; /* ✅ 이름 크게 */
+  margin-bottom: 4px;
+}
+
+.pet-chat-detail {
+  font-size: 14px;
+  color: #555;
+}
+
 /* 입력창 */
 .chatroom-input {
   display: flex;
@@ -231,5 +334,96 @@ import { RouterLink } from "vue-router";
   cursor: pointer;
   display: flex;
   align-items: center;
+}
+
+/* ✅ 펫 아이콘 버튼 */
+.chatroom-pet-icon {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.chatroom-pet-icon img {
+  width: 24px;
+  height: 24px;
+}
+
+/* ✅ 모달 */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  width: 360px;
+  max-height: 80vh; /* ✅ 최대 높이 제한 */
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ 스크롤 가능한 영역 */
+.pet-list-scroll {
+  overflow-y: auto;
+  max-height: 300px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 16px; /* ✅ 스크롤바와 카드 간 여백 추가 */
+}
+
+/* ✅ 펫 카드 */
+.pet-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #fdfdfd;
+}
+
+.pet-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.pet-info {
+  text-align: left;
+}
+
+.pet-name {
+  font-weight: bold;
+  font-size: 14px;
+}
+.pet-detail {
+  font-size: 12px;
+  color: #666;
+}
+
+/* 닫기 버튼 */
+.modal-close {
+  padding: 10px;
+  background: #6a0104;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.pet-card:hover {
+  background-color: #f0f0f0; /* 밝은 회색으로 변경 */
+  cursor: pointer; /* 마우스 포인터 변경 */
 }
 </style>

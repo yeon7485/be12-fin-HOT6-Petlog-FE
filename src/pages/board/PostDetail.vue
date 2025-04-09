@@ -10,53 +10,36 @@ const router = useRouter()
 const boardStore = useBoardStore()
 const commentStore = useCommentStore()
 
-const boardType = route.params.boardType
 const postId = Number(route.params.id)
 const post = ref(null)
 
 onMounted(async () => {
-  const statePost = route?.state?.post
-  if (statePost) {
-    post.value = statePost
-  } else {
-    await boardStore.fetchPosts(boardType)
-    post.value = boardStore.posts.find(p => p.id === postId)
-  }
-
+  await boardStore.fetchPosts(route.params.boardType)
+  post.value = boardStore.posts.find(p => p.id === postId)
   commentStore.fetchComments(postId)
 })
 
 const goToModify = () => {
   router.push({
-    path: `/board/${boardType}/post/${postId}/modify`,
-    state: {
-      post: post.value
-    }
+    path: `/board/${route.params.boardType}/post/${postId}/modify`,
+    state: { post: post.value }
   })
 }
 
 const confirmDeletePost = () => {
   if (window.confirm('게시글을 삭제하시겠습니까?')) {
     alert('게시글이 삭제되었습니다.')
-    router.push(`/board/${boardType}`)
+    router.push(`/board/${route.params.boardType}`)
   }
 }
 
 const newComment = ref('')
 const addComment = () => {
   if (newComment.value.trim() === '') return
-
-  const confirmed = window.confirm('댓글을 등록하시겠습니까?')
-  if (confirmed) {
-    commentStore.addComment({
-      postId,
-      text: newComment.value
-    })
-    newComment.value = ''
-  }
+  commentStore.addComment({ postId, text: newComment.value })
+  newComment.value = ''
 }
 </script>
-
 <template>
   <div v-if="post" class="wrapper">
     <div class="post_box">
@@ -80,7 +63,8 @@ const addComment = () => {
       <hr class="divider_line" />
 
       <div class="content_area">
-        <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
+        <!-- 강아지 이미지가 있을 경우 아래와 같이 출력 -->
+        <img v-if="post.imageUrl" :src="post.imageUrl" alt="강아지 이미지" class="dog_img" />
         <p class="description">{{ post.contents || '게시글 내용이 없습니다.' }}</p>
       </div>
     </div>
@@ -135,6 +119,12 @@ const addComment = () => {
   margin-bottom: 16px;
 }
 
+.dog_img {
+  width: 100%;
+  max-width: 260px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
 .user_info_line {
   display: flex;
   justify-content: space-between;

@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import AdminPassword from "./AdminPassword.vue";
+import AdminPassword from "./AdminPasswordModal.vue";
 
 // 사용자 정보
 const user = ref({

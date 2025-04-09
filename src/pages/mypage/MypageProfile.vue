@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue"
 import { useRouter } from "vue-router"
-import MypagePassword from "./MypagePassword.vue"
+import MypagePassword from "./MypagePasswordModal.vue"
 import MypageDelete from "./components/MypageDelete.vue"
 
 const router = useRouter()

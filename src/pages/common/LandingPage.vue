@@ -14,7 +14,7 @@ import logo from "/src/assets/images/logo.png";
           반려생활을 더 편리하게!
         </p>
       </div>
-      <router-link to="/login" class="start_btn">지금 시작하기</router-link>
+      <router-link to="/user/login" class="start_btn">지금 시작하기</router-link>
     </div>
   </div>
 </template>

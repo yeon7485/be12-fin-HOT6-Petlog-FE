@@ -14,7 +14,7 @@ const triggerSearch = () => {
 }
 
 const goToWritePage = () => {
-  router.push("/board/register")
+  router.push("/board/information/register")
 }
 
 onMounted(() => {

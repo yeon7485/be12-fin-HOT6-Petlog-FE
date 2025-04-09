@@ -1,40 +1,61 @@
 <script setup>
-import { ref } from "vue";
-import MypagePassword from "./MypagePassword.vue"; // 비밀번호 모달 컴포넌트 import
+import { ref } from "vue"
+import { useRouter } from "vue-router"
+import MypagePassword from "./MypagePassword.vue"
+import MypageDelete from "./components/MypageDelete.vue"
 
-const name = ref("구름봄 님");
-const editingName = ref(false);
-const email = ref("test@example.com");
-const profileImage = ref(null);
-const profileImageUrl = ref("/src/assets/images/dog1.png");
+const router = useRouter()
+
+const name = ref("구름봄 님")
+const editingName = ref(false)
+const email = ref("test@example.com")
+const profileImage = ref(null)
+const profileImageUrl = ref("/src/assets/images/dog1.png")
 
 const onFileChange = (event) => {
-  const file = event.target.files[0];
+  const file = event.target.files[0]
   if (file) {
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onload = (e) => {
-      profileImageUrl.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
-    profileImage.value = file;
+      profileImageUrl.value = e.target.result
+    }
+    reader.readAsDataURL(file)
+    profileImage.value = file
   }
-};
+}
 
 const toggleEditName = () => {
-  editingName.value = !editingName.value;
-};
+  editingName.value = !editingName.value
+}
 
 const saveName = () => {
-  editingName.value = false;
-};
+  editingName.value = false
+}
 
-const isPasswordModalOpen = ref(false);
+const isPasswordModalOpen = ref(false)
 const togglePasswordModal = () => {
-  isPasswordModalOpen.value = !isPasswordModalOpen.value;
-};
+  isPasswordModalOpen.value = !isPasswordModalOpen.value
+}
 const closePasswordModal = () => {
-  isPasswordModalOpen.value = false;
-};
+  isPasswordModalOpen.value = false
+}
+
+// 탈퇴 확인 모달 상태 및 처리
+const isDeleteModalOpen = ref(false)
+
+const openDeleteModal = () => {
+  isDeleteModalOpen.value = true
+}
+
+const closeDeleteModal = () => {
+  isDeleteModalOpen.value = false
+}
+
+const handleDeleteConfirm = (enteredPassword) => {
+  console.log("입력된 비밀번호:", enteredPassword)
+  alert("회원탈퇴 처리되었습니다.")
+  router.push("/")
+}
 </script>
 
 <template>
@@ -75,11 +96,18 @@ const closePasswordModal = () => {
     <button class="password-btn" @click="togglePasswordModal">비밀번호 설정</button>
 
     <!-- 회원 탈퇴 -->
-    <router-link to="/delete-account" class="delete-link">회원탈퇴</router-link>
+    <button class="delete-link" @click="openDeleteModal">회원탈퇴</button>
   </div>
 
   <!-- 비밀번호 변경 모달 -->
   <MypagePassword v-if="isPasswordModalOpen" @close="closePasswordModal" />
+
+  <!-- 탈퇴 확인 모달 -->
+  <MypageDelete
+    v-if="isDeleteModalOpen"
+    @confirm="handleDeleteConfirm"
+    @cancel="closeDeleteModal"
+  />
 </template>
 
 <style scoped>
@@ -182,6 +210,9 @@ const closePasswordModal = () => {
   color: red;
   text-decoration: none;
   font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 .delete-link:hover {
   text-decoration: underline;

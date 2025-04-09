@@ -55,7 +55,6 @@ const loadKakaoMap = (container) => {
 
       infowindow = new kakao.maps.InfoWindow({ zIndex: 1 })
 
-      // ✅ 내 위치 마커
       const imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png'
       const imageSize = new kakao.maps.Size(30, 42)
       const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize)
@@ -114,7 +113,8 @@ const placesSearchCB = (data, status) => {
       })
 
       kakao.maps.event.addListener(marker, 'click', () => {
-        infowindow.setContent(`<div style="padding:5px;font-size:12px;">${place.place_name}</div>`)
+        const phone = place.phone ? `<br/>📞 ${place.phone}` : ''
+        infowindow.setContent(`<div style="padding:5px;font-size:12px;">${place.place_name}${phone}</div>`)
         infowindow.open(map, marker)
       })
 
@@ -138,7 +138,8 @@ const clickPlace = (place, index) => {
   const position = new kakao.maps.LatLng(place.y, place.x)
   map.setCenter(position)
 
-  infowindow.setContent(`<div style="padding:5px;font-size:12px;">${place.place_name}</div>`)
+  const phone = place.phone ? `<br/>📞 ${place.phone}` : ''
+  infowindow.setContent(`<div style="padding:5px;font-size:12px;">${place.place_name}${phone}</div>`)
   infowindow.open(map, markers[index])
 }
 </script>
@@ -160,7 +161,8 @@ const clickPlace = (place, index) => {
             @click="clickPlace(place, index)"
           >
             <strong>{{ place.place_name }}</strong><br />
-            <small>{{ place.road_address_name || place.address_name }}</small>
+            <small>{{ place.road_address_name || place.address_name }}</small><br />
+            <small v-if="place.phone">📞 {{ place.phone }}</small>
           </li>
         </ul>
       </div>
@@ -189,7 +191,7 @@ const clickPlace = (place, index) => {
   line-height: 1.2;
 }
 
-.place{
+.place {
   margin-bottom: 15px;
 }
 

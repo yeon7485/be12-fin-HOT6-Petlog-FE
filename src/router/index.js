@@ -26,7 +26,6 @@ import AnswerDetail from "../pages/board/AnswerDetail.vue";
 import AnswerModify from "../pages/board/AnswerModify.vue";
 import PostRegister from "../pages/board/PostRegister.vue";
 import PostDetail from "../pages/board/PostDetail.vue";
-import PostModify from "../pages/board/PostModify.vue";
 import Question from "../pages/board/QuestionRegister.vue";
 import QuestionModify from "../pages/board/QuestionModify.vue";
 import Answer from "../pages/board/AnswerRegister.vue";
@@ -121,10 +120,9 @@ const routes = [
       { path: "qna", component: QnaBoard },
       { path: "qna/register", component: Question },
       { path: "qna/:id", component: AnswerDetail },
-      { path: "register", component: PostRegister },
+      { path: ":boardType/post/:id/modify", component: PostRegister },
       { path: "qna/answer/register", component: Answer },
-      { path: "post/:id", component: PostDetail },
-      { path: "post/modify", component: PostModify },
+      { path: ":boardType/post/:id", component: PostDetail },
       { path: "question/modify", component: QuestionModify },
       { path: "qna/answer/modify", component: AnswerModify },
     ],

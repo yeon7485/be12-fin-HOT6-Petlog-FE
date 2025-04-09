@@ -1,18 +1,25 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useBoardStore } from '/src/stores/useBoardStore'
 
+const route = useRoute()
 const router = useRouter()
+const boardStore = useBoardStore()
+
+const postId = route.params.id ? Number(route.params.id) : null
+const boardTypeFromRoute = route.params.boardType || ''
+const isEdit = !!postId
 
 const boardTypes = [
   { value: 'free', label: '자유 게시판' },
-  { value: 'info', label: '정보 공유' }
+  { value: 'information', label: '정보 공유' }
 ]
 
 const categories = ['강아지', '고양이', '물고기', '햄스터', '도마뱀']
 
 const form = ref({
-  boardType: '',
+  boardType: boardTypeFromRoute || '',
   category: '',
   title: '',
   content: '',
@@ -20,6 +27,19 @@ const form = ref({
 })
 
 const previewImages = ref([])
+
+onMounted(async () => {
+  if (isEdit) {
+    await boardStore.fetchPosts(boardTypeFromRoute)
+    const target = boardStore.posts.find(p => p.id === postId)
+    if (target) {
+      form.value.boardType = target.boardType || boardTypeFromRoute
+      form.value.category = target.category || ''
+      form.value.title = target.title || ''
+      form.value.content = target.content || target.contents || ''
+    }
+  }
+})
 
 const handleFileChange = (event) => {
   const files = Array.from(event.target.files)
@@ -36,17 +56,34 @@ const handleFileChange = (event) => {
 }
 
 const handleCancel = () => {
-  const confirmed = window.confirm('작성 중인 내용을 취소하시겠습니까?')
+  const confirmed = window.confirm('작성을 취소하시겠습니까?')
   if (confirmed) {
-    router.push('/board/free')
+    if (isEdit) {
+      router.push(`/board/${form.value.boardType}/post/${postId}`)
+    } else {
+      router.push(`/board/${form.value.boardType}`)
+    }
   }
 }
 
 const handleSubmit = () => {
-  const confirmed = window.confirm('게시글을 등록하시겠습니까?')
-  if (confirmed) {
-    alert('게시글이 등록되었습니다')
+  const confirmed = window.confirm(isEdit ? '수정하시겠습니까?' : '등록하시겠습니까?')
+  if (!confirmed) return
+
+  const action = isEdit ? '수정' : '등록'
+  const postData = {
+    id: postId || Date.now(),
+    boardType: form.value.boardType,
+    category: form.value.category,
+    title: form.value.title,
+    content: form.value.content,
+    images: form.value.images
   }
+
+  console.log(`📦 게시글 ${action}:`, postData)
+
+  alert(`${action}이 완료되었습니다`)
+  router.push(`/board/${form.value.boardType}/post/${postData.id}`)
 }
 </script>
 
@@ -61,6 +98,7 @@ const handleSubmit = () => {
             :value="item.value"
             v-model="form.boardType"
             name="boardType"
+            :disabled="isEdit"
           />
           {{ item.label }}
         </label>
@@ -75,19 +113,16 @@ const handleSubmit = () => {
       </select>
     </div>
 
-    <!-- 제목 입력 -->
     <div class="form_group">
       <label>제목</label>
       <input type="text" v-model="form.title" placeholder="제목을 입력해주세요." />
     </div>
 
-    <!-- 내용 입력 -->
     <div class="form_group">
       <label>내용</label>
       <textarea v-model="form.content" placeholder="내용을 입력해주세요." rows="8" />
     </div>
 
-    <!-- 이미지 업로드 -->
     <div class="form_group">
       <label>사진 등록</label>
       <input type="file" multiple @change="handleFileChange" />
@@ -98,10 +133,9 @@ const handleSubmit = () => {
       </div>
     </div>
 
-    <!-- 버튼 영역 -->
     <div class="actions">
       <button @click="handleCancel" class="cancel">취소</button>
-      <button @click="handleSubmit" class="submit">등록</button>
+      <button @click="handleSubmit" class="submit">{{ isEdit ? '수정' : '등록' }}</button>
     </div>
   </div>
 </template>
@@ -109,7 +143,7 @@ const handleSubmit = () => {
 <style scoped>
 .container {
   max-width: 1200px;
-  margin: 0 auto 40px auto;           /* ⬅︎ 상단 여백 완전 제거 */
+  margin: 0 auto 40px auto;          
   padding: 40px;
   font-family: sans-serif;
   border: 1px solid #ddd;

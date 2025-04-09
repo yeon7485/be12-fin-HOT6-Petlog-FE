@@ -27,7 +27,6 @@ import AnswerDetail from "../pages/board/AnswerDetail.vue";
 import AnswerModify from "../pages/board/AnswerModify.vue";
 import PostRegister from "../pages/board/PostRegister.vue";
 import PostDetail from "../pages/board/PostDetail.vue";
-import PostModify from "../pages/board/PostModify.vue";
 import Question from "../pages/board/QuestionRegister.vue";
 import QuestionModify from "../pages/board/QuestionModify.vue";
 import Answer from "../pages/board/AnswerRegister.vue";
@@ -85,6 +84,40 @@ const routes = [
     path: "/schedule",
     component: Schedule,
     children: [],
+  },
+
+  {
+    path: "/board",
+    component: BoardSidebar,
+    redirect: "/board/free",
+    children: [
+      { path: "information", component: InformationBoard },
+      { path: "free", component: FreeBoard },
+      { path: "qna", component: QnaBoard },
+      { path: "qna/register", component: Question },
+      { path: "qna/:id", component: AnswerDetail },
+      { path: ":boardType/post/:id/modify", component: PostRegister },
+      { path: "qna/answer/register", component: Answer },
+      { path: ":boardType/post/:id", component: PostDetail },
+      { path: "question/modify", component: QuestionModify },
+      { path: "qna/answer/modify", component: AnswerModify },
+    ],
+  },
+
+  {
+    path: "/admin",
+    component: Admin,
+    redirect: "/admin/profile",
+    children: [
+      { path: "profile", component: AdminProfile },
+      { path: "category", component: AdminCategory },
+      { path: "category/schedule", component: ScheduleCategory },
+      { path: "category/schedule/fix", component: UpdateScheduleCategory },
+      { path: "category/record", component: Record },
+      { path: "category/record/fix", component: RecordFix },
+      { path: "category/board", component: Board },
+      { path: "category/board/fix", component: BoardFix },
+    ],
   },
 ];
 

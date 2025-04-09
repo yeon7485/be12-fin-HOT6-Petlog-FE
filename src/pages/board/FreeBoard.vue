@@ -1,49 +1,31 @@
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue"
+import { useRouter } from "vue-router"
+import Card from "/src/pages/board/components/PostCard.vue"
+import { useBoardStore } from "/src/stores/useBoardStore.js"
 
-const router = useRouter();
+const router = useRouter()
+const boardStore = useBoardStore()
 
-const posts = ref([
-  { id: 1, category: "강아지", title: "저희 강아지 귀엽쥬? ", author: "구름봄", date: "04/01" },
-  { id: 2, category: "고양이", title: "우리 고양이도 귀엽쥬?", author: "별밤", date: "04/02" },
-  { id: 3, category: "강아지", title: "우리 강아지 귀엽쥬?", author: "해파리", date: "04/03" },
-  { id: 4, category: "물고기", title: "우리 물고기 귀엽쥬?", author: "해파리", date: "04/03" },
-  { id: 5, category: "물고기", title: "잉어킹", author: "해파리", date: "04/03" },
-  { id: 6, category: "물고기", title: "물속 친구 소개해요", author: "해파리", date: "04/03" },
-  { id: 7, category: "물고기", title: "물속 친구 소개해요", author: "해파리", date: "04/03" }
-]);
-
-const searchQuery = ref("");
-const searchResult = ref([...posts.value]);
+const searchQuery = ref("")
 
 const triggerSearch = () => {
-  const query = searchQuery.value.trim();
-  if (query === "") {
-    searchResult.value = [...posts.value];
-    return;
-  }
-
-  searchResult.value = posts.value.filter((post) =>
-    post.title.includes(query) ||
-    post.author.includes(query) ||
-    post.category.includes(query)
-  );
-};
-
-const goToDetail = (postId) => {
-  router.push(`/board/post/${postId}`);
-};
+  boardStore.searchPosts(searchQuery.value)
+}
 
 const goToWritePage = () => {
-  router.push("/board/register");
-};
+  router.push("/board/register")
+}
+
+onMounted(() => {
+  boardStore.fetchPosts("free")
+})
 </script>
 
 <template>
   <div>
     <div class="board_header">
-      <h1>자유게시판</h1>
+      <h1>자유 게시판</h1>
       <div class="search_box">
         <div class="search_input_wrap">
           <input
@@ -72,17 +54,12 @@ const goToWritePage = () => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="post in searchResult" :key="post.id">
-          <td>{{ post.id }}</td>
-          <td>{{ post.category }}</td>
-          <td>
-            <span class="post_link" @click="goToDetail(post.id)">
-              {{ post.title }}
-            </span>
-          </td>
-          <td>{{ post.author }}</td>
-          <td>{{ post.date }}</td>
-        </tr>
+        <Card
+          v-for="post in boardStore.filteredPosts"
+          :key="post.id"
+          :post="post"
+          boardType="free"
+        />
       </tbody>
     </table>
 
@@ -107,7 +84,6 @@ const goToWritePage = () => {
   padding-bottom: 40px;
 }
 
-/* 검색창 */
 .search_box {
   display: flex;
   justify-content: flex-end;
@@ -142,18 +118,16 @@ const goToWritePage = () => {
 .board_table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
 }
 
-.board_table th, .board_table td {
-  border-bottom: 1px solid #ddd;
-  padding: 10px;
+.board_table th {
+  background-color: #fafafa;
   text-align: left;
-}
-
-.post_link {
-  color: #000;
-  cursor: pointer;
-  text-decoration: none;
+  padding: 12px 8px;
+  border-bottom: 2px solid #ccc;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .pagination {
@@ -162,7 +136,8 @@ const goToWritePage = () => {
   margin-top: 15px;
 }
 
-.page_btn, .page_number {
+.page_btn,
+.page_number {
   margin: 0 5px;
   padding: 5px 10px;
   border: none;
@@ -172,7 +147,7 @@ const goToWritePage = () => {
 
 .write_btn {
   float: right;
-  background: #6A0104;
+  background: #6a0104;
   color: white;
   border: none;
   padding: 8px 15px;

@@ -1,27 +1,27 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 
 const toHome = () => {
-  router.push('/')
-}
+  router.push("/");
+};
 
-const dropdownOpen = ref(false)
+const dropdownOpen = ref(false);
 
 const toggleDropdown = () => {
-  dropdownOpen.value = !dropdownOpen.value
-}
+  dropdownOpen.value = !dropdownOpen.value;
+};
 
 const goToMyPage = () => {
-  router.push('/mypage')
-}
+  router.push("/mypage");
+};
 
 const logout = () => {
-  alert('로그아웃 되었습니다.')
-  router.push('/user/login')
-}
+  alert("로그아웃 되었습니다.");
+  router.push("/user/login");
+};
 </script>
 
 <template>
@@ -100,7 +100,7 @@ const logout = () => {
 }
 
 .menu:hover {
-  color: var(--maincolor_light);
+  color: var(--main-color-mid);
 }
 
 .user_box {
@@ -126,7 +126,7 @@ const logout = () => {
 }
 
 .nickname.active {
-  color: #8B4513; /* 갈색 */
+  color: #8b4513; /* 갈색 */
   font-weight: bold;
 }
 
@@ -136,7 +136,7 @@ const logout = () => {
   right: 0;
   background-color: white;
   border: 1px solid #ccc;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   padding: 8px 0;
   z-index: 100;

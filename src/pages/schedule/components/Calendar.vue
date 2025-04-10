@@ -124,14 +124,14 @@ const handleRegisterClick = () => {
         class="calendar_cell"
         v-for="(item, index) in calendarDates"
         :key="item.date.toISOString()"
-        :class="{ 'not-this-month': !item.isCurrentMonth }"
+        :class="{ not_this_month: !item.isCurrentMonth, today_cell: format(item.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') }"
       >
         <div
           class="date_number"
           :class="{
             red: isSunday(index),
             blue: isSaturday(index),
-            today: format(item.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd'),
+            today_date: format(item.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd'),
           }"
         >
           {{ item.date.getDate() }}
@@ -285,9 +285,15 @@ const handleRegisterClick = () => {
   color: var(--main-color-blue);
 }
 
-.today {
-  color: var(--main-col);
+.today_cell {
+  background-color: var(--gray200);
 }
+
+.today_date {
+  font-weight: bold;
+  font-size: 16px;
+}
+
 .event_wrapper {
   flex-grow: 1;
   overflow: hidden;
@@ -307,7 +313,7 @@ const handleRegisterClick = () => {
   box-sizing: border-box;
 }
 
-.not-this-month {
+.not_this_month {
   opacity: 0.3;
 }
 </style>

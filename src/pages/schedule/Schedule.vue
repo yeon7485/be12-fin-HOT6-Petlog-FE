@@ -3,13 +3,22 @@ import { ref } from "vue";
 import Calendar from "./components/Calendar.vue";
 import NewScheduleModal from "./components/NewScheduleModal.vue";
 import SelectPetModal from "../common/components/SelectPetModal.vue";
+import DetailSchedule from "./components/DetailSchedule.vue";
 
 const isNewScheduleModalOpen = ref(false);
 const isPetModalOpen = ref(false);
+const isDetailMode = ref(false);
 
 const selectedPet = ref({});
 
-// 모달 열기
+const openDetail = () => {
+  isDetailMode.value = true;
+};
+
+const closeDetail = () => {
+  isDetailMode.value = false;
+};
+
 const openNewScheduleModal = () => {
   isNewScheduleModalOpen.value = true;
 };
@@ -18,7 +27,6 @@ const openPetModal = () => {
   isPetModalOpen.value = true;
 };
 
-// 모달 닫기
 const closeNewScheduleModal = () => {
   isNewScheduleModalOpen.value = false;
 };
@@ -35,36 +43,63 @@ const handlePetSelect = (pet) => {
 </script>
 
 <template>
-  <div class="container">
-    <div class="title_box">
-      <div
-        class="profile_img"
-        :style="{
-          backgroundImage: selectedPet?.imageUrl ? `url(${selectedPet.imageUrl})` : `url('/src/assets/images/profile_1.jpg')`,
-        }"
-      ></div>
+  <div class="container" :class="{ detail_container: isDetailMode }">
+    <div class="calendar_section" :class="{ detail_calendar: isDetailMode }">
+      <div class="title_box">
+        <div
+          class="profile_img"
+          :style="{
+            backgroundImage: selectedPet?.imageUrl ? `url(${selectedPet.imageUrl})` : `url('/src/assets/images/profile_1.jpg')`,
+          }"
+        ></div>
 
-      <p class="title">
-        {{ selectedPet?.name ? `${selectedPet.name}이의 일정` : "내 일정" }}
-      </p>
-      <img class="arrow_down" src="/src/assets/icons/arrow_down.png" alt="아래쪽" @click="openPetModal" />
-    </div>
-    <div class="calendar">
-      <Calendar @open-modal="openNewScheduleModal" />
-    </div>
+        <p class="title">
+          {{ selectedPet?.name ? `${selectedPet.name}이의 일정` : "내 일정" }}
+        </p>
+        <img class="arrow_down" src="/src/assets/icons/arrow_down.png" alt="아래쪽" @click="openPetModal" />
+      </div>
+      <div class="calendar">
+        <Calendar :onOpenModal="openNewScheduleModal" :onDetail="openDetail" />
+      </div>
 
-    <!-- 모달 -->
-    <NewScheduleModal v-if="isNewScheduleModalOpen" :onClose="closeNewScheduleModal" />
-    <SelectPetModal v-if="isPetModalOpen" :onClose="closePetModal" :onSelect="handlePetSelect" :fromSchedule="true" />
+      <!-- 모달 -->
+      <NewScheduleModal v-if="isNewScheduleModalOpen" :onClose="closeNewScheduleModal" />
+      <SelectPetModal v-if="isPetModalOpen" :onClose="closePetModal" :onSelect="handlePetSelect" :fromSchedule="true" />
+    </div>
+    <div v-if="isDetailMode" class="detail_section">
+      <DetailSchedule :onClose="closeDetail" />
+    </div>
   </div>
 </template>
 
 <style scoped>
 .container {
   margin: 50px 20%;
+}
+
+.detail_container {
+  display: flex;
+  margin: 0 0 0 5%;
+  gap: 18px;
+}
+
+.calendar_section {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.detail_calendar {
+  flex-grow: 7;
+  flex-basis: 0;
+  margin: 50px 0;
+}
+
+.detail_section {
+  margin: 0;
+  flex-grow: 3;
+  flex-basis: 0;
+  background-color: rgba(244, 238, 231, 0.37);
 }
 
 .title_box {

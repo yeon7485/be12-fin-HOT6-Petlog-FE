@@ -44,8 +44,12 @@
         <div class="participant-section">
           <div class="participant-title">참여자</div>
           <div class="participant-box">
-            <div class="participant-name">동휘</div>
-            <div class="participant-name">파워규호</div>
+            <div
+              class="participant-name"
+              v-for="chatRoomUser in chatStore.chatRoomUsers"
+            >
+              {{ chatRoomUser.userName }}
+            </div>
           </div>
         </div>
       </div>
@@ -55,12 +59,12 @@
       <div class="animal-select-card">
         <label
           class="participant-item"
-          v-for="pet in ['봄', '구름', '솜', '빙봉']"
-          :key="pet"
+          v-for="pet in chatStore.userPets"
+          :key="pet.idx"
         >
-          <input type="checkbox" :value="pet" v-model="selectedAnimals" />
+          <input type="checkbox" :value="pet.idx" v-model="selectedAnimals" />
           <span class="checkmark"></span>
-          <span class="participant-name">{{ pet }}</span>
+          <span class="participant-name">{{ pet.petName }}</span>
         </label>
       </div>
 
@@ -74,9 +78,18 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
+import { onMounted, ref, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useChatStore } from "../../stores/useChatStroe";
+const chatStore = useChatStore();
+const route = useRoute();
 const router = useRouter();
+const chatroomIdx = route.params.chatroomIdx;
+const selectedAnimals = ref([]);
 
+watch(selectedAnimals, (newVal) => {
+  console.log("선택된 idx 배열:", newVal);
+});
 // 뒤로 가기
 const goBack = () => {
   router.go(-1); // 또는 window.history.back()
@@ -85,6 +98,11 @@ const goBack = () => {
 const goComplete = () => {
   router.push(`/chatroom/${chatroomIdx}/chatroom-schedule`); // 이동할 경로로 바꿔주세요
 };
+
+onMounted(() => {
+  chatStore.getUserPets();
+  chatStore.fetchUsers(chatroomIdx); // 테스트 데이터 로딩
+});
 </script>
 
 <style scoped>
@@ -229,8 +247,12 @@ const goComplete = () => {
 
 /* ✅ 텍스트 */
 .participant-name {
-  font-size: 14px;
-  color: #333;
+  color: #000;
+  font-family: "Noto Sans Kannada UI";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 
 .animal-select-card {

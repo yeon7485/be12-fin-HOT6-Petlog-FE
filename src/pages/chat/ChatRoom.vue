@@ -7,14 +7,7 @@
 
     <div class="chatroom">
       <!-- 채팅방 헤더 -->
-      <div class="chatroom-header">
-        <span> 서울숲에서 같이 멍멍이 산책시킬 사람 !! </span>
-        <router-link to="/chatroom/1/chatroom-info">
-          <button class="chatroom-menu">
-            <img src="../../assets/images/material-symbols_menu-rounded.svg" />
-          </button>
-        </router-link>
-      </div>
+      <ChatHeader title="test" :showMenu="true" />
 
       <!-- ✅ 스크롤 대상 메시지 영역 -->
       <div class="scrollable chatroom-messages">
@@ -27,15 +20,18 @@
           <span class="chat-time">10:46</span>
           <!-- 시간 왼쪽 -->
           <div class="chat-bubble">
-            언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가
-            괜찮으세요?
+            언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가
+            괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요?
           </div>
         </div>
 
         <!-- 반려동물 카드 메시지 -->
         <div class="chat-message pet-message my-message">
           <div class="pet-chat-card">
-            <img src="../../assets/images/Ellipse 12.png" class="pet-chat-img" />
+            <img
+              src="../../assets/images/Ellipse 12.png"
+              class="pet-chat-img"
+            />
             <div class="pet-chat-info">
               <div class="pet-chat-name">봄 <span class="gender">♀</span></div>
               <div class="pet-chat-detail">시바견 / 3살</div>
@@ -61,6 +57,24 @@
           </div>
         </div>
 
+        <div class="chat-message schedule-message my-message">
+          <div class="schedule-chat-card">
+            <div class="schedule-title">병원 검진 예약</div>
+            <div class="schedule-datetime">3.27 11:00</div>
+            <div class="schedule-location">서울강남병원</div>
+          </div>
+          <span class="chat-time">10:47</span>
+        </div>
+
+        <div class="chat-message schedule-message other-message">
+          <div class="schedule-chat-card">
+            <div class="schedule-title">병원 검진 예약</div>
+            <div class="schedule-datetime">3.27 11:00</div>
+            <div class="schedule-location">서울강남병원</div>
+          </div>
+          <span class="chat-time">10:47</span>
+        </div>
+
         <!-- 반려동물 카드 메시지 -->
         <div class="chat-message pet-message other-message">
           <div
@@ -70,7 +84,10 @@
               petDetailModalOpen = true;
             "
           >
-            <img src="../../assets/images/Ellipse 12.png" class="pet-chat-img" />
+            <img
+              src="../../assets/images/Ellipse 12.png"
+              class="pet-chat-img"
+            />
             <div class="pet-chat-info">
               <div class="pet-chat-name">봄 <span class="gender">♀</span></div>
               <div class="pet-chat-detail">시바견 3살</div>
@@ -94,7 +111,11 @@
     </div>
   </div>
 
-  <div v-if="isModalOpen" class="modal-overlay" @click.self="isModalOpen = false">
+  <div
+    v-if="isModalOpen"
+    class="modal-overlay"
+    @click.self="isModalOpen = false"
+  >
     <div class="modal-content">
       <h3>반려동물 목록</h3>
 
@@ -114,9 +135,15 @@
   </div>
 
   <!-- 반려동물 상세 모달 -->
-  <div v-if="petDetailModalOpen" class="modal-overlay" @click.self="petDetailModalOpen = false">
+  <div
+    v-if="petDetailModalOpen"
+    class="modal-overlay"
+    @click.self="petDetailModalOpen = false"
+  >
     <div class="pet-detail-modal">
-      <button class="modal-close-icon" @click="petDetailModalOpen = false">✕</button>
+      <button class="modal-close-icon" @click="petDetailModalOpen = false">
+        ✕
+      </button>
       <img :src="selectedPet.image" class="detail-pet-img" />
       <h2>
         {{ selectedPet.name }}
@@ -136,7 +163,9 @@
         </div>
         <div class="info-row">
           <span class="label">특이사항</span>
-          <span style="white-space: pre-line">{{ selectedPet.specialNote }}</span>
+          <span style="white-space: pre-line">{{
+            selectedPet.specialNote
+          }}</span>
         </div>
       </div>
     </div>
@@ -145,6 +174,7 @@
 <script setup>
 import { ref } from "vue";
 import { RouterLink } from "vue-router";
+import ChatHeader from "./ChatHeader.vue";
 
 const petDetailModalOpen = ref(false);
 const selectedPet = ref(null);
@@ -163,7 +193,7 @@ const examplePet = {
 
 const isModalOpen = ref(false);
 </script>
-<style>
+<style scoped>
 @import "./chat-base.css";
 /* 전체 페이지 영역 */
 .chatroom-container {
@@ -319,7 +349,9 @@ const isModalOpen = ref(false);
   background-color: #fff;
   border-radius: 16px;
   padding: 20px;
-  width: 30%; /* ✅ 전체 너비 차지 */
+
+  width: 30%;
+
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border: 1px solid #ddd;
 }
@@ -347,6 +379,54 @@ const isModalOpen = ref(false);
 .pet-chat-detail {
   font-size: 14px;
   color: #555;
+}
+
+/* ✅ 일정 카드 메시지 공통 */
+.schedule-message {
+  display: flex;
+  gap: 8px;
+}
+
+/* ✅ 카드 스타일 */
+.schedule-chat-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  width: 30%; /* ✅ 너비 통일 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: Inter;
+}
+
+.schedule-title {
+  color: #000;
+
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.schedule-datetime {
+  color: var(--gray700, #616161);
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.schedule-location {
+  color: #000;
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 
 /* 입력창 */
@@ -471,10 +551,15 @@ const isModalOpen = ref(false);
   background: #fff4ec;
   border-radius: 20px;
   padding: 24px;
-  width: 320px;
+  width: 480px;
+  height: 480px;
   position: relative;
   text-align: center;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+
+  /* ✅ 추가 */
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-close-icon {
@@ -513,6 +598,7 @@ const isModalOpen = ref(false);
   text-align: left;
   font-size: 14px;
   color: #333;
+  margin-top: auto; /* ✅ 아래로 밀기 */
 }
 
 .info-row {

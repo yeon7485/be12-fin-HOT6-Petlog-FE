@@ -1,14 +1,7 @@
 <template>
   <div class="chatroom-info-container">
-    <!-- 헤더 -->
-    <div class="info-header">
-      <div class="back-wrapper">
-        <img src="../../assets/images/arrow.svg" />
-        <button class="back-button"></button>
-      </div>
-
-      <span class="room-title">서울숲에서 같이 멍멍이 산책시킬 사람 !!</span>
-    </div>
+    <!-- 뒤로가기 -->
+    <ChatHeader title="서울숲에서 같이 멍멍이 산책시킬 사람 !!" />
 
     <div class="schedule-wrapper">
       <router-link to="/chatroom/1/chatroom-schedule">
@@ -78,9 +71,17 @@
 
 <script setup>
 import { RouterLink } from "vue-router";
+import { useRouter } from "vue-router";
+import ChatHeader from "./ChatHeader.vue";
+const router = useRouter();
+// 뒤로 가기
+const goBack = () => {
+  router.go(-1); // 또는 window.history.back()
+};
 </script>
 
 <style>
+@import "./chat-base.css";
 /* 전체 컨테이너 */
 .chatroom-info-container {
   width: 100%;
@@ -108,22 +109,6 @@ import { RouterLink } from "vue-router";
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-}
-/* 헤더: 가운데 정렬 */
-.info-header {
-  position: relative;
-  display: flex;
-  justify-content: center; /* ✅ 타이틀 가운데 정렬 */
-  align-items: center;
-  height: 40px; /* 필요시 명시 */
-}
-
-.back-wrapper {
-  position: absolute;
-  left: 28px; /* ✅ 왼쪽에서 28px 떨어지도록 */
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
 /* 일정 버튼: 입력영역과 오른쪽 정렬 맞춤 */

@@ -1,7 +1,5 @@
 <template>
   <div class="record-manager">
-    
-    <!-- 메인 콘텐츠 -->
     <div class="main-content">
       <div class="header">
         <h1>게시판 카테고리</h1>
@@ -10,44 +8,33 @@
           만들기
         </button>
       </div>
-      
-      <!-- 카테고리 목록 -->
+
       <div class="category-list">
-        <div v-for="(category, index) in categories" :key="index" class="category-item">
-          <div class="category-name">{{ category.name }}</div>
-          <div class="category-actions">
-            <button class="action-button" @click="editCategory(index)">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="edit-icon">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-            </button>
-            <button class="action-button" @click="deleteCategory(index)">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="trash-icon">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
+        <CategoryItem
+          v-for="(category, index) in categories"
+          :key="index"
+          :category="category"
+          :index="index"
+          @edit="editCategory"
+          @delete="deleteCategory"
+        />
       </div>
     </div>
-    
-    <!-- 카테고리 생성 모달 -->
+
     <div v-if="showCreateModal" class="modal-overlay">
       <div class="modal">
         <h2>새 카테고리 만들기</h2>
         <div class="form-group">
           <label for="categoryName">카테고리 이름</label>
-          <input type="text" id="categoryName" v-model="newCategory.name" placeholder="카테고리 이름을 입력하세요">
+          <input type="text" id="categoryName" v-model="newCategory.name" placeholder="카테고리 이름을 입력하세요" />
         </div>
         <div class="form-group">
           <label>색상</label>
           <div class="color-options">
-            <div 
-              v-for="color in colors" 
-              :key="color" 
-              class="color-option" 
+            <div
+              v-for="color in colors"
+              :key="color"
+              class="color-option"
               :style="{ backgroundColor: color }"
               :class="{ selected: newCategory.color === color }"
               @click="newCategory.color = color"
@@ -64,59 +51,69 @@
 </template>
 
 <script>
+import { useRecordCategoryStore } from '../../stores/useBoardCategoryStore.js'
+import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import CategoryItem from './components/CategoryItem.vue'
+
 export default {
-  name: 'recordCategoryManager',
-  data() {
-    return {
-      categories: [
-  { name: '강아지' },       
-  { name: '도마뱀' },   
-  { name: '햄스터' },   
-  { name: '고양이' },   
-  { name: '물고기' },   
-  { name: '토끼' },    
-  { name: '기타' }
-],
-      showCreateModal: false,
-      newCategory: {
-        name: '',
-        color: '#00bcd4'
-      },
-      colors: ['#00bcd4', '#e91e63', '#4caf50', '#9e9e9e', '#ff9800', '#673ab7', '#3f51b5', '#795548']
-    }
+  name: 'RecordCategoryManager',
+  components: {
+    CategoryItem
   },
-  methods: {
-    createCategory() {
-      if (this.newCategory.name.trim()) {
-        this.categories.push({
-          name: this.newCategory.name,
-          color: this.newCategory.color
-        });
-        this.showCreateModal = false;
-        this.newCategory = {
+  setup() {
+    const store = useRecordCategoryStore()
+    const router = useRouter()
+    const showCreateModal = ref(false)
+    const newCategory = ref({
+      name: '',
+      color: '#00bcd4'
+    })
+
+    const colors = ['#00bcd4', '#e91e63', '#4caf50', '#9e9e9e', '#ff9800', '#673ab7', '#3f51b5', '#795548']
+    const categories = computed(() => store.categories)
+
+    const createCategory = () => {
+      if (newCategory.value.name.trim()) {
+        store.addCategory({ ...newCategory.value })
+        showCreateModal.value = false
+        newCategory.value = {
           name: '',
           color: '#00bcd4'
-        };
+        }
       }
-    },
-    editCategory(index) {
-  const category = this.categories[index];
-  this.$router.push({
-    path: "/admin/category/board/fix",
-    query: {
-      name: category.name,
-      color: category.color
     }
-  });
-},
-    deleteCategory(index) {
-      if (confirm(`${this.categories[index].name} 카테고리를 삭제하시겠습니까?`)) {
-        this.categories.splice(index, 1);
+
+    const editCategory = (index) => {
+      const category = store.getCategory(index)
+      router.push({
+        path: '/admin/category/board/fix',
+        query: {
+          name: category.name,
+          color: category.color
+        }
+      })
+    }
+
+    const deleteCategory = (index) => {
+      if (confirm(`${store.categories[index].name} 카테고리를 삭제하시겠습니까?`)) {
+        store.deleteCategory(index)
       }
+    }
+
+    return {
+      categories,
+      colors,
+      showCreateModal,
+      newCategory,
+      createCategory,
+      editCategory,
+      deleteCategory
     }
   }
 }
 </script>
+
 
 <style scoped>
 .record-manager {
@@ -146,7 +143,8 @@ export default {
   flex: 1;
   padding: 20px;
   background-color: #f9f9f9;
-  max-width: 700px;
+  max-width: 700px; 
+  margin-left: 100px;
 }
 
 .header {

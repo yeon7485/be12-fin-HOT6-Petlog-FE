@@ -21,7 +21,7 @@ const logout = () => {
 
 <template>
   <header class="header">
-    <div class="container">
+    <div class="header_container">
       <div class="header_box">
         <img src="/src/assets/images/logo.png" alt="logo" class="logo_img" @click="toHome" />
 
@@ -62,8 +62,7 @@ const logout = () => {
   z-index: 10;
 }
 
-.container {
-  width: 100%;
+.header_container {
   height: 100%;
   margin: 0 10%;
 }

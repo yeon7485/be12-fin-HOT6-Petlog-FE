@@ -1,17 +1,6 @@
 <template>
   <div class="chatroom-info-container">
-    <div class="info-header">
-      <div class="back-wrapper">
-        <img
-          class="back-icon"
-          src="../../assets/images/arrow.svg"
-          @click="goBack"
-        />
-        <!-- <button class="back-button" >뒤로</button> -->
-      </div>
-
-      <span class="room-title">서울숲에서 같이 멍멍이 산책시킬 사람 !!</span>
-    </div>
+    <ChatHeader title="서울숲" />
     <div class="schedule-create-container">
       <div class="schedule-create-card">
         <div class="content_header">
@@ -92,6 +81,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import ChatHeader from "./ChatHeader.vue";
 
 //url 에서 idx 값 가져오기
 const route = useRoute();
@@ -127,45 +117,16 @@ const goBack = () => {
 };
 </script>
 
-<style>
-.chatroom-info-container {
-  width: 100%;
-  max-width: 720px;
-  margin: 40px auto;
-  background-color: #f4eee7;
-  border-radius: 20px;
-  display: flex;
-  justify-content: center; /* ✅ 자식들을 수평 가운데로 */
-  padding: 24px;
-  gap: 24px;
-}
+<style scoped>
+@import "./chat-base.css";
 
 .room-title {
   color: #000;
-
   font-family: Inter;
   font-size: 20px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-}
-/* 헤더: 가운데 정렬 */
-.info-header {
-  position: relative;
-  display: flex;
-  justify-content: center; /* ✅ 타이틀 가운데 정렬 */
-  align-items: center;
-  height: 40px; /* 필요시 명시 */
-}
-
-/* 뒤로 가기 */
-
-.back-wrapper {
-  position: absolute;
-  left: 28px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
 .back-icon {

@@ -1,17 +1,7 @@
 <template>
   <div class="schedule-container">
     <!-- 뒤로가기 -->
-    <div class="schedule-header">
-      <div class="back-wrapper">
-        <img src="../../assets/images/arrow.svg" />
-        <button
-          class="back-button"
-          @click="goBack"
-          aria-label="뒤로가기"
-        ></button>
-      </div>
-      <h2 class="chatroom-title">서울숲에서 같이 멍멍이 산책시킬 사람 !!</h2>
-    </div>
+    <ChatHeader title="서울숲 부모 페이지 연동 하세요" />
 
     <div class="schedule-inner">
       <!-- 일정 목록 -->
@@ -74,6 +64,7 @@
 
 <script setup>
 import { useRouter, useRoute } from "vue-router";
+import ChatHeader from "./ChatHeader.vue";
 const router = useRouter();
 const route = useRoute();
 const chatroomIdx = route.params.chatroomIdx;
@@ -88,7 +79,7 @@ const schedule = {
 };
 </script>
 
-<style>
+<style scoped>
 @import "./chat-base.css";
 .schedule-container {
   width: 100%;
@@ -107,28 +98,6 @@ const schedule = {
   padding: 0 130px;
   width: 100%;
   box-sizing: border-box;
-}
-/* 헤더 */
-.schedule-header {
-  position: relative;
-  display: flex;
-  justify-content: center; /* ✅ 타이틀 가운데 정렬 */
-  align-items: center;
-  height: 40px; /* 필요시 명시 */
-}
-
-.back-wrapper {
-  position: absolute;
-  left: 28px; /* ✅ 왼쪽에서 28px 떨어지도록 */
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.back-button {
-  all: unset;
-  cursor: pointer;
-  font-size: 20px;
 }
 
 .chatroom-title {
@@ -184,7 +153,10 @@ const schedule = {
   background: #fff;
   border-radius: 12px;
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.08);
-  padding: 16px;
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .schedule-time {

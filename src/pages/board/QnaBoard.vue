@@ -1,56 +1,41 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useQuestionStore } from '/src/stores/useQuestionStore'
+import QuestionCard from '/src/pages/board/components/QuestionCard.vue'
 
-const router = useRouter();
+const router = useRouter()
+const questionStore = useQuestionStore()
 
-const posts = ref([
-  {
-    id: 1,
-    status: '해결됨',
-    title: '강아지 중성화 수술 고민입니다.',
-    author: '닉네임',
-    date: '24.8.10',
-    content:
-      '저희 강아지가 말티즈(여아) 이제 1살이 되었고 주변에서 중성화 수술을 시켜야한다고 하는데 꼭 시켜야하는 건가요? 찾아보니 가격도 만만치 않고 엄청 아파한다고 하더라고요 ㅠㅠㅠ',
-    tags: ['강아지', '강아지 중성화'],
-    commentCount: 2,
-  },
-  {
-    id: 2,
-    status: '미해결',
-    title: '질문입니다',
-    author: '닉네임',
-    date: '24.8.10',
-    content: '포스트 내용입니다. 포스트 내용입니다. 포스트 내용입니다. 포스트 내용입니다...',
-    tags: ['강아지', '강아지 중성화'],
-    commentCount: 2,
-  },
-]);
+const search = ref('')
+const keyword = ref('')
 
-const search = ref('');
-const keyword = ref('');
+// mount 시 질문 로딩
+onMounted(() => {
+  questionStore.fetchQuestions()
+})
 
-const filteredPosts = computed(() => {
-  if (!keyword.value.trim()) return posts.value;
+// 검색 필터링된 리스트
+const filteredQuestions = computed(() => {
+  if (!keyword.value.trim()) return questionStore.questions
 
-  const q = keyword.value.toLowerCase();
-  return posts.value.filter(post => {
+  const q = keyword.value.toLowerCase()
+  return questionStore.questions.filter(question => {
     return (
-      post.title.toLowerCase().includes(q) ||
-      post.author.toLowerCase().includes(q) ||
-      post.content.toLowerCase().includes(q) ||
-      post.tags.some(tag => tag.toLowerCase().includes(q))
-    );
-  });
-});
+      question.title.toLowerCase().includes(q) ||
+      question.author.toLowerCase().includes(q) ||
+      question.content.toLowerCase().includes(q) ||
+      question.tags.some(tag => tag.toLowerCase().includes(q))
+    )
+  })
+})
 
 function triggerSearch() {
-  keyword.value = search.value;
+  keyword.value = search.value
 }
 
 function goToRegister() {
-  router.push('/board/qna/register');
+  router.push('/board/qna/register')
 }
 </script>
 
@@ -76,41 +61,18 @@ function goToRegister() {
         <button class="write_button" @click="goToRegister">
           <img
             class="write_icon"
-            src="/src\assets\icons\write.png"
+            src="/src/assets/icons/write.png"
             alt="글쓰기 아이콘"
           />
         </button>
       </div>
     </div>
 
-    <div v-for="post in filteredPosts" :key="post.id" class="post_card">
-      <div class="post_header">
-        <div class="user_info">
-          <img class="avatar" src="/src/assets/images/dog1.png" alt="유저 아바타" />
-          <span class="author">{{ post.author }}</span>
-          <span class="date">{{ post.date }}</span>
-        </div>
-      </div>
-
-      <div class="post_body">
-        <div
-          class="status_tag"
-          :class="post.status === '해결됨' ? 'resolved' : 'unresolved'"
-        >
-          {{ post.status }}
-        </div>
-
-        <router-link :to="`/board/qna/${post.id}`" class="post_title">
-          {{ post.title }}
-        </router-link>
-
-        <p class="post_content">{{ post.content }}</p>
-        <div class="post_tags">
-          <span v-for="tag in post.tags" :key="tag" class="tag"># {{ tag }}</span>
-        </div>
-        <div class="comment_count">💬 {{ post.commentCount }}</div>
-      </div>
-    </div>
+    <QuestionCard
+      v-for="question in filteredQuestions"
+      :key="question.id"
+      :question="question"
+    />
 
     <div class="pagination">
       <span class="page">1</span>
@@ -179,87 +141,6 @@ function goToRegister() {
 .write_icon {
   width: 22px;
   height: 22px;
-}
-
-.post_card {
-  border: 1px solid #e0e0e0;
-  border-radius: 16px;
-  background-color: #fff;
-  padding: 20px 30px;
-  margin-bottom: 20px;
-}
-
-.user_info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: #777;
-  margin-bottom: 10px;
-}
-
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
-
-.post_body {
-  position: relative;
-}
-
-.status_tag {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.resolved {
-  background-color: #d6f5d6;
-  color: #2e7d32;
-}
-
-.unresolved {
-  background-color: #e0e0e0;
-  color: #555;
-}
-
-.post_title {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 6px;
-  display: inline-block;
-  color: #000;
-  text-decoration: none;
-}
-
-.post_title:hover {
-  text-decoration: underline;
-}
-
-.post_content {
-  font-size: 14px;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.post_tags {
-  margin-top: 8px;
-  font-size: 13px;
-  color: #999;
-}
-
-.tag {
-  margin-right: 8px;
-}
-
-.comment_count {
-  font-size: 13px;
-  color: #888;
-  margin-top: 5px;
 }
 
 .pagination {

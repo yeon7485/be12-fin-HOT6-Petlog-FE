@@ -95,6 +95,14 @@ const handleRegisterClick = () => {
 };
 
 const handleDateClick = (date) => {
+  const clickedMonth = date.getMonth();
+  const clickedYear = date.getFullYear();
+
+  // 현재 선택된 달이랑 다르면 변경
+  if (clickedMonth !== currentMonth.value || clickedYear !== currentYear.value) {
+    currentMonth.value = clickedMonth;
+    currentYear.value = clickedYear;
+  }
   scheduleStore.setCurrentDate(date);
   props.onDetail();
 };
@@ -268,7 +276,7 @@ const handleEventClick = () => {
 }
 
 .calendar_cell {
-  min-height: 90px;
+  min-height: 110px;
   background-color: #fff;
   position: relative;
   font-size: 14px;

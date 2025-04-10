@@ -75,7 +75,7 @@ const pets = [
 .title {
   font-size: 32px;
   font-weight: bold;
-  margin-left: 10px;
+  margin-left: 70px;
 }
 
 .add-button {

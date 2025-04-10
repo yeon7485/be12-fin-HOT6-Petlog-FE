@@ -11,6 +11,12 @@ const store = useQuestionStore()
 const questionId = route.params.id ? Number(route.params.id) : null
 const isEdit = !!questionId
 
+const isModalOpen = ref(false)
+
+const selectPetCard = () => {
+  isModalOpen.value = true
+}
+
 const form = ref({
   title: '',
   content: '',

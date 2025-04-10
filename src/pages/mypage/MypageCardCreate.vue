@@ -112,7 +112,7 @@ const uploadImage = (event) => {
 .title {
   padding: 10px;
   text-align: left;
-  width: 130px;
+  width: 170px;
   margin-right: 400px;
 }
 
@@ -121,7 +121,6 @@ const uploadImage = (event) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
 }
 
 /* 폼 컨테이너 */
@@ -171,6 +170,8 @@ textarea {
   margin-top: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: white; /* ✅ 배경색 흰색으로 고정 */
+  color: #000; /* 텍스트 색은 검정색 */
 }
 
 /* 성별 + 중성화 여부 한 줄 정렬 */
@@ -180,6 +181,7 @@ textarea {
   align-items: center;
   margin-top: 10px;
   gap: 70px;
+  
 }
 
 /* 성별 */
@@ -247,5 +249,16 @@ textarea {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+/* 성별 라디오 버튼 크기 키우기 */
+input[type="radio"] {
+  width: 20px;
+  height: 15px;
+}
+
+/* 중성화 체크박스 크기 키우기 */
+input[type="checkbox"] {
+  width: 20px;  
+  height: 20px;
 }
 </style>

@@ -88,6 +88,7 @@ const statuses = ['정상', '실종', '파양', '사망'];
   border-radius: 50%;
   display: block;
   margin: 0 auto 20px;
+  
 }
 
 .input {
@@ -96,6 +97,8 @@ const statuses = ['정상', '실종', '파양', '사망'];
   margin: 8px 0;
   border: 1px solid #ccc;
   border-radius: 8px;
+  background-color: white; /* ✅ 배경색 흰색으로 고정 */
+  color: #000; /* 텍스트 색은 검정색 */
 }
 
 .textarea {
@@ -106,6 +109,8 @@ const statuses = ['정상', '실종', '파양', '사망'];
   border-radius: 8px;
   margin: 8px 0;
   resize: none;
+  background-color: white; /* ✅ 배경색 흰색으로 고정 */
+  color: #000; /* 텍스트 색은 검정색 */
 }
 
 .gender-section,
@@ -115,6 +120,7 @@ const statuses = ['정상', '실종', '파양', '사망'];
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  
 }
 
 .status-option {
@@ -147,4 +153,14 @@ const statuses = ['정상', '실종', '파양', '사망'];
   background: #800000;
   color: #fff;
 }
-</style
+.birthdate-section{
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white; /* ✅ 배경색 흰색으로 고정 */
+  color: #000; /* 텍스트 색은 검정색 */
+}
+
+</style>

@@ -1,0 +1,71 @@
+<script setup>
+import { defineProps } from "vue";
+
+const props = defineProps({
+  room: Object,
+});
+</script>
+
+<template>
+  <router-link :to="`/chatroom/${room.idx}`">
+    <div class="chat-card">
+      <div class="chat-title">{{ room.title }}</div>
+      <div class="chat-tags">
+        <span v-for="tag in room.hashtags" :key="tag">#{{ tag }}</span>
+      </div>
+      <div class="chat-participants">
+        <img src="../../../assets/images/fluent_people-28-filled.png" />
+        {{ room.participants }}명 참여 중
+      </div>
+    </div>
+  </router-link>
+</template>
+
+<style scoped>
+.chat-card {
+  width: 806px;
+  padding: 33px 36px;
+  border-radius: 20px;
+  border: 1px solid #6a0104;
+  background: #fff;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-sizing: border-box;
+}
+
+.chat-title {
+  font-family: Inter;
+  font-size: 20px;
+  color: #000;
+
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.chat-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  /* margin-bottom: 8px; */
+}
+
+.chat-tags span {
+  color: #6a0104;
+  font-size: 14px;
+}
+
+.chat-participants {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 24px;
+  /* bottom: 16px; */
+  font-size: 13px;
+  color: #555;
+  gap: 4px;
+}
+</style>

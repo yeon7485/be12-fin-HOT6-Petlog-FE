@@ -1,13 +1,13 @@
 <template>
   <div class="chatroom-container">
-    <div class="chatroom-back">
+    <!-- <div class="chatroom-back">
       <img src="../../assets/images/Group.svg" />
       <span>목록으로</span>
-    </div>
+    </div> -->
 
     <div class="chatroom">
       <!-- 채팅방 헤더 -->
-      <ChatHeader title="test" :showMenu="true" />
+      <ChatHeader :title="roomTitle" :showMenu="true" :roomIdx="chatroomIdx" />
 
       <!-- ✅ 스크롤 대상 메시지 영역 -->
       <div class="scrollable chatroom-messages">
@@ -172,10 +172,14 @@
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
-import { RouterLink } from "vue-router";
+import { ref, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
+import { useChatStore } from "../../stores/useChatStroe";
+const chatStore = useChatStore();
 
+const route = useRoute();
+const chatroomIdx = route.params.chatroomIdx;
 const petDetailModalOpen = ref(false);
 const selectedPet = ref(null);
 
@@ -192,6 +196,11 @@ const examplePet = {
 };
 
 const isModalOpen = ref(false);
+
+onMounted(() => {
+  chatStore.getRoomInfo(chatroomIdx); // 테스트 데이터 로딩
+});
+const roomTitle = computed(() => chatStore.chatRoomInfo?.title || "채팅방");
 </script>
 <style scoped>
 @import "./chat-base.css";

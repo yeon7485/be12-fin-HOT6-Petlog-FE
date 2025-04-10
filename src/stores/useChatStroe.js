@@ -8,6 +8,8 @@ export const useChatStore = defineStore("chat", {
     selectedRoom: null,
     chatRooms: [],
     unreadCount: 0,
+    chatRoomInfo: {},
+    chatRoomUsers: [],
   }),
 
   actions: {
@@ -38,7 +40,7 @@ export const useChatStore = defineStore("chat", {
           data: [
             {
               idx: 1,
-              title: "햄스터 친구 구해요",
+              title: "서울숲 산책하실 분",
               hashtags: ["햄스터", "친구", "삐약"],
               participants: 6,
             },
@@ -59,6 +61,65 @@ export const useChatStore = defineStore("chat", {
         this.chatRooms = response.data;
       } catch (error) {
         console.error("채팅방 목록 불러오기 실패:", error);
+      }
+    },
+
+    async getRoomInfo(chatroomIdx) {
+      try {
+        const response = {
+          data: {
+            idx: 1,
+            title: "서울숲 산책하실 분",
+            hashtags: ["햄스터", "친구", "삐약"],
+            participants: 6,
+          },
+        };
+
+        this.chatRoomInfo = response.data;
+      } catch (error) {
+        console.error("채팅방 정보 불러오기 실패:", error);
+      }
+    },
+
+    async fetchUsers(roomIdx) {
+      try {
+        const response = {
+          data: [
+            {
+              idx: roomIdx,
+              imageUrl: "../../assets/images/cat1.jpg",
+              userName: "agdddh",
+            },
+            {
+              idx: roomIdx,
+              imageUrl: "srcassetsimagescat1.jpg",
+              userName: roomIdx,
+            },
+            {
+              idx: roomIdx,
+              imageUrl: "srcassetsimagescat1.jpg",
+              userName: roomIdx,
+            },
+            {
+              idx: roomIdx,
+              imageUrl: "srcassetsimagescat1.jpg",
+              userName: "agh",
+            },
+            {
+              idx: 5,
+              imageUrl: "srcassetsimagescat1.jpg",
+              userName: "agh",
+            },
+            {
+              idx: 3,
+              imageUrl: "srcassetsimagescat1.jpg",
+              userName: "agh",
+            },
+          ],
+        };
+        this.chatRoomUsers = response.data;
+      } catch (err) {
+        console.error("❌ 멤버 목록 불러오기 실패:", err);
       }
     },
 

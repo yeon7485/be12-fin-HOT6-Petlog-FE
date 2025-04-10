@@ -1,44 +1,36 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useAnswerStore } from '/src/stores/useAnswerStore'
 
 const router = useRouter()
+const route = useRoute()
+const answerStore = useAnswerStore()
+
+const isEdit = !!route.params.id
+const answerId = Number(route.params.id)
+const questionId = Number(route.params.questionId)
 
 const content = ref('')
 const fileName = ref('')
 const previewImage = ref('')
+const originalImage = ref('')
 
-function handleFileChange(e) {
-  const file = e.target.files[0]
-  if (file) {
-    fileName.value = file.name
-
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      previewImage.value = e.target.result
+onMounted(async () => {
+  if (isEdit) {
+    await answerStore.fetchAnswersByQuestionId(questionId)
+    const target = answerStore.getAnswerById(answerId)
+    if (target) {
+      content.value = target.contents
+      originalImage.value = target.image
+      previewImage.value = target.image
     }
-    reader.readAsDataURL(file)
   }
-}
-
-function handleCancel() {
-  const confirmed = window.confirm('작성 중인 내용을 취소하시겠습니까?')
-  if (confirmed) {
-    router.push('/board/qna/1')
-  }
-}
-
-function handleSubmit() {
-  const confirmed = window.confirm('답변을 등록하시겠습니까?')
-  if (confirmed) {
-    alert('답변이 등록되었습니다')
-  }
-}
+})
 </script>
 
 <template>
   <div class="container">
-    <!-- 질문 카드 -->
     <div class="post_box">
       <div class="post_title">
         <img class="icon_img" src="/src/assets/icons/question.png" alt="질문 아이콘" />
@@ -60,7 +52,6 @@ function handleSubmit() {
         <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
         <p class="description">
           저희 강아지가 말티즈(여아) 이제 1살이 되었고 주변에서 중성화 수술을 시켜야한다고 하는데 꼭 시켜야하는 건가요?
-          찾아보니 가격도 만만치 않고 엄청 아파한다고 하더라구요 ㅠㅠㅠ
         </p>
         <div class="hashtags">
           <span># 강아지</span>
@@ -69,12 +60,10 @@ function handleSubmit() {
       </div>
     </div>
 
-    <!-- 가운데 링크 아이콘 -->
     <div class="link">
       <img class="link_icon" src="/src/assets/icons/link.png" alt="링크 아이콘" />
     </div>
 
-    <!-- 답변 입력 폼 -->
     <div class="answer_form">
       <div class="form_box">
         <img class="answer_icon" src="/src/assets/icons/answerRegister.png" alt="답변 아이콘" />
@@ -98,13 +87,18 @@ function handleSubmit() {
         </div>
 
         <div class="btn_area">
-          <button class="btn cancel" @click="handleCancel">취소</button>
-          <button class="btn submit" @click="handleSubmit">답변 등록</button>
+          <button class="btn cancel" @click="handleCancel">
+            {{ isEdit ? '수정 취소' : '취소' }}
+          </button>
+          <button class="btn submit" @click="handleSubmit">
+            {{ isEdit ? '수정 완료' : '답변 등록' }}
+          </button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .container {

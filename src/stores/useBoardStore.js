@@ -50,8 +50,8 @@ export const useBoardStore = defineStore("board", () => {
     const q = query.trim().toLowerCase();
     filteredPosts.value = posts.value.filter(
       (post) =>
-        post.title.toLowerCase().includes(q) ||
-        post.writer.toLowerCase().includes(q) ||
+        post.title.toLowerCase().includes(q) &&
+        post.writer.toLowerCase().includes(q) &&
         post.category.toLowerCase().includes(q)
     );
   };

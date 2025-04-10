@@ -47,8 +47,8 @@ const confirmDeleteAnswer = () => {
   }
 }
 
-const goToModifyAnswer = () => {
-  router.push('/board/qna/answer/modify')
+const goToModifyAnswer = (answerId) => {
+  router.push(`/board/qna/${questionId}/answer/${answerId}/modify`)
 }
 
 const goToModify = () => {
@@ -154,13 +154,13 @@ const goToModify = () => {
   </div>
 
   <AnswerCard
-    v-for="answer in answerStore.answers"
-    :key="answer.id"
-    :answer="answer"
-    @select="handleSelectAnswer"
-    @modify="goToModifyAnswer"
-    @delete="confirmDeleteAnswer"
-  />
+  v-for="answer in answerStore.answers"
+  :key="answer.id"
+  :answer="answer"
+  @select="handleSelectAnswer"
+  @modify="goToModifyAnswer"
+  @delete="confirmDeleteAnswer"
+/>
 </div>
 
     </div>

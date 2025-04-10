@@ -27,11 +27,26 @@ export const useAnswerStore = defineStore("answer", () => {
         selected: false,
         image: "/src/assets/images/dog1.png",
       },
+      {
+        id: 3,
+        questionId,
+        writer: "멍쟈쟈맘",
+        profileImage: "/src/assets/images/dog3.png",
+        date: "24.8.15",
+        contents: "너무 비싸요",
+        selected: false,
+        image: "/src/assets/images/dog3.png",
+      },
     ];
+  };
+
+  const getAnswerById = (id) => {
+    return answers.value.find((a) => a.id === id);
   };
 
   return {
     answers,
     fetchAnswersByQuestionId,
+    getAnswerById,
   };
 });

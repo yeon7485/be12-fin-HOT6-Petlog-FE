@@ -26,6 +26,10 @@ const notifications = ref([
 const removeNotification = (index) => {
   notifications.value.splice(index, 1)
 }
+
+const handleTitleClick = (notification) => {
+  alert(`${notification.title}\n\n${notification.content}`)
+}
 </script>
 
 <template>
@@ -40,12 +44,14 @@ const removeNotification = (index) => {
     >
       <div class="notification-content">
         <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-nobXsx6xXAvBtmZy2W3qRYMsgDSS8W.png"
+          src="/src/assets/images/dog1.png"
           alt="프로필 이미지"
           class="profile-image"
         />
         <div class="notification-text">
-          <p class="notification-message">{{ n.title }}</p>
+          <p class="notification-message clickable" @click="handleTitleClick(n)">
+            {{ n.title }}
+          </p>
           <p class="notification-submessage">{{ n.content }}</p>
           <p class="notification-time">{{ n.time }}</p>
         </div>
@@ -142,5 +148,16 @@ const removeNotification = (index) => {
 .trash-icon {
   width: 20px;
   height: 20px;
+}
+
+/* 클릭 가능한 제목 스타일 */
+.clickable {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.clickable:hover {
+  opacity: 0.7;
 }
 </style>

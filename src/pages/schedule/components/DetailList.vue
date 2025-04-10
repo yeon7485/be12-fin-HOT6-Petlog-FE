@@ -1,11 +1,18 @@
 <script setup>
+import { useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 import ScheduleCard from "./ScheduleCard.vue";
 
 const scheduleStore = useScheduleStore();
 
+const router = useRouter();
+
 const selectType = (type) => {
   scheduleStore.type = type;
+};
+
+const handleItemClick = (itemIdx) => {
+  router.push(`detail/${itemIdx}`);
 };
 </script>
 
@@ -20,6 +27,7 @@ const selectType = (type) => {
       v-for="(event, index) in scheduleStore.type === 'PLAN' ? scheduleStore.plans : scheduleStore.records"
       :key="index"
       :item="event"
+      @click="handleItemClick(event.idx)"
     />
   </div>
 </template>

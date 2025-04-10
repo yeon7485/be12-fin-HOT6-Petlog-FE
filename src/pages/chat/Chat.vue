@@ -63,7 +63,6 @@
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
 import { ref, onMounted } from "vue";
 import { useChatStore } from "../../stores/useChatStroe";
 import ChatCard from "./components/ChatCard.vue";

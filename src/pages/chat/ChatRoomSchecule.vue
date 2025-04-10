@@ -21,41 +21,12 @@
         </div>
 
         <div class="scrollable schedule-list">
-          <router-link
-            :to="`/chatroom/${chatroomIdx}/chatroom-schedule/${schedule.idx}`"
-            class="schedule-card-link"
-          >
-            <div class="schedule-card">
-              <div class="schedule-time">
-                <strong>{{ schedule.time }}</strong>
-              </div>
-              <div class="schedule-desc">{{ schedule.desc }}</div>
-            </div>
-          </router-link>
-          <div class="schedule-card">
-            <div class="schedule-time"><strong>11:00</strong></div>
-            <div class="schedule-desc">병원 검진 예약</div>
-          </div>
-          <div class="schedule-card">
-            <div class="schedule-time"><strong>11:00</strong></div>
-            <div class="schedule-desc">병원 검진 예약</div>
-          </div>
-          <div class="schedule-card">
-            <div class="schedule-time"><strong>11:00</strong></div>
-            <div class="schedule-desc">병원 검진 예약</div>
-          </div>
-          <div class="schedule-card">
-            <div class="schedule-time"><strong>11:00</strong></div>
-            <div class="schedule-desc">병원 검진 예약</div>
-          </div>
-          <div class="schedule-card">
-            <div class="schedule-time"><strong>11:00</strong></div>
-            <div class="schedule-desc">병원 검진 예약</div>
-          </div>
-          <div class="schedule-card">
-            <div class="schedule-time"><strong>11:00</strong></div>
-            <div class="schedule-desc">병원 검진 예약</div>
-          </div>
+          <ScheduleCard
+            v-for="schedule in chatStore.chatRoomScheduleList"
+            :key="schedule.idx"
+            :chatroomIdx="chatroomIdx"
+            :schedule="schedule"
+          />
         </div>
       </div>
     </div>
@@ -63,20 +34,20 @@
 </template>
 
 <script setup>
+import { useChatStore } from "../../stores/useChatStroe";
+import { onMounted } from "vue";
+
 import { useRouter, useRoute } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
+import ScheduleCard from "./components/ScheduleCard.vue";
 const router = useRouter();
 const route = useRoute();
 const chatroomIdx = route.params.chatroomIdx;
-function goBack() {
-  router.back();
-}
+const chatStore = useChatStore();
 
-const schedule = {
-  idx: 1,
-  time: "11:00",
-  desc: "병원 검진 예약",
-};
+onMounted(() => {
+  chatStore.getChatRoomScheduleList(chatroomIdx);
+});
 </script>
 
 <style scoped>
@@ -147,27 +118,6 @@ const schedule = {
   background-color: #f4eee7; /* ✅ 주변 배경과 맞춤 */
   padding: 12px;
   border-radius: 12px;
-}
-
-.schedule-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.08);
-  height: 50px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.schedule-time {
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-
-.schedule-desc {
-  font-size: 14px;
-  color: #333;
 }
 
 /* 모달 */

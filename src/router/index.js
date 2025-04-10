@@ -46,6 +46,7 @@ import Hospital from "../pages/place/SearchHospital.vue";
 import Beauty from "../pages/place/SearchBeauty.vue";
 import ChatRoomScheduleDetail from "../pages/chat/ChatRoomScheduleDetail.vue";
 import UserLayout from "../pages/user/UserLayout.vue";
+import DetailList from "../pages/schedule/components/DetailList.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -112,7 +113,7 @@ const routes = [
   {
     path: "/schedule",
     component: Schedule,
-    children: [],
+    children: [{ path: "detail", component: DetailList }],
   },
 
   {

@@ -1,9 +1,12 @@
 <script setup>
 import { reactive, ref, watch } from "vue";
+import { useScheduleStore } from "../../../stores/useScheduleStore";
 
 const props = defineProps({
   onClose: Function,
 });
+
+const scheduleStore = useScheduleStore();
 
 const isDropdownOpen = ref(false);
 const isCateDropdownOpen = ref(false);
@@ -33,7 +36,6 @@ const recordCategories = ref([
 
 const selectedPet = ref(pets.value[0]);
 const selectedCate = ref({});
-const selectedType = ref("PLAN");
 
 const planData = reactive({
   title: "",
@@ -55,7 +57,7 @@ const recordData = reactive({
 
 const closeModal = () => {
   selectedPet.value = pets.value[0];
-  selectedType.value = "PLAN";
+  scheduleStore.type = "PLAN";
   selectedCate.value = {};
   props.onClose();
 };
@@ -81,7 +83,7 @@ const selectPet = (option) => {
 
 // 타입 바꾸면서 데이터 초기화
 const selectType = (type) => {
-  selectedType.value = type;
+  scheduleStore.type = type;
   isCateDropdownOpen.value = false;
   selectedCate.value = {};
 
@@ -169,8 +171,8 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
           <!-- 일정/기록, 카테고리 선택 -->
           <div class="content_header">
             <div class="type_box">
-              <div class="type_btn" :class="{ active: selectedType === 'PLAN' }" @click="selectType('PLAN')">일정</div>
-              <div class="type_btn" :class="{ active: selectedType === 'RECORD' }" @click="selectType('RECORD')">기록</div>
+              <div class="type_btn" :class="{ active: scheduleStore.type === 'PLAN' }" @click="selectType('PLAN')">일정</div>
+              <div class="type_btn" :class="{ active: scheduleStore.type === 'RECORD' }" @click="selectType('RECORD')">기록</div>
             </div>
             <!-- 카테고리 선택 드롭다운 -->
             <div class="category_box">
@@ -189,7 +191,7 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
               <div v-if="isCateDropdownOpen" class="cate_dropdown_menu" @click.stop>
                 <ul>
                   <li
-                    v-for="option in selectedType === 'PLAN' ? planCategories : recordCategories"
+                    v-for="option in scheduleStore.type === 'PLAN' ? planCategories : recordCategories"
                     :key="option.name"
                     @click="selectCate(option)"
                   >
@@ -204,7 +206,7 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
           </div>
 
           <div class="input_box">
-            <template v-if="selectedType === 'PLAN'">
+            <template v-if="scheduleStore.type === 'PLAN'">
               <!-- 제목 입력 -->
               <input v-model="planData.title" type="text" placeholder="제목을 입력해주세요." class="input_title" />
 

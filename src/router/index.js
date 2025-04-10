@@ -132,6 +132,7 @@ const routes = [
       { path: "qna/:id", component: QuestionDetail },
 
       { path: "qna/answer/register", component: AnswerRegister },
+      { path: "qna/:questionId/answer/:id/modify", component: AnswerRegister,},
     ],
   },
 

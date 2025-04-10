@@ -9,6 +9,7 @@ defineEmits(['select', 'modify', 'delete'])
       <div class="left_info">
         <img class="profile_img" :src="answer.profileImage" alt="유저 이미지" />
         <span class="nickname">{{ answer.writer }}</span>
+        <span class="divider">ㅣ</span>
         <span class="date">{{ answer.date }}</span>
       </div>
       <div v-if="answer.selected" class="selected_badge">
@@ -19,7 +20,7 @@ defineEmits(['select', 'modify', 'delete'])
         <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="$emit('modify', answer.id)" />
         <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="$emit('delete', answer.id)" />
       </div>
-    </div>
+    </div>  
 
     <div class="comment_body">
       <img v-if="answer.image" class="answer_img" :src="answer.image" alt="답변 이미지" />

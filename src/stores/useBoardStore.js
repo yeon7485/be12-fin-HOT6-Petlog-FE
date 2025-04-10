@@ -12,10 +12,10 @@ export const useBoardStore = defineStore("board", () => {
       free: {
         title: "저희 강아지 귀엽쥬??",
         category: "강아지",
-        writer: "구름봄",
+        writer: "멍쟈뽀짝",
         contents: "너무너무 귀엽고 깜찍해요 이 세상에서 제일 귀여워요",
         date: "04/01",
-        imageUrl: "/src/assets/images/dog1.png",
+        imageUrl: "/src/assets/images/mung.png",
       },
       information: {
         title: "강아지 키울 때 꿀팁 공유!",

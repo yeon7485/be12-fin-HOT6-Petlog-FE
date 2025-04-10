@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBoardStore } from '/src/stores/useBoardStore'
+import AnimalCardModal from '/src/pages/board/components/AnimalCardModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -73,6 +74,12 @@ const handleSubmit = () => {
   const action = isEdit ? '수정' : '등록'
   alert(`${action}이 완료되었습니다`) 
 }
+
+const isModalOpen = ref(false)
+
+const selectPetCard = () => {
+  isModalOpen.value = true
+}
 </script>
 
 <template>
@@ -121,6 +128,13 @@ const handleSubmit = () => {
       </div>
     </div>
 
+    <div class="form_group">
+      <label>반려동물 카드 등록</label>
+      <button @click="selectPetCard" class="petcard_btn">반려동물 카드 선택</button>
+    </div>
+
+    <AnimalCardModal v-if="isModalOpen" @close="isModalOpen = false" />
+
     <div class="actions">
       <button @click="handleCancel" class="cancel">취소</button>
       <button @click="handleSubmit" class="submit">{{ isEdit ? '수정' : '등록' }}</button>
@@ -131,7 +145,7 @@ const handleSubmit = () => {
 <style scoped>
 .container {
   max-width: 1200px;
-  margin: 0 auto 40px auto;          
+  margin: 0 auto 40px auto;
   padding: 40px;
   font-family: sans-serif;
   border: 1px solid #ddd;
@@ -139,8 +153,6 @@ const handleSubmit = () => {
   background-color: #fff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
-
-
 
 .section_title {
   font-weight: bold;
@@ -244,5 +256,20 @@ button {
 .submit:hover {
   background-color: #7a2b2b;
   color: white;
+}
+
+.petcard_btn {
+  padding: 4px 10px;
+  font-size: 14px;
+  width: 140px;
+  border: 1px solid #ccc;
+  background-color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.petcard_btn:hover {
+  background-color: #f5f5f5;
 }
 </style>

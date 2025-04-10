@@ -8,7 +8,7 @@
       <nav>
         <ul>
           <li><router-link to="/mypage/profile" active-class="active">내 정보</router-link></li>
-          <li><router-link to="/mypage/card" active-class="active">카드 목록</router-link></li>
+          <li><router-link to="/mypage/cardlist" active-class="active">카드 목록</router-link></li>
           <li><router-link to="/mypage/question" active-class="active">나의 질문</router-link></li>
           <li><router-link to="/mypage/answer" active-class="active">나의 답변</router-link></li>
           <li><router-link to="/mypage/post" active-class="active">내가 쓴 글</router-link></li>

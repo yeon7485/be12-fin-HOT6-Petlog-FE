@@ -1,18 +1,20 @@
 <script setup>
 import { ref, computed } from "vue";
 import { startOfMonth, endOfMonth, subMonths, addMonths, getDay, getDate, getDaysInMonth, format, parseISO } from "date-fns";
+import { useScheduleStore } from "../../../stores/useScheduleStore";
+import { hexToRgba } from "../../../utils/color";
+
+const props = defineProps({
+  onOpenModal: Function,
+  onDetail: Function,
+});
+
+const scheduleStore = useScheduleStore();
 
 const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const currentDate = new Date();
 const currentYear = ref(currentDate.getFullYear());
 const currentMonth = ref(currentDate.getMonth());
-
-const events = ref([
-  { date: "2025-04-05T11:00:00", title: "산책 가기", color: "#d9e8d4" },
-  { date: "2025-04-07T11:00:00", title: "병원 검진 예약병원 검진 예약", color: "#cce7ee" },
-  { date: "2025-03-27T17:00:00", title: "미용 예약", color: "#f6d6dd" },
-]);
-const emit = defineEmits(["open-modal"]);
 
 const calendarDates = computed(() => {
   const year = currentYear.value;
@@ -60,11 +62,9 @@ const calendarDates = computed(() => {
 });
 
 const getEventsForDate = (date) => {
-  if (isNaN(date)) return [];
-
   const dateStr = format(date, "yyyy-MM-dd");
 
-  return events.value.filter((event) => {
+  return scheduleStore.plans.filter((event) => {
     const eventDateStr = format(parseISO(event.date), "yyyy-MM-dd");
     return eventDateStr === dateStr;
   });
@@ -91,7 +91,16 @@ const nextMonth = () => {
 };
 
 const handleRegisterClick = () => {
-  emit("open-modal");
+  props.onOpenModal();
+};
+
+const handleDateClick = (date) => {
+  scheduleStore.setCurrentDate(date);
+  props.onDetail();
+};
+
+const handleEventClick = () => {
+  props.onDetail();
 };
 </script>
 
@@ -133,6 +142,7 @@ const handleRegisterClick = () => {
             blue: isSaturday(index),
             today_date: format(item.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd'),
           }"
+          @click="handleDateClick(item.date)"
         >
           {{ item.date.getDate() }}
         </div>
@@ -141,8 +151,9 @@ const handleRegisterClick = () => {
             class="event"
             v-for="event in getEventsForDate(item.date)"
             :key="event.title"
-            :style="{ backgroundColor: event.color }"
+            :style="{ backgroundColor: hexToRgba(event.color, 0.25) }"
             :title="event.title"
+            @click="handleEventClick"
           >
             {{ event.title }}
           </div>
@@ -154,15 +165,18 @@ const handleRegisterClick = () => {
 
 <style scoped>
 .calendar_wrapper {
+  min-width: 486px;
   margin-bottom: 50px;
 }
 .calendar_header {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
+  padding: 0 10px;
 }
 
 .calendar_header > div {

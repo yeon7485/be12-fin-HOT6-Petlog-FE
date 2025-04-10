@@ -86,8 +86,7 @@ import ChatHeader from "./ChatHeader.vue";
 //url 에서 idx 값 가져오기
 const route = useRoute();
 const router = useRouter();
-
-const chatroomIdx = route.params.chatroomIdx; // 👉 '1'이 들어옵니다
+const chatroomIdx = route.params.chatroomIdx;
 
 const goComplete = () => {
   router.push(`/chatroom/${chatroomIdx}/chatroom-schedule`); // 이동할 경로로 바꿔주세요

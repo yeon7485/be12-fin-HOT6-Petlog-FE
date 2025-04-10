@@ -20,44 +20,41 @@
       <input
         type="text"
         class="room-input"
-        value="서울숲에서 같이 멍멍이 산책시킬 사람 !!"
+        :value="title"
+        :readonly="!isEditing"
       />
 
       <label class="input-label">해시태그</label>
-      <textarea class="room-textarea">#산책 #멍멍 #서울숲</textarea>
+      <textarea
+        v-model="hashtagsText"
+        class="room-textarea"
+        placeholder="#산책 #멍멍 #서울숲"
+        :readonly="!isEditing"
+      />
 
-      <button class="update-button">채팅방 수정</button>
+      <div v-if="isEditing" class="edit-actions">
+        <button class="cancel-button" @click="cancel">취소</button>
+        <button class="save-button" @click="save">저장</button>
+      </div>
+      <div v-else class="edit-actions">
+        <button class="update-button" @click="isEditing = true">
+          채팅방 수정
+        </button>
+      </div>
     </div>
 
     <!-- 대화상대 -->
     <div class="members-section">
-      <h3 class="section-title">대화상대 6</h3>
+      <h3 class="section-title">
+        대화상대 {{ chatStore.chatRoomUsers.length }}
+      </h3>
       <div class="member-list">
-        <div class="member">
-          <img src="../../assets/images/dog1.jpeg" class="profile-img" />
-          <span>짱봄</span>
-        </div>
-        <div class="member">
-          <img src="../../assets/images/dog2.jpeg" class="profile-img" />
-          <span>짱구름</span>
-        </div>
-        <div class="member">
-          <img src="../../assets/images/dog2.jpeg" class="profile-img" />
-          <span>짱구름</span>
-        </div>
-        <div class="member">
-          <img src="../../assets/images/dog2.jpeg" class="profile-img" />
-          <span>짱구름</span>
-        </div>
-        <div class="member">
-          <img src="../../assets/images/dog2.jpeg" class="profile-img" />
-          <span>짱구름</span>
-        </div>
-        <div class="member">
-          <img src="../../assets/images/dog2.jpeg" class="profile-img" />
-          <span>짱구름</span>
-        </div>
-        <!-- ... 나머지 멤버들 ... -->
+        <UserCard
+          v-for="user in chatStore.chatRoomUsers"
+          :key="user.idx"
+          :userName="user.userName"
+          :imageUrl="user.imageUrl"
+        />
       </div>
     </div>
 
@@ -71,13 +68,53 @@
 
 <script setup>
 import { RouterLink } from "vue-router";
-import { useRouter } from "vue-router";
+import { onMounted, readonly, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
-const router = useRouter();
-// 뒤로 가기
-const goBack = () => {
-  router.go(-1); // 또는 window.history.back()
+import UserCard from "./components/UserCard.vue";
+import { useChatStore } from "../../stores/useChatStroe";
+const chatStore = useChatStore();
+
+const route = useRoute();
+
+const isEditing = ref(false); // ✨ 수정 모드 여부
+
+const chatroomIdx = route.params.chatroomIdx;
+
+const title = ref("");
+const hashtagsText = ref("");
+
+// 저장 버튼 클릭 시
+const save = async () => {
+  const hashtags = hashtagsText.value
+    .trim()
+    .split(/\s+/)
+    .map((tag) => tag.replace(/^#/, ""));
+
+  await chatStore.updateRoom({
+    title: title.value,
+    hashtags,
+  });
+  isEditing.value = false;
 };
+
+// 취소 버튼 클릭 시 → 원래 데이터 복원
+const cancel = () => {
+  title.value = chatStore.chatRoomInfo.title;
+  hashtagsText.value = chatStore.chatRoomInfo.hashtags
+    .map((t) => `#${t}`)
+    .join(" ");
+  isEditing.value = false;
+};
+onMounted(() => {
+  chatStore.fetchUsers(chatroomIdx);
+  chatStore.getRoomInfo(chatroomIdx);
+  title.value = chatStore.chatRoomInfo.title;
+  const tags = chatStore.chatRoomInfo.hashtags;
+  hashtagsText.value = tags
+    .map((tag) => (tag.startsWith("#") ? tag : `#${tag}`))
+    .join(" ");
+});
 </script>
 
 <style>
@@ -140,7 +177,7 @@ const goBack = () => {
   padding: 0 130px; /* ✅ 여기 좌우 여백 */
 }
 .room-info-section .input-label {
-  color: var(--gray700, #616161);
+  /* color: var(--gray700, #616161); */
   font-family: Inter;
   font-size: 14px;
   font-style: normal;
@@ -155,6 +192,7 @@ const goBack = () => {
   padding: 10px;
   font-size: 14px;
   width: 100%;
+  background-color: #fff;
 }
 
 .room-textarea {
@@ -195,19 +233,6 @@ const goBack = () => {
   overflow-y: auto; /* ✅ 세로 스크롤 자동 */
 }
 
-.member {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-}
-
-.profile-img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-}
-
 .chatroom-leave-wrapper {
   display: flex;
   justify-content: center;
@@ -220,6 +245,23 @@ const goBack = () => {
   border: none;
   font-size: 14px;
   color: #555;
+  cursor: pointer;
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.cancel-button,
+.save-button {
+  background: white;
+  border: 1px solid #aaa;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
   cursor: pointer;
 }
 </style>

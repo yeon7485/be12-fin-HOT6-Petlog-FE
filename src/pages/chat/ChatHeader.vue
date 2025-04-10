@@ -10,7 +10,7 @@
     <span class="room-title">{{ title }}</span>
 
     <!-- 조건부 메뉴 버튼 표시 -->
-    <router-link v-if="showMenu" to="/chatroom/1/chatroom-info">
+    <router-link v-if="showMenu" :to="`/chatroom/${roomIdx}/chatroom-info`">
       <button class="chatroom-menu">
         <img src="../../assets/images/material-symbols_menu-rounded.svg" />
       </button>
@@ -24,6 +24,7 @@ import { defineProps } from "vue";
 
 const props = defineProps({
   title: String,
+  roomIdx: Number,
   showMenu: {
     type: Boolean,
     default: false,

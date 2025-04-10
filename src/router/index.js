@@ -82,7 +82,7 @@ const routes = [
     redirect: "/mypage/profile",
     children: [
       { path: "profile", component: MypageProfile },
-      { path: "card", component: MypageCardList },
+      { path: "cardlist", component: MypageCardList },
       { path: "card/create", component: MypageCardCreate },
       {
         path: "card/detail",

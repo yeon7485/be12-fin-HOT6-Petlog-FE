@@ -10,12 +10,10 @@ const questionStore = useQuestionStore()
 const search = ref('')
 const keyword = ref('')
 
-// mount 시 질문 로딩
 onMounted(() => {
   questionStore.fetchQuestions()
 })
 
-// 검색 필터링된 리스트
 const filteredQuestions = computed(() => {
   if (!keyword.value.trim()) return questionStore.questions
 

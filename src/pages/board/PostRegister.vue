@@ -130,7 +130,7 @@ const selectPetCard = () => {
 
     <div class="form_group">
       <label>반려동물 카드 등록</label>
-      <button @click="selectPetCard" class="petcard_btn">반려동물 카드 선택</button>
+      <button @click="selectPetCard" class="petcard_btn">카드 선택</button>
     </div>
 
     <AnimalCardModal v-if="isModalOpen" @close="isModalOpen = false" />
@@ -261,7 +261,7 @@ button {
 .petcard_btn {
   padding: 4px 10px;
   font-size: 14px;
-  width: 140px;
+  width: 90px;
   border: 1px solid #ccc;
   background-color: white;
   font-weight: bold;

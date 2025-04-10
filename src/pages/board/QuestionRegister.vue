@@ -1,43 +1,80 @@
-<script>
-export default {
-  name: "QuestionRegister",
-  data() {
-    return {
-      form: {
-        title: "",
-        content: "",
-        tags: "",
-        file: null,
-      },
-    };
-  },
-  methods: {
-    handle_file_change(event) {
-      this.form.file = event.target.files[0];
-    },
-    handle_cancel() {
-      const confirmed = window.confirm('작성 중인 내용을 취소하시겠습니까?');
-      if (confirmed) {
-        this.$router.go(-1);
-      }
-    },
-    handle_submit() {
-      const confirmed = window.confirm('질문을 등록하시겠습니까?');
-      if (confirmed) {
-        alert('질문이 등록되었습니다.');
-        console.log("등록된 데이터:", this.form);
-      }
-    },
-  },
-};
-</script>
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useQuestionStore } from '/src/stores/useQuestionStore'
+import AnimalCardModal from '/src/pages/board/components/AnimalCardModal.vue'
 
+const route = useRoute()
+const router = useRouter()
+const store = useQuestionStore()
+
+const questionId = route.params.id ? Number(route.params.id) : null
+const isEdit = !!questionId
+
+const form = ref({
+  title: '',
+  content: '',
+  tags: '',
+  file: null,
+})
+
+onMounted(async () => {
+  await store.fetchQuestions()
+
+  if (isEdit) {
+    const target = store.getQuestionById(questionId)
+    if (target) {
+      form.value.title = target.title
+      form.value.content = target.content
+      form.value.tags = target.tags.join(', ')
+    }
+  }
+})
+
+const handleFileChange = (event) => {
+  form.value.file = event.target.files[0]
+}
+
+const handleCancel = () => {
+  const confirmed = window.confirm('작성 중인 내용을 취소하시겠습니까?')
+  if (confirmed) {
+    router.go(-1)
+  }
+}
+
+const handleSubmit = () => {
+  const confirmed = window.confirm(isEdit ? '질문을 수정하시겠습니까?' : '질문을 등록하시겠습니까?')
+  if (!confirmed) return
+
+  const tagsArray = form.value.tags.split(',').map(tag => tag.trim())
+
+  const questionData = {
+    title: form.value.title,
+    content: form.value.content,
+    tags: tagsArray,
+    author: '닉네임',
+    date: new Date().toLocaleDateString('ko-KR'),
+    status: '미해결',     
+    commentCount: 0,
+  }
+
+  if (isEdit) {
+    store.updateQuestion(questionId, questionData)
+    alert('질문이 수정되었습니다.')
+    router.push(`/board/qna/${questionId}`)
+  } else {
+    store.addQuestion(questionData)
+    alert('질문이 등록되었습니다.')
+    router.push('/board/qna')
+  }
+}
+</script>
 
 <template>
   <div class="qna_container">
-    <h1 class="title">Q&A</h1>
+    <h1 class="title">Q&A {{ isEdit ? '수정' : '등록' }}</h1>
 
-    <form @submit.prevent="handle_submit" class="form">
+    <form @submit.prevent="handleSubmit" class="form">
       <div class="form_group">
         <label for="title">제목</label>
         <input type="text" id="title" v-model="form.title" required />
@@ -49,18 +86,25 @@ export default {
       </div>
 
       <div class="form_group">
-        <label for="tags">태그 (1개 이상)</label>
+        <label for="tags">태그 (쉼표 구분)</label>
         <input type="text" id="tags" v-model="form.tags" />
       </div>
 
       <div class="form_group">
         <label for="file">사진 등록</label>
-        <input type="file" id="file" @change="handle_file_change" />
+        <input type="file" id="file" @change="handleFileChange" />
       </div>
 
+      <div class="form_group">
+      <label>반려동물 카드 등록</label>
+      <button @click="selectPetCard" class="petcard_btn">카드 선택</button>
+    </div>
+
+    <AnimalCardModal v-if="isModalOpen" @close="isModalOpen = false" />
+
       <div class="form_actions">
-        <button type="button" class="cancel_button" @click="handle_cancel">취소</button>
-        <button type="submit" class="submit_button">등록</button>
+        <button type="button" class="cancel_button" @click="handleCancel">취소</button>
+        <button type="submit" class="submit_button">{{ isEdit ? '수정' : '등록' }}</button>
       </div>
     </form>
   </div>
@@ -138,8 +182,23 @@ textarea {
   background-color: #6A0104;
   color: #fff;
 }
+
 .submit_button:hover {
   background: #8b0000;
 }
 
+.petcard_btn {
+  padding: 4px 10px;
+  font-size: 14px;
+  width: 90px;
+  border: 1px solid #ccc;
+  background-color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.petcard_btn:hover {
+  background-color: #f5f5f5;
+}
 </style>

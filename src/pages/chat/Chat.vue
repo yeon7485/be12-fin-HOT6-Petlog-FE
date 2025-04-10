@@ -22,59 +22,11 @@
       </div>
       <!-- 채팅 목록 -->
       <div class="chat-list">
-        <router-link to="/chatroom/1">
-          <div class="chat-card">
-            <div class="chat-title">
-              서울숲에서 같이 멍멍이 산책시킬 사람 !!
-            </div>
-            <div class="chat-tags">
-              <span>#산책</span>
-              <span>#멍멍</span>
-              <span>#서울숲</span>
-            </div>
-            <div class="chat-participants">
-              <img src="../../assets/images/fluent_people-28-filled.png" />
-              6명 참여 중
-            </div>
-          </div>
-        </router-link>
-        <div class="chat-card">
-          <div class="chat-title">서울숲에서 같이 멍멍이 산책시킬 사람 !!</div>
-          <div class="chat-tags">
-            <span>#산책</span>
-            <span>#멍멍</span>
-            <span>#서울숲</span>
-          </div>
-          <div class="chat-participants">
-            <img src="../../assets/images/fluent_people-28-filled.png" />
-            6명 참여 중
-          </div>
-        </div>
-        <div class="chat-card">
-          <div class="chat-title">서울숲에서 같이 멍멍이 산책시킬 사람 !!</div>
-          <div class="chat-tags">
-            <span>#산책</span>
-            <span>#멍멍</span>
-            <span>#서울숲</span>
-          </div>
-          <div class="chat-participants">
-            <img src="../../assets/images/fluent_people-28-filled.png" />
-            6명 참여 중
-          </div>
-        </div>
-        <div class="chat-card">
-          <div class="chat-title">서울숲에서 같이 멍멍이 산책시킬 사람 !!</div>
-          <div class="chat-tags">
-            <span>#산책</span>
-            <span>#멍멍</span>
-            <span>#서울숲</span>
-          </div>
-          <div class="chat-participants">
-            <img src="../../assets/images/fluent_people-28-filled.png" />
-            6명 참여 중
-          </div>
-        </div>
-        <!-- 반복될 chat-card들 -->
+        <ChatCard
+          v-for="room in chatStore.chatRooms"
+          :key="room.idx"
+          :room="room"
+        />
       </div>
     </div>
   </div>
@@ -112,8 +64,10 @@
 
 <script setup>
 import { RouterLink } from "vue-router";
-import { ref } from "vue";
-
+import { ref, onMounted } from "vue";
+import { useChatStore } from "../../stores/useChatStroe";
+import ChatCard from "./components/ChatCard.vue";
+const chatStore = useChatStore();
 const showModal = ref(false); // true일 경우 모달이 보임
 
 const closeModal = () => {
@@ -123,6 +77,10 @@ const closeModal = () => {
 const openModal = () => {
   showModal.value = true;
 };
+
+onMounted(() => {
+  chatStore.loadRooms(); // 테스트 데이터 로딩
+});
 </script>
 
 <style>
@@ -201,53 +159,6 @@ const openModal = () => {
   flex-direction: column;
   gap: 20px;
   align-items: center;
-}
-
-.chat-card {
-  width: 806px;
-  padding: 33px 36px;
-  border-radius: 20px;
-  border: 1px solid #6a0104;
-  background: #fff;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  box-sizing: border-box;
-}
-
-.chat-title {
-  font-family: Inter;
-  font-size: 20px;
-  color: #000;
-
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-}
-
-.chat-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 22px;
-  /* margin-bottom: 8px; */
-}
-
-.chat-tags span {
-  color: #6a0104;
-  font-size: 14px;
-}
-
-.chat-participants {
-  display: flex;
-  align-items: center;
-  position: absolute;
-  right: 24px;
-  /* bottom: 16px; */
-  font-size: 13px;
-  color: #555;
-  gap: 4px;
 }
 
 /* 모달 */

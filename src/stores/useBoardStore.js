@@ -15,7 +15,7 @@ export const useBoardStore = defineStore("board", () => {
         writer: "멍쟈뽀짝",
         contents: "너무너무 귀엽고 깜찍해요 이 세상에서 제일 귀여워요",
         date: "04/01",
-        imageUrl: "/src/assets/images/mung.png",
+        imageUrl: "/src/assets/images/dog3.png",
       },
       information: {
         title: "강아지 키울 때 꿀팁 공유!",

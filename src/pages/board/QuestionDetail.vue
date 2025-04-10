@@ -2,6 +2,16 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useQuestionStore } from '/src/stores/useQuestionStore'
+import { useAnswerStore } from '/src/stores/useAnswerStore'
+import AnswerCard from '/src/pages/board/components/AnswerCard.vue'
+
+const answerStore = useAnswerStore()
+
+onMounted(async () => {
+  await questionStore.fetchQuestions()
+  await answerStore.fetchAnswersByQuestionId(questionId)
+  question.value = questionStore.getQuestionById(questionId)
+})
 
 const router = useRouter()
 const route = useRoute()
@@ -136,82 +146,23 @@ const goToModify = () => {
         </div>
       </div>
 
-      <div class="answer_wrapper">
-        <div class="answer_count">
-          <img
-            src="/src/assets/icons/answer.png"
-            class="answer_icon"
-            alt="답변 아이콘"
-          />
-          2개 답변
-        </div>
+      <!-- 사용자 답변 목록 -->
+<div class="answer_wrapper">
+  <div class="answer_count">
+    <img src="/src/assets/icons/answer.png" class="answer_icon" alt="답변 아이콘" />
+    {{ answerStore.answers.length }}개 답변
+  </div>
 
-        <div class="answer_card selected">
-          <div class="user_header">
-            <div class="left_info">
-              <img
-                class="profile_img"
-                src="/src/assets/images/dog2.jpeg"
-                alt="유저 이미지"
-              />
-              <span class="nickname">구름봄맘</span>
-              <span class="date">24.8.10</span>
-            </div>
-            <div class="selected_badge">
-              <img
-                src="/src/assets/icons/select.png"
-                class="badge_icon"
-                alt="채택 아이콘"
-              />
-              <span class="selected_text">질문자가 채택한 답변</span>
-            </div>
-          </div>
-          <div class="comment_body">
-            중성화 안 하면 자궁축농증이나 유선종양 등 질병에 걸릴 가능성이 아주 큽니다 노견 되어서나 걸리는줄 알았는데 6살인데도 자궁축농증 걸린 강아지도 봤어요. 강아지생리는 사람이 일주일 정도 하는 것과는 달리 3~4주나 하고요(6개월에 1번 정도 하긴합니다) 그 기간에는 예민해지기도 하고 입맛이 없어 밥을 잘 먹지 않을 수도 있어요 생리 끝나고 상상임신도 한다면 예민한 시기가 길어지고요 중성화해주는게 좋습니다.
-          </div>
-        </div>
+  <AnswerCard
+    v-for="answer in answerStore.answers"
+    :key="answer.id"
+    :answer="answer"
+    @select="handleSelectAnswer"
+    @modify="goToModifyAnswer"
+    @delete="confirmDeleteAnswer"
+  />
+</div>
 
-        <div class="answer_card">
-          <div class="user_header">
-            <div class="left_info">
-              <img
-                class="profile_img"
-                src="/src/assets/images/dog2.jpeg"
-                alt="유저 이미지"
-              />
-              <span class="nickname">눈가을맘</span>
-              <span class="date">24.8.10</span>
-            </div>
-            <div class="icons">
-              <img
-                src="/src/assets/icons/write.png"
-                class="icon_btn"
-                alt="수정 아이콘"
-                @click="goToModifyAnswer"
-              />
-              <img
-                src="/src/assets/icons/x-button.png"
-                class="icon_btn"
-                alt="삭제 아이콘"
-                @click="confirmDeleteAnswer"
-              />
-            </div>
-          </div>
-          <div class="comment_body">
-            <img
-              class="answer_img"
-              src="/src/assets/images/dog1.png"
-              alt="답변 이미지"
-            />
-            중성화는 명백한 동물학대입니다!!!
-          </div>
-          <div class="select_btn_area">
-            <button class="select_btn" @click="handleSelectAnswer">
-              채택하기
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
 
 </template>

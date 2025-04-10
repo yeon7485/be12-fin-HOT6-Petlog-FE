@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 
 const props = defineProps({
   onClose: Function,
@@ -15,41 +15,48 @@ const pets = ref([
 ]);
 
 const planCategories = ref([
-  { color: "#00C9CD", name: "병원" },
-  { color: "#E6B0BD", name: "미용실" },
-  { color: "#65924D", name: "산책" },
-  { color: "#BDBDBD", name: "기타" },
+  { idx: 1, color: "#00C9CD", name: "병원" },
+  { idx: 2, color: "#E6B0BD", name: "미용실" },
+  { idx: 3, color: "#65924D", name: "산책" },
+  { idx: 4, color: "#BDBDBD", name: "기타" },
 ]);
 
 const recordCategories = ref([
-  { color: "#00C9CD", name: "체중" },
-  { color: "#E6B0BD", name: "이상현상" },
-  { color: "#65924D", name: "배변상태" },
-  { color: "#b29d90", name: "수면시간" },
-  { color: "#f30F12", name: "체온" },
-  { color: "#df32f3", name: "오늘의 사진" },
-  { color: "#BDBDBD", name: "기타" },
+  { idx: 1, color: "#00C9CD", name: "체중" },
+  { idx: 2, color: "#E6B0BD", name: "이상현상" },
+  { idx: 3, color: "#65924D", name: "배변상태" },
+  { idx: 4, color: "#b29d90", name: "수면시간" },
+  { idx: 5, color: "#f30F12", name: "체온" },
+  { idx: 6, color: "#df32f3", name: "오늘의 사진" },
+  { idx: 7, color: "#BDBDBD", name: "기타" },
 ]);
 
 const selectedPet = ref(pets.value[0]);
 const selectedCate = ref({});
 const selectedType = ref("PLAN");
 
-const startTime = ref("");
-const endTime = ref("");
+const planData = reactive({
+  title: "",
+  startTime: "",
+  endTime: "",
+  memo: "",
+  isRepeat: false,
+  repeatCycle: "일",
+  repeatCount: 1,
+});
 
-const isRepeat = ref(false);
-const repeatCycle = ref("일");
-const repeatCount = ref(1);
+const recordData = reactive({
+  title: "",
+  date: "",
+  memo: "",
+  image: null,
+  previewUrl: "",
+});
 
 const closeModal = () => {
   selectedPet.value = pets.value[0];
   selectedType.value = "PLAN";
   selectedCate.value = {};
-  isRepeat.value = false;
-  repeatCycle.value = "일";
-  startTime.value = "";
-  endTime.value = "";
   props.onClose();
 };
 
@@ -72,10 +79,31 @@ const selectPet = (option) => {
   isDropdownOpen.value = false; // 드롭다운 닫기
 };
 
+// 타입 바꾸면서 데이터 초기화
 const selectType = (type) => {
   selectedType.value = type;
   isCateDropdownOpen.value = false;
   selectedCate.value = {};
+
+  if (type === "PLAN") {
+    Object.assign(planData, {
+      title: "",
+      startTime: "",
+      endTime: "",
+      memo: "",
+      isRepeat: false,
+      repeatCycle: "일",
+      repeatCount: 1,
+    });
+  } else if (type === "RECORD") {
+    Object.assign(recordData, {
+      title: "",
+      date: "",
+      memo: "",
+      image: null,
+      previewUrl: "",
+    });
+  }
 };
 
 const selectCate = (category) => {
@@ -83,10 +111,21 @@ const selectCate = (category) => {
   isCateDropdownOpen.value = false;
 };
 
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    recordData.image = file;
+
+    // 👉 선택적으로 미리보기 URL 만들기
+    const previewUrl = URL.createObjectURL(file);
+    recordData.previewUrl = previewUrl;
+  }
+};
+
 // 종료 시간이 시작 시간보다 빠를 수 없도록 감시
-watch([startTime, endTime], ([start, end]) => {
+watch([planData.startTime, planData.endTime], ([start, end]) => {
   if (start && end && new Date(end) < new Date(start)) {
-    endTime.value = start; // 종료 시간을 시작 시간에 맞춤
+    planData.endTime = start; // 종료 시간을 시작 시간에 맞춤
   }
 });
 </script>
@@ -165,60 +204,94 @@ watch([startTime, endTime], ([start, end]) => {
           </div>
 
           <div class="input_box">
-            <!-- 제목 입력 -->
-            <input v-model="title" type="text" placeholder="제목을 입력해주세요." class="input_title" />
+            <template v-if="selectedType === 'PLAN'">
+              <!-- 제목 입력 -->
+              <input v-model="planData.title" type="text" placeholder="제목을 입력해주세요." class="input_title" />
 
-            <!-- 시간 입력 -->
-            <div class="time_box">
-              <div>
-                <label>시작 시간</label>
-                <input v-model="startTime" type="datetime-local" class="input_time" />
-              </div>
-              <div>
-                <label>종료 시간</label>
-                <input v-model="endTime" :min="startTime" type="datetime-local" class="input_time" />
-              </div>
-            </div>
-
-            <!-- 장소 입력 -->
-            <div>
-              <label>장소</label>
-              <button type="button" class="place_btn">장소 선택</button>
-            </div>
-
-            <!-- 메모 입력 -->
-            <div>
-              <label>메모</label>
-              <textarea v-model="memo" placeholder="메모를 입력해주세요." class="textarea_memo" />
-            </div>
-
-            <!-- 반복 설정 -->
-            <div>
-              <label>반복 설정</label>
-              <v-switch v-model="isRepeat" color="#60BE2F"></v-switch>
-
-              <div v-if="isRepeat">
+              <!-- 시간 입력 -->
+              <div class="time_box">
                 <div>
-                  <label>반복 종료 날짜</label>
-                  <input v-model="repeat_end_date" type="date" class="input_time" />
+                  <label>시작 시간</label>
+                  <input v-model="planData.startTime" type="datetime-local" class="input_time" />
                 </div>
-
-                <v-radio-group hide-details inline v-model="repeatCycle" class="radio_btn">
-                  <v-radio label="일" value="일" color="#757575" class="radio_item"></v-radio>
-                  <v-radio label="주" value="주" color="#757575" class="radio_item"></v-radio>
-                  <v-radio label="월" value="월" color="#757575" class="radio_item"></v-radio>
-                </v-radio-group>
-
-                <input type="number" v-model="repeatCount" class="input_repeat_num" min="0" max="31" />
-                <span>{{ repeatCycle }}</span>
+                <div>
+                  <label>종료 시간</label>
+                  <input v-model="planData.endTime" :min="planData.startTime" type="datetime-local" class="input_time" />
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <div class="btn_box">
-          <button @click="closeModal" class="cancel_btn">취소</button>
-          <button @click="" class="save_btn">저장</button>
+              <!-- 장소 입력 -->
+              <div>
+                <label>장소</label>
+                <button type="button" class="place_btn">장소 선택</button>
+              </div>
+
+              <!-- 메모 입력 -->
+              <div>
+                <label>메모</label>
+                <textarea v-model="planData.memo" placeholder="메모를 입력해주세요." class="textarea_memo" />
+              </div>
+
+              <!-- 반복 설정 -->
+              <div>
+                <label>반복 설정</label>
+                <v-switch v-model="planData.isRepeat" color="#60BE2F"></v-switch>
+
+                <div v-if="planData.isRepeat">
+                  <div>
+                    <label>반복 종료 날짜</label>
+                    <input v-model="planData.repeat_end_date" type="date" class="input_time" />
+                  </div>
+
+                  <v-radio-group hide-details inline v-model="planData.repeatCycle" class="radio_btn">
+                    <v-radio label="일" value="일" color="#757575" class="radio_item"></v-radio>
+                    <v-radio label="주" value="주" color="#757575" class="radio_item"></v-radio>
+                    <v-radio label="월" value="월" color="#757575" class="radio_item"></v-radio>
+                  </v-radio-group>
+
+                  <input type="number" v-model="planData.repeatCount" class="input_repeat_num" min="0" max="31" />
+                  <span>{{ planData.repeatCycle }}</span>
+                </div>
+              </div>
+            </template>
+
+            <!-- 기록 입력박스 -->
+            <template v-else>
+              <!-- 제목 입력 -->
+              <input v-model="recordData.title" type="text" placeholder="제목을 입력해주세요." maxlength="30" class="input_title" />
+
+              <!-- 시간 입력 -->
+              <div class="time_box">
+                <div>
+                  <label>시간</label>
+                  <input v-model="recordData.date" type="datetime-local" class="input_time" />
+                </div>
+              </div>
+              <div v-if="selectedCate.idx === 6">
+                <label>사진</label>
+                <div>
+                  <div v-if="recordData.previewUrl">
+                    <img :src="recordData.previewUrl" alt="preview" class="preview_img" />
+                  </div>
+                  <label class="custom_file_btn">
+                    이미지 선택
+                    <input type="file" accept="image/*" @change="handleFileChange" class="hidden_file_input" />
+                  </label>
+                </div>
+              </div>
+
+              <!-- 메모 입력 -->
+              <div>
+                <label>메모</label>
+                <textarea v-model="recordData.memo" placeholder="메모를 입력해주세요." class="textarea_memo" />
+              </div>
+            </template>
+          </div>
+
+          <div class="btn_box">
+            <button @click="closeModal" class="cancel_btn">취소</button>
+            <button @click="" class="save_btn">저장</button>
+          </div>
         </div>
       </div>
     </div>
@@ -542,6 +615,29 @@ watch([startTime, endTime], ([start, end]) => {
   margin-right: 7px;
   font-size: 14px;
   text-align: center;
+}
+
+.preview_img {
+  width: 300px;
+  margin-bottom: 10px;
+}
+.custom_file_btn {
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-size: 14px !important;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100px;
+  text-align: center;
+  border: 1px solid var(--gray300);
+}
+
+.custom_file_btn:hover {
+  background-color: var(--gray300);
+}
+
+.hidden_file_input {
+  display: none;
 }
 
 .btn_box {

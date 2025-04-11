@@ -53,28 +53,33 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useRecordCategoryStore } from '../../stores/useRecordCategoryStore.js'
+import { useCategoryStore } from '../../stores/useCategoryStore.js'
 import CategoryItem from './components/CategoryItem.vue'
 
 const router = useRouter()
-const store = useRecordCategoryStore()
+const store = useCategoryStore()
 
 const showCreateModal = ref(false)
 const newCategory = ref({ name: '', color: '#00bcd4' })
 
-const categories = computed(() => store.categories)
+// ✅ 변경된 스토어 상태 참조
+const categories = computed(() => store.recordCategories)
+
+// ✅ 색상 배열은 그대로 유지
 const colors = ['#00bcd4', '#e91e63', '#4caf50', '#9e9e9e', '#ff9800', '#673ab7', '#3f51b5', '#795548']
 
-const createCategory = () => {
+// ✅ 저장 함수도 store 액션에 type을 넘겨줌
+const createCategory = async () => {
   if (newCategory.value.name.trim()) {
-    store.addCategory({ ...newCategory.value })
+    await store.addCategory('DAILY_RECORD', { ...newCategory.value })
     showCreateModal.value = false
     newCategory.value = { name: '', color: '#00bcd4' }
   }
 }
 
+// ✅ 수정 페이지로 이동
 const editCategory = (index) => {
-  const category = store.getCategory(index)
+  const category = store.recordCategories[index]
   router.push({
     path: '/admin/category/record/fix',
     query: {
@@ -84,9 +89,11 @@ const editCategory = (index) => {
   })
 }
 
-const deleteCategory = (index) => {
-  if (confirm(`${store.categories[index].name} 카테고리를 삭제하시겠습니까?`)) {
-    store.deleteCategory(index)
+// ✅ 삭제도 type과 함께 store로 전달
+const deleteCategory = async (index) => {
+  const category = store.recordCategories[index]
+  if (confirm(`${category.name} 카테고리를 삭제하시겠습니까?`)) {
+    await store.deleteCategory('DAILY_RECORD', category)
   }
 }
 </script>

@@ -8,6 +8,7 @@ const categories = ref([
   { id: 1, name: '일정 카테고리', icon: '📅', route: '/admin/category/schedule' },
   { id: 2, name: '기록 카테고리', icon: '📄', route: '/admin/category/record' },
   { id: 3, name: '게시판 카테고리', icon: '📋', route: '/admin/category/board' },
+  { id: 4, name: '게시판 종류', icon: '🗂️', route: '/admin/category/boardtype' }
 ]);
 
 const handleClick = (category) => {

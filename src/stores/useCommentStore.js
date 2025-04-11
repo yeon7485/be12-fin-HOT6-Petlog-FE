@@ -9,7 +9,7 @@ export const useCommentStore = defineStore("comment", () => {
       {
         id: 1,
         postId,
-        author: "댓글작성",
+        writer: "댓글작성",
         date: "24.8.10",
         text: "저희집 콩이가 더 귀엽네유",
         editable: true,
@@ -17,7 +17,7 @@ export const useCommentStore = defineStore("comment", () => {
       {
         id: 2,
         postId,
-        author: "닉네임",
+        writer: "닉네임",
         date: "24.8.10",
         text: "뒤에 사료값 2배는 뭔가요 ㅋㅋ",
         editable: true,
@@ -29,7 +29,7 @@ export const useCommentStore = defineStore("comment", () => {
     const newComment = {
       id: Date.now(),
       postId: comment.postId,
-      author: "현재 사용자",
+      writer: "현재 사용자",
       date: new Date().toLocaleDateString("ko-KR", {
         year: "2-digit",
         month: "numeric",

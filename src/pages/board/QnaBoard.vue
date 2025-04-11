@@ -21,8 +21,8 @@ const filteredQuestions = computed(() => {
   return questionStore.questions.filter(question => {
     return (
       question.title.toLowerCase().includes(q) ||
-      question.author.toLowerCase().includes(q) ||
-      question.content.toLowerCase().includes(q) ||
+      question.writer.toLowerCase().includes(q) ||
+      question.contents.toLowerCase().includes(q) ||
       question.tags.some(tag => tag.toLowerCase().includes(q))
     )
   })

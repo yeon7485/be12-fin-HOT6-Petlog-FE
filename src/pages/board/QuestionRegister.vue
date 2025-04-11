@@ -19,7 +19,7 @@ const selectPetCard = () => {
 
 const form = ref({
   title: '',
-  content: '',
+  contents: '',
   tags: '',
   file: null,
 })
@@ -31,7 +31,7 @@ onMounted(async () => {
     const target = store.getQuestionById(questionId)
     if (target) {
       form.value.title = target.title
-      form.value.content = target.content
+      form.value.contents = target.contents
       form.value.tags = target.tags.join(', ')
     }
   }
@@ -56,9 +56,9 @@ const handleSubmit = () => {
 
   const questionData = {
     title: form.value.title,
-    content: form.value.content,
+    contents: form.value.contents,
     tags: tagsArray,
-    author: '닉네임',
+    writer: '닉네임',
     date: new Date().toLocaleDateString('ko-KR'),
     status: '미해결',     
     commentCount: 0,
@@ -88,7 +88,7 @@ const handleSubmit = () => {
 
       <div class="form_group">
         <label for="content">내용</label>
-        <textarea id="content" v-model="form.content" rows="10" required></textarea>
+        <textarea id="content" v-model="form.contents" rows="10" required></textarea>
       </div>
 
       <div class="form_group">

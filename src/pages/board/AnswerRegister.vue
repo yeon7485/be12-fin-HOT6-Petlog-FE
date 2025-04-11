@@ -2,21 +2,28 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAnswerStore } from '/src/stores/useAnswerStore'
+import { useQuestionStore } from '/src/stores/useQuestionStore'
 
 const router = useRouter()
 const route = useRoute()
-const answerStore = useAnswerStore()
 
-const isEdit = !!route.params.id
-const answerId = Number(route.params.id)
+const answerStore = useAnswerStore()
+const questionStore = useQuestionStore()
+
+const isEdit = !!route.params.answerId 
+const answerId = Number(route.params.answerId)
 const questionId = Number(route.params.questionId)
 
 const content = ref('')
 const fileName = ref('')
 const previewImage = ref('')
 const originalImage = ref('')
+const question = ref(null)
 
 onMounted(async () => {
+  // 질문 데이터 불러오기
+  question.value = await questionStore.getQuestionById(questionId)
+
   if (isEdit) {
     await answerStore.fetchAnswersByQuestionId(questionId)
     const target = answerStore.getAnswerById(answerId)
@@ -27,6 +34,25 @@ onMounted(async () => {
     }
   }
 })
+
+const handleCancel = () => {
+  const confirmed = window.confirm('작성 중인 내용을 취소하시겠습니까?')
+  if (confirmed) {
+    router.push(`/board/qna/${questionId}`) 
+  }
+}
+
+const handleSubmit = () => {
+  const confirmed = window.confirm(isEdit ? '답변을 수정하시겠습니까?' : '답변을 등록하시겠습니까?')
+  if (confirmed) {
+    if (isEdit) {
+      alert('답변이 수정되었습니다.')
+    } else {
+      alert('답변이 등록되었습니다.')
+    }
+    router.push(`/board/qna/${questionId}`) 
+  }
+}
 </script>
 
 <template>
@@ -34,15 +60,15 @@ onMounted(async () => {
     <div class="post_box">
       <div class="post_title">
         <img class="icon_img" src="/src/assets/icons/question.png" alt="질문 아이콘" />
-        <span class="text">강아지 중성화 수술 고민입니다.</span>
+        <span class="text">{{ question?.title || '질문 제목' }}</span>
       </div>
 
       <div class="user_info_line">
         <div class="user_info">
           <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
-          <span class="nickname">닉네임</span>
+          <span class="nickname">{{ question?.author || '작성자' }}</span>
           <span class="divider">ㅣ</span>
-          <span class="date">24.8.10</span>
+          <span class="date">{{ question?.date || '날짜' }}</span>
         </div>
       </div>
 
@@ -51,11 +77,10 @@ onMounted(async () => {
       <div class="content_area">
         <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
         <p class="description">
-          저희 강아지가 말티즈(여아) 이제 1살이 되었고 주변에서 중성화 수술을 시켜야한다고 하는데 꼭 시켜야하는 건가요?
+          {{ question?.content || '질문 내용' }}
         </p>
         <div class="hashtags">
-          <span># 강아지</span>
-          <span># 강아지 중성화</span>
+          <span v-for="tag in question?.tags" :key="tag"># {{ tag }}</span>
         </div>
       </div>
     </div>
@@ -98,7 +123,6 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .container {

@@ -3,7 +3,7 @@
     <div class="post_header">
       <div class="user_info">
         <img class="avatar" src="/src/assets/images/dog1.png" alt="유저 아바타" />
-        <span class="author">{{ question.author }}</span>
+        <span class="author">{{ question.writer }}</span>
         <span class="date">{{ question.date }}</span>
       </div>
     </div>
@@ -20,7 +20,7 @@
         {{ question.title }}
       </router-link>
 
-      <p class="post_content">{{ question.content }}</p>
+      <p class="post_content">{{ question.contents }}</p>
 
       <div class="post_tags">
         <span v-for="tag in question.tags" :key="tag" class="tag"># {{ tag }}</span>

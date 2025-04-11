@@ -1,5 +1,5 @@
 <template>
-  <div class="schedule-container">
+  <div class="chatroom-info-container">
     <!-- 뒤로가기 -->
     <ChatHeader title="서울숲 부모 페이지 연동 하세요" />
 
@@ -37,10 +37,9 @@
 import { useChatStore } from "../../stores/useChatStroe";
 import { onMounted } from "vue";
 
-import { useRouter, useRoute } from "vue-router";
+import { useRoute } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
 import ScheduleCard from "./components/ScheduleCard.vue";
-const router = useRouter();
 const route = useRoute();
 const chatroomIdx = route.params.chatroomIdx;
 const chatStore = useChatStore();
@@ -52,18 +51,7 @@ onMounted(() => {
 
 <style scoped>
 @import "./chat-base.css";
-.schedule-container {
-  width: 100%;
-  max-width: 720px;
-  margin: 40px auto;
-  background-color: #f4eee7;
-  border-radius: 20px;
-  padding: 32px 0; /* 상하만 적용 */
 
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
 /* 💡 내부 공통 여백용 래퍼 (좌우 여백 130px) */
 .schedule-inner {
   padding: 0 130px;
@@ -109,7 +97,7 @@ onMounted(() => {
   flex-direction: column;
   gap: 12px;
   /* 스크롤 동작을 위해 높이 추가 */
-  max-height: 320px; /* ✅ 필요에 따라 조정 */
+  max-height: 720px; /* ✅ 필요에 따라 조정 */
   overflow-y: auto;
 
   /* 부드러운 스크롤 (선택) */

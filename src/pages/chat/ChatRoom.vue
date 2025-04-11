@@ -1,113 +1,16 @@
 <template>
   <div class="chatroom-container">
-    <!-- <div class="chatroom-back">
-      <img src="../../assets/images/Group.svg" />
-      <span>목록으로</span>
-    </div> -->
-
     <div class="chatroom">
       <!-- 채팅방 헤더 -->
       <ChatHeader :title="roomTitle" :showMenu="true" :roomIdx="chatroomIdx" />
 
-      <!-- ✅ 스크롤 대상 메시지 영역 -->
-      <div class="scrollable chatroom-messages">
-        <div class="chat-message my-message">
-          <span class="chat-time">10:46</span>
-          <!-- 시간 왼쪽 -->
-          <div class="chat-bubble">다들 시간은</div>
-        </div>
-        <div class="chat-message my-message">
-          <span class="chat-time">10:46</span>
-          <!-- 시간 왼쪽 -->
-          <div class="chat-bubble">
-            언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가
-            괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요? 언제가 괜찮으세요?
-          </div>
-        </div>
+      <ChatMessages
+        :messages="chatStore.messages"
+        :currentUserId="currentUserId"
+      />
 
-        <!-- 반려동물 카드 메시지 -->
-        <div class="chat-message pet-message my-message">
-          <div class="pet-chat-card">
-            <img
-              src="../../assets/images/Ellipse 12.png"
-              class="pet-chat-img"
-            />
-            <div class="pet-chat-info">
-              <div class="pet-chat-name">봄 <span class="gender">♀</span></div>
-              <div class="pet-chat-detail">시바견 / 3살</div>
-            </div>
-          </div>
-          <span class="chat-time">10:50</span>
-        </div>
-
-        <div class="chat-message other-message">
-          <div class="user-info">
-            <img src="../../assets/images/Ellipse 12.png" class="profile-img" />
-            <div class="username">짱봄</div>
-          </div>
-          <div class="chat-message other-message">
-            <div class="chat-bubble">저는 언제든 괜찮습니다!</div>
-            <span class="chat-time">10:46</span>
-            <!-- 시간 왼쪽 -->
-          </div>
-          <div class="chat-message other-message">
-            <div class="chat-bubble">ㅎㅎ</div>
-            <span class="chat-time">10:46</span>
-            <!-- 시간 왼쪽 -->
-          </div>
-        </div>
-
-        <div class="chat-message schedule-message my-message">
-          <div class="schedule-chat-card">
-            <div class="schedule-title">병원 검진 예약</div>
-            <div class="schedule-datetime">3.27 11:00</div>
-            <div class="schedule-location">서울강남병원</div>
-          </div>
-          <span class="chat-time">10:47</span>
-        </div>
-
-        <div class="chat-message schedule-message other-message">
-          <div class="schedule-chat-card">
-            <div class="schedule-title">병원 검진 예약</div>
-            <div class="schedule-datetime">3.27 11:00</div>
-            <div class="schedule-location">서울강남병원</div>
-          </div>
-          <span class="chat-time">10:47</span>
-        </div>
-
-        <!-- 반려동물 카드 메시지 -->
-        <div class="chat-message pet-message other-message">
-          <div
-            class="pet-chat-card"
-            @click="
-              selectedPet = examplePet;
-              petDetailModalOpen = true;
-            "
-          >
-            <img
-              src="../../assets/images/Ellipse 12.png"
-              class="pet-chat-img"
-            />
-            <div class="pet-chat-info">
-              <div class="pet-chat-name">봄 <span class="gender">♀</span></div>
-              <div class="pet-chat-detail">시바견 3살</div>
-            </div>
-          </div>
-          <span class="chat-time">10:50</span>
-        </div>
-      </div>
-
-      <!-- 하단 입력창 -->
-      <div class="chatroom-input">
-        <!-- ✅ 펫 아이콘 버튼 -->
-        <button class="chatroom-pet-icon" @click="isModalOpen = true">
-          <img src="../../assets/images/mdi_pets.svg" alt="펫 버튼" />
-        </button>
-        <input type="text" placeholder="메시지 입력" />
-        <button class="chatroom-send">
-          <img src="../../assets/images/lucide_send.png" alt="보내기" />
-        </button>
-      </div>
+      <!-- 입력 영역 -->
+      <ChatInput @open-pet-modal="isModalOpen = true" />
     </div>
   </div>
 
@@ -176,12 +79,20 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
 import { useChatStore } from "../../stores/useChatStroe";
+import ChatMessages from "./components/ChatMessages.vue";
+import ChatInput from "./components/ChatInput.vue";
 const chatStore = useChatStore();
 
 const route = useRoute();
 const chatroomIdx = route.params.chatroomIdx;
 const petDetailModalOpen = ref(false);
 const selectedPet = ref(null);
+
+const currentUserId = 1; // 실제론 로그인된 유저 ID
+
+onMounted(() => {
+  chatStore.getRoomInfo(chatroomIdx);
+});
 
 // 더미 테스트용 객체 예시 (실제 데이터와 연결 시 수정 가능)
 const examplePet = {
@@ -262,88 +173,6 @@ const roomTitle = computed(() => chatStore.chatRoomInfo?.title || "채팅방");
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-}
-
-/* ✅ 메시지 영역: 스크롤만 여기! */
-.chatroom-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.chat-message {
-  margin-bottom: 12px;
-  max-width: 100%;
-}
-
-.my-message {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.my-message .chat-bubble {
-  background-color: #6a0104;
-  color: #fff;
-  line-height: 160%;
-  border-radius: 12px;
-  padding: 8px 12px;
-  max-width: 60%; /* ✅ 최대 너비 제한 (줄바꿈 유도) */
-  word-wrap: break-word; /* ✅ 단어 너무 길면 줄바꿈 */
-  text-align: left;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: inline-block; /* ✅ 내용 기반 width */
-}
-
-/* 상대방 말풍선 */
-.user-info {
-  display: flex;
-  align-items: center; /* 세로 중앙 정렬 */
-  gap: 8px; /* 이미지와 닉네임 사이 여백 */
-  margin-bottom: 4px; /* 아래 말풍선과의 간격 */
-}
-.username {
-  align-self: flex-end;
-  margin-top: 2px;
-}
-/* 상대 메시지는 왼쪽 */
-.other-message {
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-
-.other-message .chat-bubble {
-  background-color: #fff;
-  color: #000;
-  line-height: 160%;
-  border-radius: 12px;
-  padding: 8px 12px;
-  max-width: 60%;
-  word-wrap: break-word;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: inline-block;
-}
-
-.chat-time {
-  font-size: 12px;
-  color: #666;
-  margin: 0 4px;
-  align-self: flex-end;
-}
-
-.username {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.other-message .profile-img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  margin-right: 8px;
 }
 
 /* ✅ 채팅방 내 반려동물 카드 메시지 */
@@ -436,45 +265,6 @@ const roomTitle = computed(() => chatStore.chatRoomInfo?.title || "채팅방");
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-}
-
-/* 입력창 */
-.chatroom-input {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  border-top: 1px solid #ddd;
-  background: #fff;
-}
-
-.chatroom-input input {
-  flex: 1;
-  border: none;
-  background: #f0f0f0;
-  border-radius: 30px;
-  padding: 10px 16px;
-  font-size: 14px;
-  outline: none;
-}
-
-.chatroom-send {
-  all: unset;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-/* ✅ 펫 아이콘 버튼 */
-.chatroom-pet-icon {
-  all: unset;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-.chatroom-pet-icon img {
-  width: 24px;
-  height: 24px;
 }
 
 /* ✅ 모달 */

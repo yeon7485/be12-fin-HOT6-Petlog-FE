@@ -57,7 +57,7 @@ const recordData = reactive({
 
 const closeModal = () => {
   selectedPet.value = pets.value[0];
-  scheduleStore.type = "PLAN";
+  scheduleStore.type = "SCHEDULE";
   selectedCate.value = {};
   props.onClose();
 };
@@ -87,7 +87,7 @@ const selectType = (type) => {
   isCateDropdownOpen.value = false;
   selectedCate.value = {};
 
-  if (type === "PLAN") {
+  if (type === "SCHEDULE") {
     Object.assign(planData, {
       title: "",
       startTime: "",
@@ -97,7 +97,7 @@ const selectType = (type) => {
       repeatCycle: "일",
       repeatCount: 1,
     });
-  } else if (type === "RECORD") {
+  } else if (type === "DAILY_RECORD") {
     Object.assign(recordData, {
       title: "",
       date: "",
@@ -171,8 +171,20 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
           <!-- 일정/기록, 카테고리 선택 -->
           <div class="content_header">
             <div class="type_box">
-              <div class="type_btn" :class="{ active: scheduleStore.type === 'PLAN' }" @click="selectType('PLAN')">일정</div>
-              <div class="type_btn" :class="{ active: scheduleStore.type === 'RECORD' }" @click="selectType('RECORD')">기록</div>
+              <div
+                class="type_btn"
+                :class="{ active: scheduleStore.type === 'SCHEDULE' }"
+                @click="selectType('SCHEDULE')"
+              >
+                일정
+              </div>
+              <div
+                class="type_btn"
+                :class="{ active: scheduleStore.type === 'DAILY_RECORD' }"
+                @click="selectType('DAILY_RECORD')"
+              >
+                기록
+              </div>
             </div>
             <!-- 카테고리 선택 드롭다운 -->
             <div class="category_box">
@@ -191,7 +203,9 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
               <div v-if="isCateDropdownOpen" class="cate_dropdown_menu" @click.stop>
                 <ul>
                   <li
-                    v-for="option in scheduleStore.type === 'PLAN' ? planCategories : recordCategories"
+                    v-for="option in scheduleStore.type === 'SCHEDULE'
+                      ? planCategories
+                      : recordCategories"
                     :key="option.name"
                     @click="selectCate(option)"
                   >
@@ -206,9 +220,14 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
           </div>
 
           <div class="input_box">
-            <template v-if="scheduleStore.type === 'PLAN'">
+            <template v-if="scheduleStore.type === 'SCHEDULE'">
               <!-- 제목 입력 -->
-              <input v-model="planData.title" type="text" placeholder="제목을 입력해주세요." class="input_title" />
+              <input
+                v-model="planData.title"
+                type="text"
+                placeholder="제목을 입력해주세요."
+                class="input_title"
+              />
 
               <!-- 시간 입력 -->
               <div class="time_box">
@@ -218,7 +237,12 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
                 </div>
                 <div>
                   <label>종료 시간</label>
-                  <input v-model="planData.endTime" :min="planData.startTime" type="datetime-local" class="input_time" />
+                  <input
+                    v-model="planData.endTime"
+                    :min="planData.startTime"
+                    type="datetime-local"
+                    class="input_time"
+                  />
                 </div>
               </div>
 
@@ -231,7 +255,11 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
               <!-- 메모 입력 -->
               <div>
                 <label>메모</label>
-                <textarea v-model="planData.memo" placeholder="메모를 입력해주세요." class="textarea_memo" />
+                <textarea
+                  v-model="planData.memo"
+                  placeholder="메모를 입력해주세요."
+                  class="textarea_memo"
+                />
               </div>
 
               <!-- 반복 설정 -->
@@ -245,13 +273,24 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
                     <input v-model="planData.repeat_end_date" type="date" class="input_time" />
                   </div>
 
-                  <v-radio-group hide-details inline v-model="planData.repeatCycle" class="radio_btn">
+                  <v-radio-group
+                    hide-details
+                    inline
+                    v-model="planData.repeatCycle"
+                    class="radio_btn"
+                  >
                     <v-radio label="일" value="일" color="#757575" class="radio_item"></v-radio>
                     <v-radio label="주" value="주" color="#757575" class="radio_item"></v-radio>
                     <v-radio label="월" value="월" color="#757575" class="radio_item"></v-radio>
                   </v-radio-group>
 
-                  <input type="number" v-model="planData.repeatCount" class="input_repeat_num" min="0" max="31" />
+                  <input
+                    type="number"
+                    v-model="planData.repeatCount"
+                    class="input_repeat_num"
+                    min="0"
+                    max="31"
+                  />
                   <span>{{ planData.repeatCycle }}</span>
                 </div>
               </div>
@@ -260,7 +299,13 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
             <!-- 기록 입력박스 -->
             <template v-else>
               <!-- 제목 입력 -->
-              <input v-model="recordData.title" type="text" placeholder="제목을 입력해주세요." maxlength="30" class="input_title" />
+              <input
+                v-model="recordData.title"
+                type="text"
+                placeholder="제목을 입력해주세요."
+                maxlength="30"
+                class="input_title"
+              />
 
               <!-- 시간 입력 -->
               <div class="time_box">
@@ -277,7 +322,12 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
                   </div>
                   <label class="custom_file_btn">
                     이미지 선택
-                    <input type="file" accept="image/*" @change="handleFileChange" class="hidden_file_input" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      @change="handleFileChange"
+                      class="hidden_file_input"
+                    />
                   </label>
                 </div>
               </div>
@@ -285,7 +335,11 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
               <!-- 메모 입력 -->
               <div>
                 <label>메모</label>
-                <textarea v-model="recordData.memo" placeholder="메모를 입력해주세요." class="textarea_memo" />
+                <textarea
+                  v-model="recordData.memo"
+                  placeholder="메모를 입력해주세요."
+                  class="textarea_memo"
+                />
               </div>
             </template>
           </div>

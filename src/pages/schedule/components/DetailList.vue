@@ -18,13 +18,27 @@ const handleItemClick = (itemIdx) => {
 
 <template>
   <div class="type_box">
-    <div class="type_btn" :class="{ active: scheduleStore.type === 'PLAN' }" @click="selectType('PLAN')">일정</div>
-    <div class="type_btn" :class="{ active: scheduleStore.type === 'RECORD' }" @click="selectType('RECORD')">기록</div>
+    <div
+      class="type_btn"
+      :class="{ active: scheduleStore.type === 'SCHEDULE' }"
+      @click="selectType('SCHEDULE')"
+    >
+      일정
+    </div>
+    <div
+      class="type_btn"
+      :class="{ active: scheduleStore.type === 'DAILY_RECORD' }"
+      @click="selectType('DAILY_RECORD')"
+    >
+      기록
+    </div>
   </div>
 
   <div class="schedule_list">
     <ScheduleCard
-      v-for="(event, index) in scheduleStore.type === 'PLAN' ? scheduleStore.plans : scheduleStore.records"
+      v-for="(event, index) in scheduleStore.type === 'SCHEDULE'
+        ? scheduleStore.plans
+        : scheduleStore.records"
       :key="index"
       :item="event"
       @click="handleItemClick(event.idx)"

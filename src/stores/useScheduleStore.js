@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 export const useScheduleStore = defineStore("schedule", {
   state: () => ({
     currentDate: "",
-    type: "PLAN",
+    type: "SCHEDULE",
     plans: [
       {
         idx: 1,

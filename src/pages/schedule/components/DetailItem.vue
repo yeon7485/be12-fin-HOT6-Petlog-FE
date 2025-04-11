@@ -1,19 +1,31 @@
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 import { formatTimeRange } from "../../../utils/dateFormat";
+import DeleteModal from "../../common/components/DeleteModal.vue";
 
 const route = useRoute();
 const router = useRouter();
 const scheduleStore = useScheduleStore();
 
-const item = scheduleStore.getItemDetail(route.params.id);
-
+const itemIdx = Number(route.params.id);
+const item = scheduleStore.getItemDetail(itemIdx);
 const timeText = computed(() => formatTimeRange(item.startAt, item.endAt));
+
+const isDeleteModalOpen = ref(false);
 
 const handleBackClick = () => {
   router.push("/schedule/detail");
+};
+
+const handleDeleteClick = () => {
+  console.log("s");
+  isDeleteModalOpen.value = true;
+};
+
+const onCloseModal = () => {
+  isDeleteModalOpen.value = false;
 };
 </script>
 
@@ -33,7 +45,7 @@ const handleBackClick = () => {
         <div>
           <img src="/src/assets/icons/share.svg" alt="share" class="header_icon" />
           <img src="/src/assets/icons/edit.svg" alt="edit" class="header_icon" />
-          <img src="/src/assets/icons/delete.svg" alt="delete" class="header_icon" />
+          <img src="/src/assets/icons/delete.svg" alt="delete" class="header_icon" @click="handleDeleteClick" />
         </div>
       </div>
       <h2 class="title">{{ item.title }}</h2>
@@ -59,6 +71,8 @@ const handleBackClick = () => {
       </div>
     </div>
   </div>
+
+  <DeleteModal v-if="isDeleteModalOpen" :onClose="onCloseModal" :itemIdx="itemIdx" />
 </template>
 
 <style scoped>
@@ -69,6 +83,7 @@ const handleBackClick = () => {
   cursor: pointer;
   margin-bottom: 15px;
 }
+
 .back_img {
   width: 17px;
   height: 17px;
@@ -85,7 +100,7 @@ const handleBackClick = () => {
   border-radius: 16px;
   background: #fff;
   box-shadow: 2px 2px 3px 0px rgba(0, 0, 0, 0.15);
-  padding: 18px 25px;
+  padding: 20px 30px;
 }
 
 .detail_header {
@@ -101,9 +116,13 @@ const handleBackClick = () => {
 }
 
 .header_icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
+}
+
+.category_box {
+  font-size: 14px;
 }
 
 .color_circle {

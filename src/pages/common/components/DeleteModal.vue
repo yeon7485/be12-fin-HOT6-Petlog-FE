@@ -55,7 +55,7 @@ const handleDeleteClick = () => {
 
 .modal_content {
   background-color: var(--background-color);
-  padding: 28px 31px;
+  padding: 25px;
   width: 350px;
   border-radius: 20px;
   display: flex;
@@ -103,6 +103,7 @@ const handleDeleteClick = () => {
   border-radius: 8px;
   border-width: 1px;
   border-style: solid;
+  transition: all 0.3s;
 }
 
 .cancel {

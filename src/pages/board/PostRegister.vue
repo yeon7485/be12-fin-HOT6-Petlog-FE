@@ -23,7 +23,7 @@ const form = ref({
   boardType: boardTypeFromRoute || '',
   category: '',
   title: '',
-  content: '',
+  contents: '',
   images: []
 })
 
@@ -37,7 +37,7 @@ onMounted(async () => {
       form.value.boardType = target.boardType || boardTypeFromRoute
       form.value.category = target.category || ''
       form.value.title = target.title || ''
-      form.value.content = target.content || target.contents || ''
+      form.value.contents = target.contents || target.contents || ''
     }
   }
 })
@@ -115,7 +115,7 @@ const selectPetCard = () => {
 
     <div class="form_group">
       <label>내용</label>
-      <textarea v-model="form.content" placeholder="내용을 입력해주세요." rows="8" />
+      <textarea v-model="form.contents" placeholder="내용을 입력해주세요." rows="8" />
     </div>
 
     <div class="form_group">

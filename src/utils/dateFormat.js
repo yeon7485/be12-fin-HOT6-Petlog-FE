@@ -20,3 +20,9 @@ export function formatTimeRange(startAt, endAt) {
     return `${format(start, "M월 d일 HH:mm")} ~ ${format(end, "M월 d일 HH:mm")}`;
   }
 }
+
+export function formatToMonthDay(dateString) {
+  if (!dateString) return "";
+  const date = parseISO(dateString);
+  return format(date, "M월 d일");
+}

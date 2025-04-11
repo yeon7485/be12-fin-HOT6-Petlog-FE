@@ -70,6 +70,7 @@ export const useScheduleStore = defineStore("schedule", {
       recurring: true,
       repeatCycle: "일",
       repeatCount: 3,
+      repeatEndAt: "2025-04-07T12:00:00",
       startAt: "2025-04-07T11:00:00",
       endAt: "2025-04-07T12:00:00",
       placeId: "api_place_id",

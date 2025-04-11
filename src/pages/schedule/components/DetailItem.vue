@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
-import { formatTimeRange } from "../../../utils/dateFormat";
+import { formatTimeRange, formatToMonthDay } from "../../../utils/dateFormat";
 import DeleteModal from "../../common/components/DeleteModal.vue";
 import EditItem from "./EditItem.vue";
 
@@ -29,13 +29,16 @@ const handleDeleteClick = () => {
   isDeleteModalOpen.value = true;
 };
 
+const onCloseEditMode = () => {
+  isEditMode.value = false;
+};
 const onCloseModal = () => {
   isDeleteModalOpen.value = false;
 };
 </script>
 
 <template>
-  <EditItem v-if="isEditMode" :item="item" />
+  <EditItem v-if="isEditMode" :item="item" :onClose="onCloseEditMode" />
   <div v-else>
     <button class="back_btn" @click="handleBackClick">
       <img src="/src/assets/icons/arrow_left.svg" alt="back" class="back_img" />
@@ -50,8 +53,18 @@ const onCloseModal = () => {
         </div>
         <div>
           <img src="/src/assets/icons/share.svg" alt="share" class="header_icon" />
-          <img @click="handleEditClick" src="/src/assets/icons/edit.svg" alt="edit" class="header_icon" />
-          <img @click="handleDeleteClick" src="/src/assets/icons/delete.svg" alt="delete" class="header_icon" />
+          <img
+            @click="handleEditClick"
+            src="/src/assets/icons/edit.svg"
+            alt="edit"
+            class="header_icon"
+          />
+          <img
+            @click="handleDeleteClick"
+            src="/src/assets/icons/delete.svg"
+            alt="delete"
+            class="header_icon"
+          />
         </div>
       </div>
       <h2 class="title">{{ item.title }}</h2>
@@ -70,9 +83,11 @@ const onCloseModal = () => {
         <p>메모</p>
         <div class="memo_box">{{ item.memo }}</div>
       </div>
-      <div class="content_box">
-        <p>반복 여부</p>
+      <div v-if="item.recurring" class="content_box">
+        <p>반복</p>
         <span>{{ item.repeatCount + item.repeatCycle }}마다 반복</span>
+        <p class="repeat_end">반복 종료</p>
+        <span>{{ formatToMonthDay(item.repeatEndAt) }}</span>
       </div>
     </div>
   </div>
@@ -105,7 +120,7 @@ const onCloseModal = () => {
   border-radius: 16px;
   background: #fff;
   box-shadow: 2px 2px 3px 0px rgba(0, 0, 0, 0.15);
-  padding: 20px 30px;
+  padding: 20px 30px 30px;
 }
 
 .detail_header {
@@ -163,5 +178,9 @@ const onCloseModal = () => {
 
 .v_switch {
   height: 60px;
+}
+
+.repeat_end {
+  margin-top: 23px;
 }
 </style>

@@ -72,6 +72,7 @@ const handleItemClick = (itemIdx) => {
   display: flex;
   flex-direction: column;
   gap: 39px;
-  margin: 29px 0;
+  padding: 29px 0;
+  overflow-y: auto;
 }
 </style>

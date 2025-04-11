@@ -5,7 +5,6 @@ import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
 import "./reset.css";
 import "./style.css";
-import "./fullcalendar.css";
 
 const pinia = createPinia();
 

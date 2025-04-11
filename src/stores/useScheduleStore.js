@@ -61,11 +61,30 @@ export const useScheduleStore = defineStore("schedule", {
         image: "/src/assets/images/cat2.jpg",
       },
     ],
+    planDetail: {
+      idx: 2,
+      title: "병원 검진 예약 병원 검진 예약",
+      color: "#00C9CD",
+      category: "병원",
+      fromChat: false,
+      recurring: true,
+      repeatCycle: "일",
+      repeatCount: 3,
+      startAt: "2025-04-07T11:00:00",
+      endAt: "2025-04-07T12:00:00",
+      placeId: "api_place_id",
+      placeName: "서울멍냥병원",
+      memo: "정기검진",
+    },
   }),
 
   actions: {
     setCurrentDate(date) {
       this.currentDate = date;
+    },
+    getItemDetail(idx) {
+      console.log(idx);
+      return this.planDetail;
     },
   },
 });

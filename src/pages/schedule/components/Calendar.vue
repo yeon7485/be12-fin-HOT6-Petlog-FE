@@ -112,7 +112,7 @@ const handleDateClick = (date) => {
 const handleEventClick = (event) => {
   scheduleStore.setCurrentDate(event.date);
   //props.onDetail();
-  router.push("/schedule/detail");
+  router.push(`/schedule/detail/${event.idx}`);
 };
 </script>
 

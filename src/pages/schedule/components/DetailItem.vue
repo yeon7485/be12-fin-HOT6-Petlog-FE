@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 import { formatTimeRange } from "../../../utils/dateFormat";
 import DeleteModal from "../../common/components/DeleteModal.vue";
+import EditItem from "./EditItem.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -13,14 +14,18 @@ const itemIdx = Number(route.params.id);
 const item = scheduleStore.getItemDetail(itemIdx);
 const timeText = computed(() => formatTimeRange(item.startAt, item.endAt));
 
+const isEditMode = ref(false);
 const isDeleteModalOpen = ref(false);
 
 const handleBackClick = () => {
   router.push("/schedule/detail");
 };
 
+const handleEditClick = () => {
+  isEditMode.value = true;
+};
+
 const handleDeleteClick = () => {
-  console.log("s");
   isDeleteModalOpen.value = true;
 };
 
@@ -30,7 +35,8 @@ const onCloseModal = () => {
 </script>
 
 <template>
-  <div>
+  <EditItem v-if="isEditMode" :item="item" />
+  <div v-else>
     <button class="back_btn" @click="handleBackClick">
       <img src="/src/assets/icons/arrow_left.svg" alt="back" class="back_img" />
       <span>목록으로</span>
@@ -44,8 +50,8 @@ const onCloseModal = () => {
         </div>
         <div>
           <img src="/src/assets/icons/share.svg" alt="share" class="header_icon" />
-          <img src="/src/assets/icons/edit.svg" alt="edit" class="header_icon" />
-          <img src="/src/assets/icons/delete.svg" alt="delete" class="header_icon" @click="handleDeleteClick" />
+          <img @click="handleEditClick" src="/src/assets/icons/edit.svg" alt="edit" class="header_icon" />
+          <img @click="handleDeleteClick" src="/src/assets/icons/delete.svg" alt="delete" class="header_icon" />
         </div>
       </div>
       <h2 class="title">{{ item.title }}</h2>
@@ -66,7 +72,6 @@ const onCloseModal = () => {
       </div>
       <div class="content_box">
         <p>반복 여부</p>
-
         <span>{{ item.repeatCount + item.repeatCycle }}마다 반복</span>
       </div>
     </div>

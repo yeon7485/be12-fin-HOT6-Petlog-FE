@@ -38,6 +38,7 @@ import Record from "../pages/admin/RecordCategory.vue";
 import RecordFix from "../pages/admin/ModifyRecordCategory.vue";
 import Board from "../pages/admin/BoardCategory.Vue";
 import BoardFix from "../pages/admin/ModifyBoardCategory.vue";
+import BoardTypeCategory from "../pages/admin/BoardTypeCategory.vue";
 
 import Login from "../pages/user/Login.vue";
 import Signup from "../pages/user/Signup.vue";
@@ -154,6 +155,7 @@ const routes = [
       { path: "category/record/fix", component: RecordFix },
       { path: "category/board", component: Board },
       { path: "category/board/fix", component: BoardFix },
+      { path: "category/boardtype", component: BoardTypeCategory },
     ],
   },
 ];

@@ -34,23 +34,23 @@ const scheduleStore = useScheduleStore();
 .category_box {
   display: flex;
   align-items: center;
-  font-size: 0.875rem;
-  gap: 0.3125rem;
-  margin: 0 0 0.5rem 0.3125rem;
+  font-size: 14px;
+  gap: 5px;
+  margin: 0 0 8px 5px;
 }
 
 .color_circle {
-  width: 0.5625rem;
-  height: 0.5625rem;
-  border-radius: 6.1875rem;
+  width: 9px;
+  height: 9px;
+  border-radius: 99px;
 }
 
 .schedule_item {
   width: 100%;
   background-color: #fff;
-  padding: 1.375rem;
-  box-shadow: 0.125rem 0.125rem 0.1875rem 0rem rgba(0, 0, 0, 0.15);
-  border-radius: 1rem;
+  padding: 22px;
+  box-shadow: 2px 2px 3px 0px rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
   transition: all 0.3s;
   cursor: pointer;
 }
@@ -62,18 +62,18 @@ const scheduleStore = useScheduleStore();
 .schedule_time {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.625rem;
+  margin-bottom: 10px;
   font-weight: bold;
 }
 
 .chat_icon {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 18px;
+  height: 18px;
 }
 
 .record_memo {
-  font-size: 0.875rem;
-  margin-top: 0.9375rem;
+  font-size: 14px;
+  margin-top: 15px;
   color: var(--gray600);
   line-height: 140%;
   display: -webkit-box;
@@ -86,6 +86,6 @@ const scheduleStore = useScheduleStore();
 
 .record_img {
   width: 70%;
-  margin-top: 0.625rem;
+  margin-top: 10px;
 }
 </style>

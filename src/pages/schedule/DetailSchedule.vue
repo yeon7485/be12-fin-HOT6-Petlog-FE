@@ -1,18 +1,12 @@
 <script setup>
-import { ref } from "vue";
-import { useScheduleStore } from "../../../stores/useScheduleStore";
-import { formatToKoreanDate } from "../../../utils/dateFormat";
-import ScheduleCard from "./ScheduleCard.vue";
+import { useScheduleStore } from "../../stores/useScheduleStore";
+import { formatToKoreanDate } from "../../utils/dateFormat";
 
 const props = defineProps({
   onClose: Function,
 });
 
 const scheduleStore = useScheduleStore();
-
-const selectType = (type) => {
-  scheduleStore.type = type;
-};
 </script>
 
 <template>
@@ -27,18 +21,7 @@ const selectType = (type) => {
           <img src="/src/assets/images/mdi_pets.svg" alt="paw" class="paw_icon" />
         </div>
       </div>
-      <div class="type_box">
-        <div class="type_btn" :class="{ active: scheduleStore.type === 'PLAN' }" @click="selectType('PLAN')">일정</div>
-        <div class="type_btn" :class="{ active: scheduleStore.type === 'RECORD' }" @click="selectType('RECORD')">기록</div>
-      </div>
-
-      <div class="schedule_list">
-        <ScheduleCard
-          v-for="(event, index) in scheduleStore.type === 'PLAN' ? scheduleStore.plans : scheduleStore.records"
-          :key="index"
-          :item="event"
-        />
-      </div>
+      <router-view></router-view>
     </div>
   </div>
 </template>
@@ -61,36 +44,8 @@ const selectType = (type) => {
   cursor: pointer;
 }
 
-.type_box {
-  display: flex;
-  gap: 10px;
-  align-self: start;
-}
-
-.type_btn {
-  border-radius: 20px;
-  border: 1px solid var(--gray400);
-  font-weight: bold;
-  color: var(--gray600);
-  padding: 10px 14px;
-  cursor: pointer;
-  background-color: #fff;
-}
-
-.type_btn.active {
-  border-color: var(--main-color-brown);
-  color: var(--main-color-brown);
-}
-
 .detail_body {
   padding: 24px;
-}
-
-.schedule_list {
-  display: flex;
-  flex-direction: column;
-  gap: 39px;
-  margin: 29px 0;
 }
 
 .date_box {

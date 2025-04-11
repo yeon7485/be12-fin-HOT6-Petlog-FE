@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from "vue";
-import { startOfMonth, endOfMonth, subMonths, addMonths, getDay, getDate, getDaysInMonth, format, parseISO } from "date-fns";
+import { addMonths, endOfMonth, format, getDay, getDaysInMonth, parseISO, startOfMonth, subMonths } from "date-fns";
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 import { hexToRgba } from "../../../utils/color";
 
@@ -10,6 +11,7 @@ const props = defineProps({
 });
 
 const scheduleStore = useScheduleStore();
+const router = useRouter();
 
 const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const currentDate = new Date();
@@ -95,12 +97,22 @@ const handleRegisterClick = () => {
 };
 
 const handleDateClick = (date) => {
+  const clickedMonth = date.getMonth();
+  const clickedYear = date.getFullYear();
+
+  // 현재 선택된 달이랑 다르면 변경
+  if (clickedMonth !== currentMonth.value || clickedYear !== currentYear.value) {
+    currentMonth.value = clickedMonth;
+    currentYear.value = clickedYear;
+  }
   scheduleStore.setCurrentDate(date);
-  props.onDetail();
+  router.push("/schedule/detail");
 };
 
-const handleEventClick = () => {
-  props.onDetail();
+const handleEventClick = (event) => {
+  scheduleStore.setCurrentDate(event.date);
+  //props.onDetail();
+  router.push(`/schedule/detail/${event.idx}`);
 };
 </script>
 
@@ -150,10 +162,10 @@ const handleEventClick = () => {
           <div
             class="event"
             v-for="event in getEventsForDate(item.date)"
-            :key="event.title"
+            :key="event.idx"
             :style="{ backgroundColor: hexToRgba(event.color, 0.25) }"
             :title="event.title"
-            @click="handleEventClick"
+            @click="handleEventClick(event)"
           >
             {{ event.title }}
           </div>
@@ -268,7 +280,7 @@ const handleEventClick = () => {
 }
 
 .calendar_cell {
-  min-height: 90px;
+  min-height: 110px;
   background-color: #fff;
   position: relative;
   font-size: 14px;
@@ -318,9 +330,8 @@ const handleEventClick = () => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
   margin-top: 1px;
-  padding: 3px 6px;
+  padding: 5px 6px;
   font-size: 12px;
   border-radius: 4px;
   cursor: pointer;

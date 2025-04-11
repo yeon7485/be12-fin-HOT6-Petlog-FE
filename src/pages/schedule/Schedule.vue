@@ -1,9 +1,10 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import SelectPetModal from "../common/components/SelectPetModal.vue";
 import Calendar from "./components/Calendar.vue";
 import NewScheduleModal from "./components/NewScheduleModal.vue";
-import SelectPetModal from "../common/components/SelectPetModal.vue";
-import DetailSchedule from "./components/DetailSchedule.vue";
+import DetailSchedule from "./DetailSchedule.vue";
 
 const isNewScheduleModalOpen = ref(false);
 const isPetModalOpen = ref(false);
@@ -11,12 +12,29 @@ const isDetailMode = ref(false);
 
 const selectedPet = ref({});
 
+const router = useRouter();
+const route = useRoute();
+
+// 경로 감지
+watch(
+  () => route.path,
+  (newPath) => {
+    if (newPath.startsWith("/schedule/detail")) {
+      isDetailMode.value = true;
+    } else if (newPath === "/schedule") {
+      isDetailMode.value = false;
+    }
+  },
+  { immediate: true }
+);
+
 const openDetail = () => {
   isDetailMode.value = true;
 };
 
 const closeDetail = () => {
   isDetailMode.value = false;
+  router.push("/schedule");
 };
 
 const openNewScheduleModal = () => {
@@ -33,6 +51,7 @@ const closeNewScheduleModal = () => {
 
 const closePetModal = () => {
   isPetModalOpen.value = false;
+  router.push("/schedule");
 };
 
 // 펫 변경 함수

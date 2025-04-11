@@ -12,9 +12,26 @@ export const useChatStore = defineStore("chat", {
     chatRoomUsers: [],
     chatRoomScheduleList: [],
     userPets: [],
+    ChatRoomScheculeDetail: [],
+    myInfo: {},
   }),
 
   actions: {
+    async submitScheduleParticipation(chatroomIdx, animalIds) {
+      try {
+        // const response = await axios.post(
+        //   `/api/chatroom/${chatroomIdx}/participate`,
+        //   {
+        //     animalIds: animalIds,
+        //   }
+        // );
+        console.log("참여 완료:", animalIds);
+        // 필요하면 상태 업데이트
+      } catch (error) {
+        console.error("참여 실패:", error);
+        throw error; // 에러를 밖으로 던져서 UI에서 처리하게
+      }
+    },
     async fetchMessages(roomId) {
       try {
         const { data } = await axios.get(`/api/chatroom/${roomId}/messages`);
@@ -88,27 +105,52 @@ export const useChatStore = defineStore("chat", {
         const response = {
           data: [
             {
-              idx: roomIdx,
+              idx: 1,
               imageUrl: "../../assets/images/cat1.jpg",
               userName: "agdddh",
             },
             {
-              idx: roomIdx,
+              idx: 2,
               imageUrl: "srcassetsimagescat1.jpg",
               userName: roomIdx,
             },
             {
-              idx: roomIdx,
+              idx: 3,
               imageUrl: "srcassetsimagescat1.jpg",
               userName: roomIdx,
             },
             {
-              idx: roomIdx,
+              idx: 4,
               imageUrl: "srcassetsimagescat1.jpg",
               userName: "agh",
             },
             {
               idx: 5,
+              imageUrl: "srcassetsimagescat1.jpg",
+              userName: "agh",
+            },
+            {
+              idx: 3,
+              imageUrl: "srcassetsimagescat1.jpg",
+              userName: "agh",
+            },
+            {
+              idx: 3,
+              imageUrl: "srcassetsimagescat1.jpg",
+              userName: "agh",
+            },
+            {
+              idx: 3,
+              imageUrl: "srcassetsimagescat1.jpg",
+              userName: "agh",
+            },
+            {
+              idx: 3,
+              imageUrl: "srcassetsimagescat1.jpg",
+              userName: "agh",
+            },
+            {
+              idx: 3,
               imageUrl: "srcassetsimagescat1.jpg",
               userName: "agh",
             },
@@ -194,6 +236,46 @@ export const useChatStore = defineStore("chat", {
       } catch (err) {
         console.error("실패");
       }
+    },
+
+    async getChatroomScheduleDetail(roomIdx) {
+      try {
+        const response = {
+          data: {
+            title: "병원 검진 예약",
+            time: "11:00 ~ 12:00",
+            place: "서울숲",
+            memo: "진료 결과 다른 곳은 양호한데 과체중 진단을 받아서 다이어트가 필요하다고 하셨다.",
+            participants: [
+              { nickname: "agdddh", petIdx: 1 },
+              { nickname: "agh", petIdx: 2 },
+              { nickname: "agh", petIdx: 3 },
+              { nickname: "agh", petIdx: 4 },
+            ],
+          },
+        };
+
+        this.ChatRoomScheculeDetail = response.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    async getMyInfo() {
+      try {
+        const response = {
+          data: {
+            userId: 100,
+            username: "petlover123",
+            nickname: "짱봄맘",
+            profileUrl: "...",
+            roles: ["USER"],
+          },
+        };
+
+        this.myInfo = response.data;
+        console.log(this.myInfo);
+      } catch (err) {}
     },
 
     selectRoom(room) {

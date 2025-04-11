@@ -2,6 +2,7 @@
 .scrollable {
   overflow-y: auto;
   scroll-behavior: smooth;
+  /* max-height: 160px;  */
 }
 
 .scrollable::-webkit-scrollbar {
@@ -20,6 +21,7 @@
 .chatroom-info-container {
   width: 100%;
   max-width: 720px;
+  max-height: 720px;
   margin: 40px auto;
   background-color: #f4eee7;
   border-radius: 20px;
@@ -27,4 +29,8 @@
   justify-content: center; /* ✅ 자식들을 수평 가운데로 */
   padding: 24px;
   gap: 24px;
+
+  /* ✅ height 고정/제한 제거 */
+  height: auto;
+  max-height: none;
 }

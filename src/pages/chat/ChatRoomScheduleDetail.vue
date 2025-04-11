@@ -12,51 +12,56 @@
 
       <span class="room-title">서울숲에서 같이 멍멍이 산책시킬 사람 !!</span>
     </div>
-    <div class="schedule-detail-container">
-      <!-- 왼쪽 화살표 -->
-      <div class="schedule-back">
-        <img src="../../assets/images/arrow.svg" alt="뒤로가기" />
-      </div>
 
-      <!-- 컨텐츠 카드 (참여자 정보 포함) -->
-      <div class="schedule-content-card">
-        <!-- 일정 정보 -->
-        <div class="schedule-info">
-          <h2 class="schedule-title">병원 검진 예약</h2>
-          <div class="schedule-row">
-            <span class="label">시간</span>
-            <span class="value">11:00 ~ 12:00</span>
-          </div>
-          <div class="schedule-row">
-            <span class="label">장소</span>
-            <span class="value">서울숲</span>
-          </div>
-          <div class="schedule-row">
-            <span class="label">메모</span>
-            <div class="memo-box">
-              진료 결과 다른 곳은 양호한데 과체중 진단을 받아서 다이어트가
-              필요하다고 하셨다.
-            </div>
-          </div>
+    <!-- 왼쪽 화살표 -->
+    <div class="schedule-back">
+      <img src="../../assets/images/arrow.svg" alt="뒤로가기" />
+    </div>
+
+    <!-- 컨텐츠 카드 (참여자 정보 포함) -->
+    <div class="schedule-content-card">
+      <!-- 일정 정보 -->
+      <div class="schedule-info">
+        <h2 class="schedule-title">
+          {{ chatStore.ChatRoomScheculeDetail.title }}
+        </h2>
+        <div class="schedule-row">
+          <span class="label">시간</span>
+          <span class="value">{{ chatStore.ChatRoomScheculeDetail.time }}</span>
         </div>
-
-        <!-- 참여자 정보 (읽기용) -->
-        <div class="participant-section">
-          <div class="participant-title">참여자</div>
-          <div class="participant-box">
-            <div
-              class="participant-name"
-              v-for="chatRoomUser in chatStore.chatRoomUsers"
-            >
-              {{ chatRoomUser.userName }}
-            </div>
+        <div class="schedule-row">
+          <span class="label">장소</span>
+          <span class="value">{{
+            chatStore.ChatRoomScheculeDetail.place
+          }}</span>
+        </div>
+        <div class="schedule-row">
+          <span class="label">메모</span>
+          <div class="memo-box">
+            {{ chatStore.ChatRoomScheculeDetail.memo }}
           </div>
         </div>
       </div>
+
+      <!-- 참여자 정보 (읽기용) -->
+      <div class="scrollable participant-section">
+        <div class="participant-title">참여자</div>
+        <div class="participant-box">
+          <div
+            class="participant-name"
+            v-for="chatRoomUser in chatStore.chatRoomUsers"
+          >
+            {{ chatRoomUser.userName }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ 전체를 하나의 div로 감싸고 v-if를 적용 -->
+    <div v-if="showAnimalSelect">
       <div class="participant-title">참여 동물 선택</div>
 
-      <!-- ✅ 참여 동물 선택 박스 (카드 밖 별도) -->
-      <div class="animal-select-card">
+      <div class="scrollable animal-select-card">
         <label
           class="participant-item"
           v-for="pet in chatStore.userPets"
@@ -68,7 +73,6 @@
         </label>
       </div>
 
-      <!-- 액션 버튼 -->
       <div class="modal-actions">
         <button class="cancel-button" @click="goBack">취소</button>
         <button class="confirm-button" @click="goComplete">참여</button>
@@ -86,6 +90,7 @@ const route = useRoute();
 const router = useRouter();
 const chatroomIdx = route.params.chatroomIdx;
 const selectedAnimals = ref([]);
+const showAnimalSelect = ref(false);
 
 watch(selectedAnimals, (newVal) => {
   console.log("선택된 idx 배열:", newVal);
@@ -95,26 +100,42 @@ const goBack = () => {
   router.go(-1); // 또는 window.history.back()
 };
 
-const goComplete = () => {
-  router.push(`/chatroom/${chatroomIdx}/chatroom-schedule`); // 이동할 경로로 바꿔주세요
+const goComplete = async () => {
+  if (selectedAnimals.value.length === 0) {
+    alert("참여할 반려동물을 선택해주세요!");
+    return;
+  }
+
+  try {
+    await chatStore.submitScheduleParticipation(
+      chatroomIdx,
+      selectedAnimals.value
+    );
+    router.push(`/chatroom/${chatroomIdx}/chatroom-schedule`);
+  } catch (e) {
+    alert("참여 중 문제가 발생했습니다. 다시 시도해주세요.");
+  }
 };
 
-onMounted(() => {
-  chatStore.getUserPets();
-  chatStore.fetchUsers(chatroomIdx); // 테스트 데이터 로딩
+const checkParticipation = () => {
+  const myId = chatStore.myInfo.userId;
+  showAnimalSelect.value = !chatStore.chatRoomUsers.some((p) => p.idx === myId);
+};
+
+onMounted(async () => {
+  await Promise.all([
+    chatStore.getUserPets(),
+    chatStore.fetchUsers(chatroomIdx),
+    chatStore.getChatroomScheduleDetail(chatroomIdx),
+    chatStore.getMyInfo(),
+  ]);
+
+  checkParticipation(); // ✅ 모든 데이터 로딩 완료 후
 });
 </script>
 
 <style scoped>
-.schedule-detail-container {
-  width: 100%;
-  max-width: 720px;
-  margin: 40px auto;
-  display: flex;
-  gap: 24px;
-  flex-direction: column;
-}
-
+@import "./chat-base.css";
 .schedule-back {
   position: absolute;
   left: -40px;
@@ -130,6 +151,9 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 32px;
+  width: 80%;
+  align-self: center;
+  max-height: 720px;
 }
 
 .schedule-info {
@@ -182,6 +206,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: 200px; /* ✅ 필수 */
 }
 
 .participant-title {
@@ -269,5 +294,12 @@ onMounted(() => {
   min-height: 150px; /* 세로 최소 높이 설정 */
   margin-left: auto;
   margin-right: auto;
+}
+
+.modal-actions {
+  margin-top: 24px; /* ✅ 위에 공간 확보 */
+  display: flex;
+  justify-content: center;
+  gap: 12px;
 }
 </style>

@@ -18,7 +18,7 @@
                 <div v-else class="placeholder">카테고리 선택</div>
               </div>
               <img
-                src="../../assets/icons/Ai.png"
+                src="../../assets/icons/dropdown.png"
                 alt="down"
                 class="dropdown_icon"
               />

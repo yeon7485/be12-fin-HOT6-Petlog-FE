@@ -40,8 +40,7 @@ const props = defineProps({
   flex-direction: column;
   align-items: flex-start; /* ✅ 좌측 정렬 */
   gap: 6px; /* 시간과 내용 사이 간격 */
-  min-width: 220px;
-  max-width: 300px;
+  width: 100%;
 }
 
 .schedule-time {

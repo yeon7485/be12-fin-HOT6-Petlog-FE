@@ -83,6 +83,9 @@ export const useScheduleStore = defineStore("schedule", {
     setCurrentDate(date) {
       this.currentDate = date;
     },
+    setItemDetail(data) {
+      this.planDetail = data;
+    },
     getItemDetail(idx) {
       console.log(idx);
       return this.planDetail;

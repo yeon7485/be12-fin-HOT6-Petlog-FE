@@ -10,22 +10,14 @@
       </div>
 
       <div class="category-list">
-        <div
+        <CategoryItem
           v-for="(category, index) in categories"
           :key="index"
-          class="category-item"
-        >
-          <div class="category-dot" :style="{ backgroundColor: category.color }"></div>
-          <div class="category-name">{{ category.name }}</div>
-          <div class="category-actions">
-            <button class="action-button" @click="editCategory(index)">
-              ✏️
-            </button>
-            <button class="action-button" @click="deleteCategory(index)">
-              🗑️
-            </button>
-          </div>
-        </div>
+          :category="category"
+          :index="index"
+          @edit="editCategory"
+          @delete="deleteCategory"
+        />
       </div>
     </div>
 
@@ -62,6 +54,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRecordCategoryStore } from '../../stores/useRecordCategoryStore.js'
+import CategoryItem from './components/CategoryItem.vue'
 
 const router = useRouter()
 const store = useRecordCategoryStore()
@@ -70,7 +63,7 @@ const showCreateModal = ref(false)
 const newCategory = ref({ name: '', color: '#00bcd4' })
 
 const categories = computed(() => store.categories)
-const colors = store.colors
+const colors = ['#00bcd4', '#e91e63', '#4caf50', '#9e9e9e', '#ff9800', '#673ab7', '#3f51b5', '#795548']
 
 const createCategory = () => {
   if (newCategory.value.name.trim()) {

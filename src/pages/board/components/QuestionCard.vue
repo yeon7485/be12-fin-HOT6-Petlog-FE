@@ -1,41 +1,40 @@
+<script setup>
+defineProps({ question: Object })
+</script>
+
 <template>
   <div class="post_card">
     <div class="post_header">
       <div class="user_info">
         <img class="avatar" src="/src/assets/images/dog1.png" alt="유저 아바타" />
         <span class="author">{{ question.writer }}</span>
+        <span class="divider">ㅣ</span>
         <span class="date">{{ question.date }}</span>
       </div>
     </div>
 
     <div class="post_body">
-      <div
-        class="status_tag"
-        :class="question.status === '해결됨' ? 'resolved' : 'unresolved'"
-      >
-        {{ question.status }}
+      <div class="status_badge" :class="question.selected ? 'resolved' : 'unresolved'">
+        {{ question.selected ? '해결됨' : '미해결' }}
       </div>
 
-      <router-link :to="`/board/qna/${question.id}`" class="post_title">
+      <router-link :to="`/board/qna/${question.idx}`" class="post_title">
         {{ question.title }}
       </router-link>
 
       <p class="post_content">{{ question.contents }}</p>
 
       <div class="post_tags">
-        <span v-for="tag in question.tags" :key="tag" class="tag"># {{ tag }}</span>
+        <span v-for="tags in question.tags" :key="tags" class="tag"># {{ tags }}</span>
       </div>
 
-      <div class="comment_count">💬 {{ question.commentCount }}</div>
+      <div class="comment_count">
+        <img src="/src/assets/icons/comment.png" alt="댓글 아이콘" class="comment_icon" />
+        {{ question.commentCount }}
+      </div>
     </div>
   </div>
 </template>
-
-<script setup>
-defineProps({
-  question: Object
-})
-</script>
 
 <style scoped>
 .post_card {
@@ -49,10 +48,15 @@ defineProps({
 .user_info {
   display: flex;
   align-items: center;
-  gap: 10px;
   font-size: 14px;
   color: #777;
   margin-bottom: 10px;
+  gap: 6px;
+}
+
+.divider {
+  margin: 0 2px;
+  color: #aaa;
 }
 
 .avatar {
@@ -63,25 +67,6 @@ defineProps({
 
 .post_body {
   position: relative;
-}
-
-.status_tag {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.resolved {
-  background-color: #d6f5d6;
-  color: #2e7d32;
-}
-
-.unresolved {
-  background-color: #e0e0e0;
-  color: #555;
 }
 
 .post_title {
@@ -113,9 +98,36 @@ defineProps({
   margin-right: 8px;
 }
 
+.comment_icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
 .comment_count {
   font-size: 13px;
   color: #888;
   margin-top: 5px;
+}
+
+.status_badge {
+  display: inline-block;
+  font-size: 13px;
+  margin-right: 5px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.status_badge.resolved {
+  background-color: #d6f5d6;
+  color: #2e7d32;
+}
+
+.status_badge.unresolved {
+  background-color: #f2f2f2;
+  color: #555;
 }
 </style>

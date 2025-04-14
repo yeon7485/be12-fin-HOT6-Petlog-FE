@@ -1,7 +1,31 @@
 <script setup>
-defineProps({ answer: Object })
-defineEmits(['select', 'modify', 'delete'])
+import { useAnswerStore } from '/src/stores/useAnswerStore';
+import { useQuestionStore } from '/src/stores/useQuestionStore';
+import { useRoute } from 'vue-router';
+
+const answerStore = useAnswerStore();
+const questionStore = useQuestionStore();
+const route = useRoute();
+const questionIdx = Number(route.params.questionId); 
+
+const props = defineProps({
+  answer: Object,
+});
+
+const confirmAndSelect = async () => {
+  const confirmed = window.confirm("이 답변을 채택하시겠습니까?");
+  if (!confirmed) return;
+
+  try {
+    await answerStore.selectAnswer(props.answer.idx);
+    await questionStore.refreshQuestionStatus(questionIdx); 
+    alert("채택이 완료되었습니다.");
+  } catch (e) {
+    alert("채택 실패");
+  }
+};
 </script>
+
 
 <template>
   <div class="answer_card" :class="{ selected: answer.selected }">
@@ -12,13 +36,15 @@ defineEmits(['select', 'modify', 'delete'])
         <span class="divider">ㅣ</span>
         <span class="date">{{ answer.date }}</span>
       </div>
+
       <div v-if="answer.selected" class="selected_badge">
         <img src="/src/assets/icons/select.png" class="badge_icon" alt="채택 아이콘" />
         <span class="selected_text">질문자가 채택한 답변</span>
       </div>
+
       <div v-else class="icons">
-        <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="$emit('modify', answer.id)" />
-        <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="$emit('delete', answer.id)" />
+        <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="emit('modify', answer.idx)" />
+        <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="emit('delete', answer.idx)" />
       </div>
     </div>  
 
@@ -27,8 +53,11 @@ defineEmits(['select', 'modify', 'delete'])
       {{ answer.contents }}
     </div>
 
-    <div v-if="!answer.selected" class="select_btn_area">
-      <button class="select_btn" @click="$emit('select', answer.id)">채택하기</button>
+    <div
+      v-if="!answer.selected && !answerStore.answers.some(a => a.selected)"
+      class="select_btn_area"
+    >
+      <button class="select_btn" @click="confirmAndSelect('select', answer.idx)">채택하기</button>
     </div>
   </div>
 </template>

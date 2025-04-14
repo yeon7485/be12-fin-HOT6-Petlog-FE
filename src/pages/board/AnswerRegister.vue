@@ -20,9 +20,24 @@ const previewImage = ref('')
 const originalImage = ref('')
 const question = ref(null)
 
+const handleFileChange = (e) => {
+  const file = e.target.files[0]
+  if (file) {
+    fileName.value = file.name
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      previewImage.value = e.target.result
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
 onMounted(async () => {
-  // 질문 데이터 불러오기
-  question.value = await questionStore.getQuestionById(questionId)
+  if (questionStore.selectedQuestion) {
+    question.value = questionStore.selectedQuestion
+  } else {
+    question.value = await questionStore.readQuestion(questionId)
+  }
 
   if (isEdit) {
     await answerStore.fetchAnswersByQuestionId(questionId)
@@ -36,90 +51,98 @@ onMounted(async () => {
 })
 
 const handleCancel = () => {
-  const confirmed = window.confirm('작성 중인 내용을 취소하시겠습니까?')
-  if (confirmed) {
+  if (window.confirm('작성 중인 내용을 취소하시겠습니까?')) {
     router.push(`/board/qna/${questionId}`) 
   }
 }
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   const confirmed = window.confirm(isEdit ? '답변을 수정하시겠습니까?' : '답변을 등록하시겠습니까?')
-  if (confirmed) {
+  if (!confirmed) return
+
+  try {
     if (isEdit) {
-      alert('답변이 수정되었습니다.')
+      alert('답변 수정 기능은 아직 구현되지 않았습니다.')
     } else {
+      await answerStore.registerAnswer(question.value.idx, content.value)
       alert('답변이 등록되었습니다.')
     }
-    router.push(`/board/qna/${questionId}`) 
+    router.push(`/board/qna/${questionId}`)
+  } catch (err) {
+    alert('답변 등록에 실패하였습니다.')
   }
 }
 </script>
 
 <template>
-  <div class="container">
-    <div class="post_box">
-      <div class="post_title">
-        <img class="icon_img" src="/src/assets/icons/question.png" alt="질문 아이콘" />
-        <span class="text">{{ question?.title || '질문 제목' }}</span>
-      </div>
+  <div>
+    <div v-if="question" class="container">
+      <div class="post_box">
+        <div class="post_title">
+          <img class="icon_img" src="/src/assets/icons/question.png" alt="질문 아이콘" />
+          <span class="text">{{ question.title }}</span>
+        </div>
 
-      <div class="user_info_line">
-        <div class="user_info">
-          <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
-          <span class="nickname">{{ question?.author || '작성자' }}</span>
-          <span class="divider">ㅣ</span>
-          <span class="date">{{ question?.date || '날짜' }}</span>
+        <div class="user_info_line">
+          <div class="user_info">
+            <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
+            <span class="nickname">{{ question.writer }}</span>
+            <span class="divider">ㅣ</span>
+            <span class="date">{{ question.date }}</span>
+          </div>
+        </div>
+
+        <hr class="divider_line" />
+
+        <div class="content_area">
+          <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
+          <p class="description">{{ question.contents }}</p>
+          <div class="hashtags">
+            <span v-for="tag in question.tags" :key="tag"># {{ tag }}</span>
+          </div>
         </div>
       </div>
 
-      <hr class="divider_line" />
+      <div class="link">
+        <img class="link_icon" src="/src/assets/icons/link.png" alt="링크 아이콘" />
+      </div>
 
-      <div class="content_area">
-        <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
-        <p class="description">
-          {{ question?.content || '질문 내용' }}
-        </p>
-        <div class="hashtags">
-          <span v-for="tag in question?.tags" :key="tag"># {{ tag }}</span>
+      <div class="answer_form">
+        <div class="form_box">
+          <img class="answer_icon" src="/src/assets/icons/answerRegister.png" alt="답변 아이콘" />
+
+          <textarea
+            class="textarea"
+            placeholder="내용을 입력해주세요."
+            v-model="content"
+          ></textarea>
+
+          <div class="file_area">
+            <label class="file_label" for="fileInput">사진 등록</label>
+            <input
+              id="fileInput"
+              type="file"
+              class="file_input"
+              @change="handleFileChange"
+            />
+            <span v-if="fileName" class="file_name">{{ fileName }}</span>
+            <img v-if="previewImage" :src="previewImage" alt="미리보기 이미지" class="preview_img" />
+          </div>
+
+          <div class="btn_area">
+            <button class="btn cancel" @click="handleCancel">
+              {{ isEdit ? '수정 취소' : '취소' }}
+            </button>
+            <button class="btn submit" @click="handleSubmit">
+              {{ isEdit ? '수정 완료' : '답변 등록' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="link">
-      <img class="link_icon" src="/src/assets/icons/link.png" alt="링크 아이콘" />
-    </div>
-
-    <div class="answer_form">
-      <div class="form_box">
-        <img class="answer_icon" src="/src/assets/icons/answerRegister.png" alt="답변 아이콘" />
-
-        <textarea
-          class="textarea"
-          placeholder="내용을 입력해주세요."
-          v-model="content"
-        ></textarea>
-
-        <div class="file_area">
-          <label class="file_label" for="fileInput">사진 등록</label>
-          <input
-            id="fileInput"
-            type="file"
-            class="file_input"
-            @change="handleFileChange"
-          />
-          <span v-if="fileName" class="file_name">{{ fileName }}</span>
-          <img v-if="previewImage" :src="previewImage" alt="미리보기 이미지" class="preview_img" />
-        </div>
-
-        <div class="btn_area">
-          <button class="btn cancel" @click="handleCancel">
-            {{ isEdit ? '수정 취소' : '취소' }}
-          </button>
-          <button class="btn submit" @click="handleSubmit">
-            {{ isEdit ? '수정 완료' : '답변 등록' }}
-          </button>
-        </div>
-      </div>
+    <div v-else class="loading">
+      질문 정보를 불러오는 중입니다...
     </div>
   </div>
 </template>

@@ -1,57 +1,77 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useQuestionStore } from '/src/stores/useQuestionStore'
+import axios from 'axios'
 import { useAnswerStore } from '/src/stores/useAnswerStore'
+import { useQuestionStore } from '/src/stores/useQuestionStore'
 import AnswerCard from '/src/pages/board/components/AnswerCard.vue'
-
-const answerStore = useAnswerStore()
-const questionStore = useQuestionStore()
 
 const router = useRouter()
 const route = useRoute()
 
+const questionStore = useQuestionStore()
+const answerStore = useAnswerStore()
+
 const question = ref(null)
-const questionId = Number(route.params.id)
+const questionIdx = Number(route.params.idx)
+
+const hasSelectedAnswer = computed(() =>
+  answerStore.answers.some((a) => a.selected)
+)
 
 onMounted(async () => {
-  await questionStore.fetchQuestions()
+  try {
+    const res = await axios.get(`/api/question/read/${questionIdx}`)
+    question.value = res.data
+  } catch (err) {
+    console.error('질문 불러오기 실패:', err)
+  }
 
-  question.value = questionStore.getQuestionById(questionId)
-  await answerStore.fetchAnswersByQuestionId(questionId)
+  await answerStore.fetchAnswersByQuestionId(questionIdx)
 })
 
 const handleDelete = () => {
-  const confirmed = window.confirm('게시글을 삭제하시겠습니까?')
-  if (confirmed) {
+  if (window.confirm('게시글을 삭제하시겠습니까?')) {
     alert('게시글이 삭제되었습니다.')
   }
 }
 
-const handleSelectAnswer = () => {
+const handleSelectAnswer = async (answerId) => {
+  if (!answerId || isNaN(answerId)) {
+    console.error("잘못된 answerId:", answerId)
+    return
+  }
+
   const confirmed = window.confirm('현재 답변을 채택하시겠습니까?')
-  if (confirmed) {
+  if (!confirmed) return
+
+  try {
+    await answerStore.selectAnswer(answerId)
+    await answerStore.fetchAnswersByQuestionId(questionIdx)
+    await questionStore.updateQuestionStatus(questionIdx)
     alert('채택이 완료되었습니다.')
+  } catch (err) {
+    alert('채택 실패')
   }
 }
 
 const confirmDeleteAnswer = () => {
-  const confirmed = window.confirm('정말 답변을 삭제하시겠습니까?')
-  if (confirmed) {
+  if (window.confirm('정말 답변을 삭제하시겠습니까?')) {
     alert('답변이 삭제되었습니다.')
   }
 }
 
 const goToModifyAnswer = (answerId) => {
-  router.push(`/board/qna/${questionId}/answer/${answerId}/modify`)
+  router.push(`/board/qna/${questionIdx}/answer/${answerId}/modify`)
 }
 
 const goToModify = () => {
-  router.push(`/board/qna/${questionId}/modify`)
+  router.push(`/board/qna/${questionIdx}/modify`)
 }
 
 const goToRegister = () => {
-  router.push(`/board/qna/${questionId}/answer/register`)
+  questionStore.setSelectedQuestion(question.value)
+  router.push(`/board/qna/${question.value.idx}/answer/register`)
 }
 </script>
 
@@ -88,11 +108,12 @@ const goToRegister = () => {
         </div>
       </div>
 
-      <div class="action_area">
+      <div class="action_area" v-if="!hasSelectedAnswer">
         <button class="reply_btn" @click="goToRegister">답변하기</button>
       </div>
     </div>
 
+    <!-- AI 답변 -->
     <div class="ai_answer_v2">
       <div class="ai_header_v2">
         <img class="ai_icon_img" src="/src/assets/icons/Ai.png" alt="전구 아이콘" />
@@ -142,7 +163,7 @@ const goToRegister = () => {
 
       <AnswerCard
         v-for="answer in answerStore.answers"
-        :key="answer.id"
+        :key="answer.idx"
         :answer="answer"
         @select="handleSelectAnswer"
         @modify="goToModifyAnswer"
@@ -151,6 +172,7 @@ const goToRegister = () => {
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .wrapper {

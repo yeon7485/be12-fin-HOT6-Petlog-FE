@@ -49,6 +49,7 @@ import ChatRoomScheduleDetail from "../pages/chat/ChatRoomScheduleDetail.vue";
 import UserLayout from "../pages/user/UserLayout.vue";
 import DetailList from "../pages/schedule/components/DetailList.vue";
 import DetailItem from "../pages/schedule/components/DetailItem.vue";
+import DetailRecordItem from "../pages/schedule/components/DetailRecordItem.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -118,6 +119,7 @@ const routes = [
     children: [
       { path: "detail", component: DetailList },
       { path: "detail/:id", component: DetailItem },
+      { path: "detail/record/:id", component: DetailRecordItem },
     ],
   },
 
@@ -138,7 +140,7 @@ const routes = [
       { path: "qna/:id", component: QuestionDetail },
 
       { path: "qna/:questionId/answer/register", component: AnswerRegister },
-      { path: "qna/:questionId/answer/:id/modify", component: AnswerRegister,},
+      { path: "qna/:questionId/answer/:id/modify", component: AnswerRegister },
     ],
   },
 

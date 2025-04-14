@@ -142,6 +142,7 @@ const handleEditClick = () => {
 }
 
 .cate_dropdown_btn {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -1,52 +1,67 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import axios from "axios";
 
 export const useQuestionStore = defineStore("question", () => {
   const questions = ref([]);
+  const selectedQuestion = ref(null); 
 
   const fetchQuestions = async () => {
-    questions.value = [
-      {
-        id: 1,
-        status: "해결됨",
-        title: "강아지 중성화 수술 고민입니다.",
-        writer: "닉네임",
-        date: "24.8.10",
-        contents:
-          "저희 강아지가 말티즈(여아) 이제 1살이 되었고 주변에서 중성화 수술을 시켜야한다고 하는데 꼭 시켜야하는 건가요? 찾아보니 가격도 만만치 않고 엄청 아파한다고 하더라고요 ㅠㅠㅠ",
-        tags: ["강아지", "강아지 중성화"],
-        commentCount: 2,
-      },
-      {
-        id: 2,
-        status: "미해결",
-        title: "질문입니다",
-        writer: "닉네임",
-        date: "24.8.10",
-        contents: "포스트 내용입니다. 포스트 내용입니다. 포스트 내용입니다.",
-        tags: ["강아지", "강아지 중성화"],
-        commentCount: 2,
-      },
-      {
-        id: 3,
-        status: "해결됨",
-        title: "테스트용",
-        writer: "테스트",
-        date: "24.8.12",
-        contents: "테스트용입니다.",
-        tags: ["테스트", "강아지 중성화"],
-        commentCount: 2,
-      },
-    ];
+    try {
+      const res = await axios.get("/api/question/list");
+      questions.value = res.data;
+    } catch (error) {
+      console.error("질문 목록 조회 실패:", error);
+    }
   };
 
-  const getQuestionById = (id) => {
-    return questions.value.find((question) => question.id === id);
+  const createQuestion = async (questionData) => {
+    try {
+      const res = await axios.post("/api/question/register", questionData);
+      return res.data;
+    } catch (error) {
+      console.error("질문 등록 실패:", error);
+      throw error;
+    }
+  };
+
+  const readQuestion = async (idx) => {
+    try {
+      const res = await axios.get(`/api/question/read/${idx}`);
+      return res.data;
+    } catch (error) {
+      console.error("질문 단건 조회 실패:", error);
+      throw error;
+    }
+  };
+
+  const setSelectedQuestion = (q) => {
+    selectedQuestion.value = q;
+  };
+
+  const refreshQuestionStatus = async (idx) => {
+    try {
+      const updated = await readQuestion(idx);
+      const index = questions.value.findIndex((q) => q.idx === idx);
+      if (index !== -1) {
+        questions.value[index] = updated;
+      }
+
+      if (selectedQuestion.value?.idx === idx) {
+        selectedQuestion.value = updated;
+      }
+    } catch (e) {
+      console.error("질문 상태 갱신 실패:", e);
+    }
   };
 
   return {
     questions,
     fetchQuestions,
-    getQuestionById,
+    createQuestion,
+    readQuestion,
+    selectedQuestion,
+    setSelectedQuestion,
+    refreshQuestionStatus
   };
 });

@@ -136,11 +136,11 @@ const routes = [
 
       { path: "qna", component: QnaBoard },
       { path: "qna/register", component: QuestionRegister },
-      { path: "qna/:id/modify", component: QuestionRegister },
-      { path: "qna/:id", component: QuestionDetail },
+      { path: "qna/:idx/modify", component: QuestionRegister },
+      { path: "qna/:idx", component: QuestionDetail },
 
       { path: "qna/:questionId/answer/register", component: AnswerRegister },
-      { path: "qna/:questionId/answer/:id/modify", component: AnswerRegister },
+      { path: "qna/:questionId/answer/:idx/modify", component: AnswerRegister,},
     ],
   },
 

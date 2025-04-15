@@ -30,11 +30,20 @@ onMounted(async () => {
   await answerStore.fetchAnswersByQuestionId(questionIdx)
 })
 
-const handleDelete = () => {
-  if (window.confirm('게시글을 삭제하시겠습니까?')) {
-    alert('게시글이 삭제되었습니다.')
+const handleDelete = async () => {
+  const confirmed = window.confirm('게시글을 삭제하시겠습니까?');
+  if (!confirmed) return;
+
+  try {
+    await questionStore.deleteQuestion(questionIdx);
+    alert('게시글이 삭제되었습니다.');
+    router.push('/board/qna');
+  } catch (err) {
+    alert('삭제 중 오류가 발생했습니다.');
+    console.error(err);
   }
 }
+
 
 const handleSelectAnswer = async (answerId) => {
   if (!answerId || isNaN(answerId)) {
@@ -93,8 +102,19 @@ const goToRegister = () => {
           <span class="date">{{ question.created_at }}</span>
         </div>
         <div class="icons">
-          <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="goToModify" />
-          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="handleDelete" />
+          <img
+  v-if="!hasSelectedAnswer"
+  src="/src/assets/icons/write.png"
+  class="icon_btn"
+  alt="수정 아이콘"
+  @click="goToModify"
+/>
+<img
+  src="/src/assets/icons/x-button.png"
+  class="icon_btn"
+  alt="삭제 아이콘"
+  @click="handleDelete"
+/>
         </div>
       </div>
 

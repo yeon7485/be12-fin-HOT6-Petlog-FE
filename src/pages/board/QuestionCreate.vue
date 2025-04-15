@@ -1,15 +1,16 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuestionStore } from '/src/stores/useQuestionStore'
 import AnimalCardModal from '/src/pages/board/components/AnimalCardModal.vue'
+import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
 const store = useQuestionStore()
 
 const questionIdx = route.params.idx ? Number(route.params.idx) : null
-const isEdit = !!questionIdx
+const isEdit = computed(() => !!questionIdx)
 
 const isModalOpen = ref(false)
 
@@ -22,18 +23,16 @@ const form = ref({
   content: '',
   tags: '',
   file: null,
+  image: '',
 })
 
 onMounted(async () => {
-  await store.fetchQuestions()
-
-  if (isEdit) {
-    const target = store.questions.find(q => q.idx === questionIdx)
-    if (target) {
-      form.value.qTitle = target.qTitle
-      form.value.content = target.content
-      form.value.tags = target.tags.join(', ')
-    }
+  if (isEdit.value) {
+    const data = await store.readQuestion(questionIdx)
+    form.value.qTitle = data.qTitle
+    form.value.content = data.content
+    form.value.tags = data.tags.join(', ')
+    form.value.image = data.image || ''
   }
 })
 
@@ -49,7 +48,7 @@ const handleCancel = () => {
 }
 
 const handleSubmit = async () => {
-  const confirmed = window.confirm(isEdit ? '질문을 수정하시겠습니까?' : '질문을 등록하시겠습니까?')
+  const confirmed = window.confirm(isEdit.value ? '질문을 수정하시겠습니까?' : '질문을 등록하시겠습니까?')
   if (!confirmed) return
 
   const tagsArray = form.value.tags
@@ -62,23 +61,24 @@ const handleSubmit = async () => {
     content: form.value.content,
     tags: tagsArray,
     writer: '닉네임',
-    created_at: new Date().toLocaleDateString('ko-KR'),
-    status: '미해결',
-    commentCount: 0,
+    image: form.value.image || '', // 이미지 필드 추가
+    selected: false,
   }
 
-  if (isEdit) {
-    alert('수정 기능은 아직 백엔드 연동되지 않았습니다.')
-    router.push(`/board/qna/${questionIdx}`)
-  } else {
-    try {
+  try {
+    if (isEdit.value) {
+      await axios.put(`/api/question/update/${questionIdx}`, questionData)
+      alert('질문이 수정되었습니다.')
+      router.push(`/board/qna/${questionIdx}`)
+    } else {
       await store.createQuestion(questionData)
-      await store.fetchQuestions() 
+      await store.fetchQuestions()
       alert('질문이 등록되었습니다.')
       router.push('/board/qna')
-    } catch (err) {
-      alert('등록 실패하였습니다.')
     }
+  } catch (err) {
+    alert(isEdit.value ? '수정 실패하였습니다.' : '등록 실패하였습니다.')
+    console.error(err)
   }
 }
 </script>
@@ -99,7 +99,7 @@ const handleSubmit = async () => {
       </div>
 
       <div class="form_group">
-        <label for="tags" >해시태그</label>
+        <label for="tags">해시태그</label>
         <input type="text" id="tags" v-model="form.tags" placeholder="예) 강아지, 강아지 중성화" />
       </div>
 
@@ -110,7 +110,7 @@ const handleSubmit = async () => {
 
       <div class="form_group">
         <label>반려동물 카드 등록</label>
-        <button @click="selectPetCard" class="petcard_btn">카드 선택</button>
+        <button @click="selectPetCard" class="petcard_btn" type="button">카드 선택</button>
       </div>
 
       <AnimalCardModal v-if="isModalOpen" @close="isModalOpen = false" />
@@ -122,6 +122,7 @@ const handleSubmit = async () => {
     </form>
   </div>
 </template>
+
 
 <style scoped>
 .qna_container {

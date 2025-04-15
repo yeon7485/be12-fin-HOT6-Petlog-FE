@@ -39,8 +39,8 @@ onMounted(async () => {
       birthDate: response.data.birthDate,
       specificInformation: response.data.specificInformation,
       profileImageUrl: imageUrl,
-      neutering: response.data.neutering,
-    };
+      isNeutering: response.data.isNeutering,
+    };  
 
     profileImage.value = response.data.profileImageUrl;
   } catch (e) {
@@ -97,7 +97,7 @@ const deleteCard = async () => {
       <div class="info-box">
         <p><strong>생일</strong> <span>{{ card.birthDate }}</span></p>
         <p><strong>중성화 여부</strong> 
-          <span v-if="card.neutering">✅</span>
+          <span v-if="card.isNeutering">✅</span>
           <span v-else>❌</span>
         </p>
         <p><strong>나이</strong> <span>{{ card.age }}살</span></p>

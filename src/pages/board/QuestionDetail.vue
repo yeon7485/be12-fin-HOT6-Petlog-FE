@@ -64,9 +64,15 @@ const handleSelectAnswer = async (answerId) => {
   }
 }
 
-const confirmDeleteAnswer = () => {
-  if (window.confirm('정말 답변을 삭제하시겠습니까?')) {
+const confirmDeleteAnswer = async (answerId) => {
+  if (!window.confirm('정말 답변을 삭제하시겠습니까?')) return;
+  try {
+    await answerStore.deleteAnswer(answerId)
+    await answerStore.fetchAnswersByQuestionId(questionIdx)
     alert('답변이 삭제되었습니다.')
+  } catch (err) {
+    alert('답변 삭제에 실패하였습니다.')
+    console.error(err)
   }
 }
 
@@ -174,7 +180,6 @@ const goToRegister = () => {
       </div>
     </div>
 
-    <!-- 사용자 답변 목록 -->
     <div class="answer_wrapper">
       <div class="answer_count">
         <img src="/src/assets/icons/answer.png" class="answer_icon" alt="답변 아이콘" />
@@ -187,7 +192,7 @@ const goToRegister = () => {
         :answer="answer"
         @select="handleSelectAnswer"
         @modify="goToModifyAnswer"
-        @delete="confirmDeleteAnswer"
+        @delete="(id) => confirmDeleteAnswer(id)"
       />
     </div>
   </div>

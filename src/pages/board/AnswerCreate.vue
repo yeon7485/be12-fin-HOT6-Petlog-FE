@@ -10,9 +10,9 @@ const route = useRoute()
 const answerStore = useAnswerStore()
 const questionStore = useQuestionStore()
 
-const isEdit = !!route.params.answerId 
-const answerId = Number(route.params.answerId)
+const answerId = Number(route.params.idx)
 const questionId = Number(route.params.questionId)
+const isEdit = !isNaN(answerId) && answerId > 0
 
 const content = ref('')
 const fileName = ref('')
@@ -40,8 +40,7 @@ onMounted(async () => {
   }
 
   if (isEdit) {
-    await answerStore.fetchAnswersByQuestionId(questionId)
-    const target = answerStore.getAnswerById(answerId)
+    const target = await answerStore.getAnswerByIdFromServer(answerId)
     if (target) {
       content.value = target.content
       originalImage.value = target.image
@@ -52,7 +51,7 @@ onMounted(async () => {
 
 const handleCancel = () => {
   if (window.confirm('작성 중인 내용을 취소하시겠습니까?')) {
-    router.push(`/board/qna/${questionId}`) 
+    router.push(`/board/qna/${questionId}`)
   }
 }
 
@@ -62,14 +61,16 @@ const handleSubmit = async () => {
 
   try {
     if (isEdit) {
-      alert('답변 수정 기능은 아직 구현되지 않았습니다.')
+      await answerStore.updateAnswer(answerId, content.value, previewImage.value || originalImage.value || '')
+      alert('답변이 수정되었습니다.')
     } else {
       await answerStore.registerAnswer(question.value.idx, content.value)
       alert('답변이 등록되었습니다.')
     }
     router.push(`/board/qna/${questionId}`)
   } catch (err) {
-    alert('답변 등록에 실패하였습니다.')
+    alert(isEdit ? '답변 수정에 실패하였습니다.' : '답변 등록에 실패하였습니다.')
+    console.error(err)
   }
 }
 </script>
@@ -146,6 +147,7 @@ const handleSubmit = async () => {
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .container {

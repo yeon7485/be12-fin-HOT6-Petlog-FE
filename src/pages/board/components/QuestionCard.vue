@@ -34,7 +34,6 @@ defineProps({ question: Object })
       </div>
     </div>
   </div>
-  <pre>{{ question }}</pre>
 
 </template>
 

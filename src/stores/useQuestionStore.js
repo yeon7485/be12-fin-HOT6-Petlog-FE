@@ -39,6 +39,12 @@ export const useQuestionStore = defineStore("question", () => {
     selectedQuestion.value = q;
   };
 
+  const deleteQuestion = async (idx) => {
+    await axios.delete(`/api/question/delete/${idx}`);
+    await fetchQuestions();
+  };
+
+
   const refreshQuestionStatus = async (idx) => {
     try {
       const updated = await readQuestion(idx);
@@ -62,6 +68,7 @@ export const useQuestionStore = defineStore("question", () => {
     readQuestion,
     selectedQuestion,
     setSelectedQuestion,
-    refreshQuestionStatus
+    refreshQuestionStatus,
+    deleteQuestion,
   };
 });

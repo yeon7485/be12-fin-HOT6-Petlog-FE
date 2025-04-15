@@ -1,11 +1,25 @@
 <script setup>
-import { ref } from "vue";
+import { reactive } from "vue";
 import { useRouter } from "vue-router";
+import { useUserStore } from "../../stores/useUserStore";
 
 const router = useRouter();
-
 const toHome = () => {
   router.push("/");
+};
+
+const loginData = reactive({
+  email: "",
+  password: "",
+});
+
+const userStore = useUserStore();
+
+const login = async () => {
+  const result = await userStore.login(loginData);
+  console.log(result);
+  alert("로그인되었습니다.");
+  toHome();
 };
 </script>
 
@@ -13,20 +27,32 @@ const toHome = () => {
   <div class="login_container">
     <img src="/src/assets/images/logo.png" alt="logo" class="logo_img" @click="toHome" />
 
-    <div class="login_box">
+    <form class="login_box">
       <div class="form_group">
         <label for="email">이메일</label>
-        <input type="email" id="email" placeholder="이메일을 입력해주세요." />
+        <input
+          type="email"
+          id="email"
+          v-model="loginData.email"
+          autocomplete="username"
+          placeholder="이메일을 입력해주세요."
+        />
       </div>
 
       <div class="form_group">
         <label for="password">비밀번호</label>
-        <input type="password" id="password" placeholder="비밀번호를 입력해주세요." />
+        <input
+          type="password"
+          id="password"
+          v-model="loginData.password"
+          autocomplete="current-password"
+          placeholder="비밀번호를 입력해주세요."
+        />
       </div>
 
-      <button class="login_btn">로그인</button>
+      <button type="button" class="login_btn" @click="login">로그인</button>
 
-      <button class="kakao_btn">
+      <button type="button" class="kakao_btn">
         <img src="/src/assets/icons/kakao.png" alt="카카오 아이콘" class="kakao_icon" />
         카카오로 로그인
       </button>
@@ -35,7 +61,7 @@ const toHome = () => {
         아직 회원이 아니신가요?
         <router-link to="/user/signup" class="signup_link">회원가입</router-link>
       </p>
-    </div>
+    </form>
   </div>
 </template>
 

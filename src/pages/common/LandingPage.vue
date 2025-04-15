@@ -51,7 +51,7 @@ import logo from "/src/assets/images/logo.png";
   object-fit: contain;
 }
 
-.text_box {
+.text_box > p {
   text-align: center;
   line-height: 160%;
   font-family: Cafe24Ssurround;

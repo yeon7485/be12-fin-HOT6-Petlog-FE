@@ -130,9 +130,9 @@ const routes = [
     children: [
       { path: "information", component: InformationBoard },
       { path: "free", component: FreeBoard },
-      { path: ":boardType/post/:id/modify", component: PostRegister },
+      { path: ":boardType/post/:idx/modify", component: PostRegister },
       { path: ":boardType/register", component: PostRegister },
-      { path: ":boardType/post/:id", component: PostDetail },
+      { path: ":boardType/post/:idx", component: PostDetail },
 
       { path: "qna", component: QnaBoard },
       { path: "qna/register", component: QuestionRegister },

@@ -1,31 +1,36 @@
 <script setup>
 import { useRouter } from 'vue-router'
 
-const props = defineProps({ post: Object, boardType: String })
+const props = defineProps({
+  post: Object,
+  boardType: String,
+  index: Number
+})
+
 const router = useRouter()
 
 const goToDetail = () => {
-  router.push(`/board/${props.boardType}/post/${props.post.id}`)
+  router.push(`/board/${props.boardType}/post/${props.post.idx}`)
 }
 </script>
 
 <template>
   <tr class="post_row" @click="goToDetail">
-    <td>{{ post.id }}</td>
+    <td>{{ index }}</td>
     <td>{{ post.category }}</td>
     <td>
-  <span class="post_title">
-    {{ post.title }}
-    <img
-      v-if="post.imageUrl"
-      src="/src/assets/icons/image.png"
-      alt="image"
-      class="image_icon"
-    />
-  </span>
-</td>
+      <span class="post_title">
+        {{ post.title }}
+        <img
+          v-if="post.imageUrl"
+          src="/src/assets/icons/image.png"
+          alt="image"
+          class="image_icon"
+        />
+      </span>
+    </td>
     <td>{{ post.writer }}</td>
-    <td>{{ post.date }}</td>
+    <td>{{ post.createdAt }}</td>
   </tr>
 </template>
 

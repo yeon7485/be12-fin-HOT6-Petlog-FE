@@ -1,42 +1,58 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useBoardStore } from '/src/stores/useBoardStore'
+import axios from 'axios'
 import { useCommentStore } from '/src/stores/useCommentStore'
 import CommentCard from './components/CommentCard.vue'
 
 const route = useRoute()
 const router = useRouter()
-const boardStore = useBoardStore()
 const commentStore = useCommentStore()
 
-const postId = Number(route.params.id)
+const postIdx = Number(route.params.idx)
+const boardType = route.params.boardType
 const post = ref(null)
 
 onMounted(async () => {
-  await boardStore.fetchPosts(route.params.boardType)
-  post.value = boardStore.posts.find(p => p.id === postId)
-  commentStore.fetchComments(postId)
+  try {
+    const res = await axios.get(`/api/post/read/${postIdx}`)
+    post.value = res.data
+    await commentStore.fetchComments(postIdx)
+  } catch (err) {
+    console.error('게시글 조회 실패:', err)
+  }
 })
 
 const goToModify = () => {
   router.push({
-    path: `/board/${route.params.boardType}/post/${postId}/modify`,
+    path: `/board/${boardType}/post/${postIdx}/modify`,
     state: { post: post.value }
   })
 }
 
-const confirmDeletePost = () => {
+const confirmDeletePost = async () => {
   if (window.confirm('게시글을 삭제하시겠습니까?')) {
-    alert('게시글이 삭제되었습니다.')
-    router.push(`/board/${route.params.boardType}`)
+    try {
+      await axios.delete(`/api/post/delete/${postIdx}`)
+      alert('게시글이 삭제되었습니다.')
+      router.push(`/board/${boardType}`)
+    } catch (err) {
+      console.error('삭제 실패:', err)
+      alert('삭제에 실패하였습니다.')
+    }
   }
 }
 
 const newComment = ref('')
-const addComment = () => {
-  if (newComment.value.trim() === '') return
-  commentStore.addComment({ postId, text: newComment.value })
+const addComment = async () => {
+  if (!newComment.value.trim()) return
+
+  await commentStore.addComment({
+    postIdx: postIdx,
+    writer: '현재 사용자', 
+    text: newComment.value
+  })
+
   newComment.value = ''
 }
 </script>
@@ -52,7 +68,7 @@ const addComment = () => {
           <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
           <span class="nickname">{{ post.writer }}</span>
           <span class="divider">ㅣ</span>
-          <span class="date">{{ post.date }}</span>
+          <span class="date">{{ post.createdAt }}</span>
         </div>
         <div class="icons">
           <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="goToModify" />
@@ -63,7 +79,6 @@ const addComment = () => {
       <hr class="divider_line" />
 
       <div class="content_area">
-        <!-- 강아지 이미지가 있을 경우 아래와 같이 출력 -->
         <img v-if="post.imageUrl" :src="post.imageUrl" alt="강아지 이미지" class="dog_img" />
         <p class="description">{{ post.contents || '게시글 내용이 없습니다.' }}</p>
       </div>
@@ -88,9 +103,9 @@ const addComment = () => {
 
     <CommentCard
       v-for="comment in commentStore.comments"
-      :key="comment.id"
+      :key="comment.idx"
       :comment="comment"
-      :post-id="postId"
+      :post-idx="postIdx"
     />
   </div>
 </template>
@@ -194,7 +209,6 @@ const addComment = () => {
   margin-bottom: 10px;
 }
 
-/* ⬇ 댓글 영역 */
 .comment_section {
   width: 100%;
   max-width: 1000px;
@@ -291,4 +305,3 @@ const addComment = () => {
   cursor: pointer;
 }
 </style>
-

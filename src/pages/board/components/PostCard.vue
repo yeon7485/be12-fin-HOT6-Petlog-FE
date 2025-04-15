@@ -30,7 +30,7 @@ const goToDetail = () => {
       </span>
     </td>
     <td>{{ post.writer }}</td>
-    <td>{{ post.createdAt }}</td>
+    <td>{{ post.created_at }}</td>
   </tr>
 </template>
 

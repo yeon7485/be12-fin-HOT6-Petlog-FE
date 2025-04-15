@@ -14,11 +14,11 @@ export const useAnswerStore = defineStore("answer", () => {
     }
   };
 
-  const registerAnswer = async (questionIdx, contents) => {
+  const registerAnswer = async (questionIdx, content) => {
     try {
       await axios.post("/api/answer/register", {
         questionIdx,
-        contents,
+        content,
       });
     } catch (err) {
       console.error("답변 등록 실패:", err);

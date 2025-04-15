@@ -68,7 +68,7 @@ const addComment = async () => {
           <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
           <span class="nickname">{{ post.writer }}</span>
           <span class="divider">ㅣ</span>
-          <span class="date">{{ post.createdAt }}</span>
+          <span class="date">{{ post.created_at }}</span>
         </div>
         <div class="icons">
           <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="goToModify" />
@@ -80,11 +80,10 @@ const addComment = async () => {
 
       <div class="content_area">
         <img v-if="post.imageUrl" :src="post.imageUrl" alt="강아지 이미지" class="dog_img" />
-        <p class="description">{{ post.contents || '게시글 내용이 없습니다.' }}</p>
+        <p class="description">{{ post.content || '게시글 내용이 없습니다.' }}</p>
       </div>
     </div>
   </div>
-
   <div class="comment_section">
     <label class="comment_label">
       <img class="label_icon" src="/src/assets/icons/write-letter.png" alt="댓글 아이콘" />

@@ -27,17 +27,13 @@ const toHome = () => {
       <button class="login_btn">로그인</button>
 
       <button class="kakao_btn">
-        <img
-          src="/src/assets/icons/kakao.png"
-          alt="카카오 아이콘"
-          class="kakao_icon"
-        />
+        <img src="/src/assets/icons/kakao.png" alt="카카오 아이콘" class="kakao_icon" />
         카카오로 로그인
       </button>
 
       <p class="signup_text">
         아직 회원이 아니신가요?
-        <router-link to="/signup" class="signup_link">회원가입</router-link>
+        <router-link to="/user/signup" class="signup_link">회원가입</router-link>
       </p>
     </div>
   </div>

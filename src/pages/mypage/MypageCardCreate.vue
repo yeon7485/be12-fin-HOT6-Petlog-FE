@@ -49,12 +49,16 @@ const saveCard = async () => {
     const petData = {
       name: card.value.name,
       gender: card.value.gender,
-      neutering: card.value.isNeutering,  // 중성화 여부
+      isNeutering: card.value.isNeutering,  // 중성화 여부
       birthDate: card.value.birthDate,
       breed: card.value.breed,
       specificInformation: card.value.specificInformation,  // 특이사항
       userId: card.value.userId,
     };
+
+    console.log("중성화 여부:", typeof(petData.isNeutering));
+    
+    console.log("중성화 여부:", (petData.isNeutering)); // 값을 로그로 확인
 
     // JSON 데이터를 FormData로 추가
     formData.append(

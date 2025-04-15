@@ -16,9 +16,8 @@ const toggleAlert = () => (alertOpen.value = !alertOpen.value);
 
 const goToMyPage = () => router.push("/mypage");
 const logout = () => {
-  alert("로그아웃 되었습니다.");
-  document.cookie = "ATOKEN=; Max-Age=0; path=/";
   userStore.logout();
+  alert("로그아웃 되었습니다.");
   router.push("/");
 };
 

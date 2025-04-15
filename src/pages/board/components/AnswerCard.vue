@@ -1,31 +1,32 @@
 <script setup>
-import { useAnswerStore } from '/src/stores/useAnswerStore';
-import { useQuestionStore } from '/src/stores/useQuestionStore';
-import { useRoute } from 'vue-router';
+import { useAnswerStore } from '/src/stores/useAnswerStore'
+import { useQuestionStore } from '/src/stores/useQuestionStore'
+import { useRoute } from 'vue-router'
 
-const answerStore = useAnswerStore();
-const questionStore = useQuestionStore();
-const route = useRoute();
-const questionIdx = Number(route.params.questionId); 
+const emit = defineEmits(['modify', 'delete', 'select'])
 
 const props = defineProps({
   answer: Object,
-});
+})
+
+const answerStore = useAnswerStore()
+const questionStore = useQuestionStore()
+const route = useRoute()
+const questionIdx = Number(route.params.questionId)
 
 const confirmAndSelect = async () => {
-  const confirmed = window.confirm("이 답변을 채택하시겠습니까?");
-  if (!confirmed) return;
+  const confirmed = window.confirm('이 답변을 채택하시겠습니까?')
+  if (!confirmed) return
 
   try {
-    await answerStore.selectAnswer(props.answer.idx);
-    await questionStore.refreshQuestionStatus(questionIdx); 
-    alert("채택이 완료되었습니다.");
+    await answerStore.selectAnswer(props.answer.idx)
+    await questionStore.refreshQuestionStatus(questionIdx)
+    alert('채택이 완료되었습니다.')
   } catch (e) {
-    alert("채택 실패");
+    alert('채택 실패')
   }
-};
+}
 </script>
-
 
 <template>
   <div class="answer_card" :class="{ selected: answer.selected }">
@@ -37,16 +38,29 @@ const confirmAndSelect = async () => {
         <span class="date">{{ answer.created_at }}</span>
       </div>
 
-      <div v-if="answer.selected" class="selected_badge">
-        <img src="/src/assets/icons/select.png" class="badge_icon" alt="채택 아이콘" />
-        <span class="selected_text">질문자가 채택한 답변</span>
+      <div class="icons">
+        <template v-if="answer.selected">
+          <div class="selected_badge">
+            <img src="/src/assets/icons/select.png" class="badge_icon" alt="채택 아이콘" />
+            <span class="selected_text">질문자가 채택한 답변</span>
+          </div>
+        </template>
+        <template v-else>
+          <img
+            src="/src/assets/icons/write.png"
+            class="icon_btn"
+            alt="수정 아이콘"
+            @click="emit('modify', answer.idx)"
+          />
+          <img
+            src="/src/assets/icons/x-button.png"
+            class="icon_btn"
+            alt="삭제 아이콘"
+            @click="emit('delete', answer.idx)"
+          />
+        </template>
       </div>
-
-      <div v-else class="icons">
-        <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="emit('modify', answer.idx)" />
-        <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="emit('delete', answer.idx)" />
-      </div>
-    </div>  
+    </div>
 
     <div class="comment_body">
       <img v-if="answer.image" class="answer_img" :src="answer.image" alt="답변 이미지" />
@@ -57,10 +71,11 @@ const confirmAndSelect = async () => {
       v-if="!answer.selected && !answerStore.answers.some(a => a.selected)"
       class="select_btn_area"
     >
-      <button class="select_btn" @click="confirmAndSelect('select', answer.idx)">채택하기</button>
+      <button class="select_btn" @click="confirmAndSelect">채택하기</button>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .answer_card {
@@ -88,6 +103,16 @@ const confirmAndSelect = async () => {
   height: 32px;
   border-radius: 50%;
 }
+.nickname {
+  font-weight: bold;
+}
+.divider {
+  color: #aaa;
+}
+.date {
+  color: #888;
+  font-size: 13px;
+}
 .selected_badge {
   display: flex;
   align-items: center;
@@ -97,8 +122,8 @@ const confirmAndSelect = async () => {
   font-weight: 500;
 }
 .badge_icon {
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
 }
 .comment_body {
   font-size: 15px;
@@ -109,12 +134,13 @@ const confirmAndSelect = async () => {
   width: 100%;
   max-width: 120px;
   border-radius: 8px;
-  margin-bottom: 10px;
+  margin-top: 10px;
   display: block;
 }
 .icons {
   display: flex;
-  gap: 15px;
+  align-items: center;
+  gap: 12px;
 }
 .icon_btn {
   width: 18px;

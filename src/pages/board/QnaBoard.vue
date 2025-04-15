@@ -46,7 +46,7 @@ async function triggerSearch() {
 }
 
 function goToRegister() {
-  router.push('/board/qna/register')
+  router.push('/board/qna/create')
 }
 </script>
 

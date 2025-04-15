@@ -77,7 +77,7 @@ const handleSubmit = async () => {
     if (isEdit) {
       alert('수정이 완료되었습니다')
     } else {
-      await axios.post('/api/post/register', {
+      await axios.post('/api/post/create', {
         ...form.value,
         boardType: form.value.boardType
       })

@@ -17,7 +17,7 @@ export const useQuestionStore = defineStore("question", () => {
 
   const createQuestion = async (questionData) => {
     try {
-      const res = await axios.post("/api/question/register", questionData);
+      const res = await axios.post("/api/question/create", questionData);
       return res.data;
     } catch (error) {
       console.error("질문 등록 실패:", error);

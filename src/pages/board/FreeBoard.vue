@@ -35,7 +35,7 @@ const triggerSearch = async () => {
 
 
 const goToWritePage = () => {
-  router.push("/board/free/register")
+  router.push("/board/free/create")
 }
 
 onMounted(() => {

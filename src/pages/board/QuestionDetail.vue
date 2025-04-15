@@ -71,7 +71,7 @@ const goToModify = () => {
 
 const goToRegister = () => {
   questionStore.setSelectedQuestion(question.value)
-  router.push(`/board/qna/${question.value.idx}/answer/register`)
+  router.push(`/board/qna/${question.value.idx}/answer/create`)
 }
 </script>
 

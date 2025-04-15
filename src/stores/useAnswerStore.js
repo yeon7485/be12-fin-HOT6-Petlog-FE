@@ -16,7 +16,7 @@ export const useAnswerStore = defineStore("answer", () => {
 
   const registerAnswer = async (questionIdx, content) => {
     try {
-      await axios.post("/api/answer/register", {
+      await axios.post("/api/answer/create", {
         questionIdx,
         content,
       });

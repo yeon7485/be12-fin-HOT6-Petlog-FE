@@ -43,7 +43,7 @@ onMounted(async () => {
     await answerStore.fetchAnswersByQuestionId(questionId)
     const target = answerStore.getAnswerById(answerId)
     if (target) {
-      content.value = target.contents
+      content.value = target.content
       originalImage.value = target.image
       previewImage.value = target.image
     }
@@ -96,7 +96,7 @@ const handleSubmit = async () => {
 
         <div class="content_area">
           <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
-          <p class="description">{{ question.contents }}</p>
+          <p class="description">{{ question.content }}</p>
           <div class="hashtags">
             <span v-for="tag in question.tags" :key="tag"># {{ tag }}</span>
           </div>

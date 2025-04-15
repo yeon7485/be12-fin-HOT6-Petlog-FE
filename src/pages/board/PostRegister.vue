@@ -3,14 +3,15 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBoardStore } from '/src/stores/useBoardStore'
 import AnimalCardModal from '/src/pages/board/components/AnimalCardModal.vue'
+import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
 const boardStore = useBoardStore()
 
-const postId = route.params.id ? Number(route.params.id) : null
+const postIdx = route.params.idx ? Number(route.params.idx) : null
 const boardTypeFromRoute = route.params.boardType || ''
-const isEdit = !!postId
+const isEdit = !!postIdx
 
 const boardTypes = [
   { value: 'free', label: '자유 게시판' },
@@ -24,7 +25,8 @@ const form = ref({
   category: '',
   title: '',
   contents: '',
-  images: []
+  images: [],
+  writer: '익명' 
 })
 
 const previewImages = ref([])
@@ -32,12 +34,12 @@ const previewImages = ref([])
 onMounted(async () => {
   if (isEdit) {
     await boardStore.fetchPosts(boardTypeFromRoute)
-    const target = boardStore.posts.find(p => p.id === postId)
+    const target = boardStore.posts.find(p => p.idx === postIdx)
     if (target) {
       form.value.boardType = target.boardType || boardTypeFromRoute
       form.value.category = target.category || ''
       form.value.title = target.title || ''
-      form.value.contents = target.contents || target.contents || ''
+      form.value.contents = target.contents || ''
     }
   }
 })
@@ -60,19 +62,32 @@ const handleCancel = () => {
   const confirmed = window.confirm('작성을 취소하시겠습니까?')
   if (confirmed) {
     if (isEdit) {
-      router.push(`/board/${form.value.boardType}/post/${postId}`)
+      router.push(`/board/${form.value.boardType}/post/${postIdx}`)
     } else {
       router.push(`/board/${form.value.boardType}`)
     }
   }
 }
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   const confirmed = window.confirm(isEdit ? '수정하시겠습니까?' : '등록하시겠습니까?')
   if (!confirmed) return
 
-  const action = isEdit ? '수정' : '등록'
-  alert(`${action}이 완료되었습니다`) 
+  try {
+    if (isEdit) {
+      alert('수정이 완료되었습니다')
+    } else {
+      await axios.post('/api/post/register', {
+        ...form.value,
+        boardType: form.value.boardType
+      })
+      alert('등록이 완료되었습니다')
+      router.push(`/board/${form.value.boardType}`)
+    }
+  } catch (err) {
+    console.error('처리 실패:', err)
+    alert('작업에 실패하였습니다')
+  }
 }
 
 const isModalOpen = ref(false)

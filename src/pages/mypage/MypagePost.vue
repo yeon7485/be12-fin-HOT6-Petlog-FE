@@ -1,3 +1,26 @@
+<script setup>
+import { ref, computed } from "vue";
+
+// 게시글 데이터 (백엔드 API에서 불러올 수도 있음)
+const posts = ref([
+  { category: "자유게시판", title: "자유게시판 글 제목입니다. 자유게시판 글 제목입니다.", author: "구름봄", date: "20:30" },
+  { category: "분양 홍보", title: "자유게시판 글 제목입니다.", author: "구름봄", date: "25.1.24" },
+  { category: "정보공유", title: "자유게시판 글 제목입니다.", author: "구름봄", date: "22.12.25", commentCount: 14 },
+]);
+
+// 페이지네이션 관련 데이터
+const currentPage = ref(1);
+const itemsPerPage = 10; // 한 페이지에 보여줄 글 개수
+const totalPages = computed(() => Math.ceil(posts.value.length / itemsPerPage));
+
+const prevPage = () => {
+  if (currentPage.value > 1) currentPage.value--;
+};
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) currentPage.value++;
+};
+</script>
+
 <template>
   <div class="mypage-posts">
     <h2 class="title">내가 쓴 글</h2>
@@ -33,29 +56,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, computed } from "vue";
-
-// 게시글 데이터 (백엔드 API에서 불러올 수도 있음)
-const posts = ref([
-  { category: "자유게시판", title: "자유게시판 글 제목입니다. 자유게시판 글 제목입니다.", author: "구름봄", date: "20:30" },
-  { category: "분양 홍보", title: "자유게시판 글 제목입니다.", author: "구름봄", date: "25.1.24" },
-  { category: "정보공유", title: "자유게시판 글 제목입니다.", author: "구름봄", date: "22.12.25", commentCount: 14 },
-]);
-
-// 페이지네이션 관련 데이터
-const currentPage = ref(1);
-const itemsPerPage = 10; // 한 페이지에 보여줄 글 개수
-const totalPages = computed(() => Math.ceil(posts.value.length / itemsPerPage));
-
-const prevPage = () => {
-  if (currentPage.value > 1) currentPage.value--;
-};
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) currentPage.value++;
-};
-</script>
 
 <style scoped>
 .mypage-posts {

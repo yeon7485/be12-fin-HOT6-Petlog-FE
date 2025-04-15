@@ -77,7 +77,11 @@ const routes = [
       { path: "signup", component: Signup },
     ],
   },
-
+  {
+    path: '/mypage/card/detail/:petId',
+    name: 'PetDetail',
+    component: () => import('../pages/mypage/MypageCardDetail.vue')
+  },
   {
     path: "/mypage",
     component: Mypage,
@@ -86,11 +90,6 @@ const routes = [
       { path: "profile", component: MypageProfile },
       { path: "cardlist", component: MypageCardList },
       { path: "card/create", component: MypageCardCreate },
-      {
-        path: "card/detail",
-        name: "MypageCardDetail",
-        component: CardDetail,
-      },
       {
         path: "card/change",
         name: "MypageCardChange",

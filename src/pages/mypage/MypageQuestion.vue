@@ -1,3 +1,9 @@
+<script>
+export default {
+  name: "QuestionCard",
+};
+</script>
+
 <template>
   <div class="container">
     <h2 class="title">나의 질문</h2>
@@ -25,11 +31,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "QuestionCard",
-};
-</script>
 
 <style scoped>
 .container {

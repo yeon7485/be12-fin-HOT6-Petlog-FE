@@ -1,17 +1,27 @@
 <script setup>
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useMypageCard } from '../../stores/useMypageCard.js'  // ✅ 올바른 경로 구분자 사용
+import { useMypageCard } from '../../stores/useMypageCard.js'
+import { storeToRefs } from 'pinia'
 import PetCard from '../../pages/mypage/components/MypagePetCard.vue'
 
-const { pets } = useMypageCard()
+const store = useMypageCard()
+const { fetchPets } = store
+const { pets } = storeToRefs(store) // ✅ 반응형 연결
+
 const router = useRouter()
+const userId = 1
+
+onMounted(async () => {
+  await fetchPets(userId)
+})
 
 const goToCreateCard = () => {
   router.push('/mypage/card/create')
 }
 
 const goToDetail = (pet) => {
-  router.push('/mypage/card/detail')
+  router.push(`/mypage/card/detail/${pet.idx}`)
 }
 </script>
 
@@ -22,14 +32,15 @@ const goToDetail = (pet) => {
       <button class="add-button" @click="goToCreateCard">➕</button>
     </div>
 
-    <div class="pet-cards">
+    <div class="pet-cards" v-if="pets.length">
       <PetCard
         v-for="pet in pets"
-        :key="pet.id"
+        :key="pet.idx"
         :pet="pet"
-        @click="goToDetail"
+        @click="() => goToDetail(pet)"
       />
     </div>
+    <div v-else style="margin-top: 150px;">반려동물이 없습니다.</div>
   </div>
 </template>
 

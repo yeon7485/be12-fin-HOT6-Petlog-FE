@@ -50,6 +50,16 @@ export const useUserStore = defineStore("user", {
       }
     },
 
+    // async kakaoLogin() {
+    //   try {
+    //     const response = await axios.get("/api/oauth2/authorization/kakao");
+    //     console.log(response);
+    //   } catch (error) {
+    //     alert("로그인에 실패하였습니다.");
+    //     console.error(error);
+    //   }
+    // },
+
     async loginCheck() {
       try {
         const response = await axios.get("/api/user/auth/check", {
@@ -59,6 +69,7 @@ export const useUserStore = defineStore("user", {
         if (response.data.result.login) {
           this.isLogin = response.data.result.login;
           this.nickname = response.data.result.nickname;
+          console.log(response.data);
         } else {
           this.isLogin = false;
         }

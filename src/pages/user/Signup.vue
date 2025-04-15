@@ -32,6 +32,11 @@ const handleSignup = async () => {
     router.push("/user/login");
   }
 };
+
+const kakaoSignup = () => {
+  window.location.href = import.meta.env.VITE_KAKAO_LOGIN_URL;
+  alert("회원가입되었습니다.");
+};
 </script>
 
 <template>
@@ -88,7 +93,7 @@ const handleSignup = async () => {
 
       <button type="button" class="signup_btn" @click="handleSignup">회원가입</button>
 
-      <button type="button" class="kakao_btn">
+      <button type="button" class="kakao_btn" @click="kakaoSignup">
         <img src="/src/assets/icons/kakao.png" alt="카카오 아이콘" class="kakao_icon" />
         카카오로 회원가입
       </button>

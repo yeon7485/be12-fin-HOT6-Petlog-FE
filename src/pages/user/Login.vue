@@ -21,6 +21,11 @@ const login = async () => {
   alert("로그인되었습니다.");
   toHome();
 };
+
+const kakaoLogin = () => {
+  window.location.href = import.meta.env.VITE_KAKAO_LOGIN_URL;
+  alert("로그인 되었습니다.");
+};
 </script>
 
 <template>
@@ -52,7 +57,7 @@ const login = async () => {
 
       <button type="button" class="login_btn" @click="login">로그인</button>
 
-      <button type="button" class="kakao_btn">
+      <button type="button" class="kakao_btn" @click="kakaoLogin">
         <img src="/src/assets/icons/kakao.png" alt="카카오 아이콘" class="kakao_icon" />
         카카오로 로그인
       </button>

@@ -6,6 +6,17 @@
       message.type + '-message',
     ]"
   >
+    <!-- ✅ 상대방 메시지일 경우 유저 정보 표시 -->
+    <template v-if="!isMine">
+      <div class="user-info">
+        <img
+          :src="message.profileImage || defaultProfile"
+          class="profile-img"
+        />
+        <div class="username">{{ message.username || "알 수 없음" }}</div>
+      </div>
+    </template>
+
     <!-- 텍스트 메시지 -->
     <template v-if="message.type === 'text'">
       <div class="chat-bubble">{{ message.text }}</div>

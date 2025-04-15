@@ -92,6 +92,9 @@ const currentUserId = 1; // 실제론 로그인된 유저 ID
 
 onMounted(() => {
   chatStore.getRoomInfo(chatroomIdx);
+  chatStore.connectStomp(1, () => {
+    console.log("🟢 연결된 후 실행할 추가 작업!");
+  });
 });
 
 // 더미 테스트용 객체 예시 (실제 데이터와 연결 시 수정 가능)

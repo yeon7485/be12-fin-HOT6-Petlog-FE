@@ -18,6 +18,10 @@
 <script setup>
 import { ref } from "vue";
 import { useChatStore } from "../../../stores/useChatStroe";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const chatroomIdx = route.params.chatroomIdx;
 
 const chatStore = useChatStore();
 const message = ref("");
@@ -25,7 +29,7 @@ const message = ref("");
 const send = () => {
   console.log("test");
   if (message.value.trim()) {
-    chatStore.sendMessage(message.value, chatStore.currentUserId); // currentUserId를 store에 저장한 경우
+    chatStore.sendMessage(message.value, chatroomIdx); // currentUserId를 store에 저장한 경우
     message.value = "";
   }
 

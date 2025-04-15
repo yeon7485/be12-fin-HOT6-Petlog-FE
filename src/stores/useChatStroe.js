@@ -18,36 +18,42 @@ export const useChatStore = defineStore("chat", {
     myInfo: {},
     messages: [],
     stompClient: null,
+    currentUserId: 2,
   }),
 
   actions: {
     connectStomp(roomId, onConnectedCallback) {
-      const socket = new SockJS("http://localhost:8080/ws-stomp");
+      const socket = new SockJS("/ws");
 
       this.stompClient = new Client({
         webSocketFactory: () => socket,
         reconnectDelay: 5000,
+
         onConnect: () => {
           console.log("✅ STOMP 연결 성공");
 
-          this.stompClient.subscribe(`/sub/chat/room/${roomId}`, (message) => {
-            const msg = JSON.parse(message.body);
-            this.receiveMessage(msg);
-          });
+          // 채팅방 구독
+          this.stompClient.subscribe(
+            `/topic/chat/room/${roomId}`,
+            (message) => {
+              const msg = JSON.parse(message.body);
+              this.receiveMessage(msg);
+            }
+          );
 
           if (onConnectedCallback) onConnectedCallback();
         },
+
         onStompError: (frame) => {
-          console.error("STOMP 오류 발생:", frame);
+          console.error("❌ STOMP 오류 발생:", frame);
         },
       });
 
-      this.stompClient.activate();
+      this.stompClient.activate(); // 연결 시작
     },
 
-    sendMessage(text, userId, roomId) {
+    sendMessage(text, roomId) {
       const msg = {
-        senderId: userId,
         chatroomId: roomId,
         type: "text",
         text,
@@ -56,7 +62,7 @@ export const useChatStore = defineStore("chat", {
 
       if (this.stompClient && this.stompClient.connected) {
         this.stompClient.publish({
-          destination: "/pub/chat/message",
+          destination: `/app/chat/${roomId}`,
           body: JSON.stringify(msg),
         });
         this.messages.push(msg); // Optimistic UI
@@ -333,6 +339,10 @@ export const useChatStore = defineStore("chat", {
         this.myInfo = response.data;
         console.log(this.myInfo);
       } catch (err) {}
+    },
+
+    receiveMessage(msg) {
+      this.messages.push(msg);
     },
 
     selectRoom(room) {

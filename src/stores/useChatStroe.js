@@ -1,6 +1,8 @@
 // stores/chat.js
 import { defineStore } from "pinia";
 import axios from "axios";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 
 export const useChatStore = defineStore("chat", {
   state: () => ({
@@ -14,9 +16,61 @@ export const useChatStore = defineStore("chat", {
     userPets: [],
     ChatRoomScheculeDetail: [],
     myInfo: {},
+    messages: [],
+    stompClient: null,
+    currentUserId: 2,
   }),
 
   actions: {
+    connectStomp(roomId, onConnectedCallback) {
+      const socket = new SockJS("/ws");
+
+      this.stompClient = new Client({
+        webSocketFactory: () => socket,
+        reconnectDelay: 5000,
+
+        onConnect: () => {
+          console.log("✅ STOMP 연결 성공");
+
+          // 채팅방 구독
+          this.stompClient.subscribe(
+            `/topic/chat/room/${roomId}`,
+            (message) => {
+              const msg = JSON.parse(message.body);
+              this.receiveMessage(msg);
+            }
+          );
+
+          if (onConnectedCallback) onConnectedCallback();
+        },
+
+        onStompError: (frame) => {
+          console.error("❌ STOMP 오류 발생:", frame);
+        },
+      });
+
+      this.stompClient.activate(); // 연결 시작
+    },
+
+    sendMessage(text, roomId) {
+      const msg = {
+        chatroomId: roomId,
+        type: "text",
+        text,
+        timestamp: new Date().toISOString(),
+      };
+
+      if (this.stompClient && this.stompClient.connected) {
+        this.stompClient.publish({
+          destination: `/app/chat/${roomId}`,
+          body: JSON.stringify(msg),
+        });
+        this.messages.push(msg); // Optimistic UI
+      } else {
+        console.warn("⛔ STOMP 연결되지 않음 (테스트 메시지 추가)");
+        this.messages.push({ ...msg, testMode: true });
+      }
+    },
     async submitScheduleParticipation(chatroomIdx, animalIds) {
       try {
         // const response = await axios.post(
@@ -38,17 +92,6 @@ export const useChatStore = defineStore("chat", {
         this.chatMessages = data;
       } catch (err) {
         console.error("💥 메시지 불러오기 실패:", err);
-      }
-    },
-
-    async sendMessage(roomId, messageContent) {
-      try {
-        const { data } = await axios.post(`/api/chatroom/${roomId}/messages`, {
-          message: messageContent,
-        });
-        this.chatMessages.push(data);
-      } catch (err) {
-        console.error("💥 메시지 전송 실패:", err);
       }
     },
 
@@ -201,6 +244,26 @@ export const useChatStore = defineStore("chat", {
               time: "25.04.12 11:00",
               place: "서울숲 산책",
             },
+            {
+              idx: roomIdx,
+              time: "25.04.12 11:00",
+              place: "서울숲 산책",
+            },
+            {
+              idx: roomIdx,
+              time: "25.04.12 11:00",
+              place: "서울숲 산책",
+            },
+            {
+              idx: roomIdx,
+              time: "25.04.12 11:00",
+              place: "서울숲 산책",
+            },
+            {
+              idx: roomIdx,
+              time: "25.04.12 11:00",
+              place: "서울숲 산책",
+            },
           ],
         };
         this.chatRoomScheduleList = response.data;
@@ -276,6 +339,10 @@ export const useChatStore = defineStore("chat", {
         this.myInfo = response.data;
         console.log(this.myInfo);
       } catch (err) {}
+    },
+
+    receiveMessage(msg) {
+      this.messages.push(msg);
     },
 
     selectRoom(room) {

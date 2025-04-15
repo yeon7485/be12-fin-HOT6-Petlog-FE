@@ -1,47 +1,90 @@
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router"; // ✅ 라우터 사용
+import axios from "axios";
 
-// 프로필 이미지 상태 (기본 이미지 설정)
-const profileImage = ref("/src/assets/images/cat2.jpg");
+const router = useRouter(); // ✅ 인스턴스
 
-// 카드 정보
+const profileImage = ref("");
+
 const card = ref({
-  name: "빙봉",
-  gender: "female",
-  neutered: true,
-  birthDate: "2017-04-01", // 기본 날짜 설정
-  breed: "코리안숏헤어",
-  notes: "성격 다정함\n꼬리가 짧아요",
+  name: "",
+  gender: "",
+  isNeutering: false, // 기본값은 false (체크되지 않은 상태)
+  birthDate: "",
+  breed: "",
+  specificInformation: "",
+  userId: 1, 
 });
 
 // 파일 입력 요소 참조
 const fileInput = ref(null);
 
-// 저장 버튼 클릭 시 실행될 함수
-const saveCard = () => {
-  console.log("카드 저장됨:", card.value);
-};
-
-// 취소 버튼 클릭 시 실행될 함수
-const cancel = () => {
-  console.log("취소됨");
-};
+// 이미지 파일 객체
+const selectedFile = ref(null);
 
 // 파일 선택 창 열기
 const triggerFileInput = () => {
-  fileInput.value.click(); // input 요소 클릭
+  fileInput.value.click();
 };
 
 // 파일 업로드 함수
 const uploadImage = (event) => {
-  const file = event.target.files[0]; // 사용자가 선택한 파일
+  const file = event.target.files[0];
   if (file) {
+    selectedFile.value = file;
     const reader = new FileReader();
     reader.onload = (e) => {
-      profileImage.value = e.target.result; // 이미지 미리보기 적용
+      profileImage.value = e.target.result;
     };
     reader.readAsDataURL(file);
   }
+};
+
+// 카드 저장 함수
+const saveCard = async () => {
+  try {
+    const formData = new FormData();
+
+    const petData = {
+      name: card.value.name,
+      gender: card.value.gender,
+      neutering: card.value.isNeutering,  // 중성화 여부
+      birthDate: card.value.birthDate,
+      breed: card.value.breed,
+      specificInformation: card.value.specificInformation,  // 특이사항
+      userId: card.value.userId,
+    };
+
+    // JSON 데이터를 FormData로 추가
+    formData.append(
+      "pet",
+      new Blob([JSON.stringify(petData)], { type: "application/json" })
+    );
+
+    // 프로필 이미지 추가
+    if (selectedFile.value) {
+      formData.append("profileImage", selectedFile.value);
+    }
+
+    // 서버로 FormData 전송 (multipart/form-data)
+    const response = await axios.post("http://localhost:8080/pet/create", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    alert("카드가 성공적으로 생성되었습니다!");
+    router.push("/mypage/cardlist"); // ✅ 저장 후 이동
+  } catch (err) {
+    console.error("카드 등록 실패:", err);
+    alert("등록 중 오류가 발생했습니다.");
+  }
+};
+
+// 취소 버튼 클릭 시 실행될 함수
+const cancel = () => {
+  router.push("/mypage/cardlist"); // ✅ 취소 시 이동
 };
 </script>
 
@@ -60,9 +103,8 @@ const uploadImage = (event) => {
       <label>이름</label>
       <input type="text" v-model="card.name" placeholder="이름 입력" />
 
-      <!-- 성별 + 중성화 여부 (한 줄 배치) -->
+      <!-- 성별 + 중성화 여부 -->
       <div class="gender-neuter-group">
-        <!-- 성별 -->
         <div class="gender-section">
           <label>성별</label>
           <div class="gender-buttons">
@@ -77,17 +119,16 @@ const uploadImage = (event) => {
           </div>
         </div>
 
-        <!-- 중성화 여부 -->
         <div class="neuter-section">
           <label>중성화 여부</label>
           <label class="neutered">
-            <input type="checkbox" v-model="card.neutered" />
+            <input type="checkbox" v-model="card.isNeutering" />
             <span></span>
           </label>
         </div>
       </div>
 
-      <!-- 생일 (달력 입력) -->
+      <!-- 생일 -->
       <label>생일</label>
       <input type="date" v-model="card.birthDate" class="birth-input" />
 
@@ -97,14 +138,14 @@ const uploadImage = (event) => {
 
       <!-- 특이사항 -->
       <label>특이사항</label>
-      <textarea v-model="card.notes" placeholder="특이사항 입력"></textarea>
+      <textarea v-model="card.specificInformation" placeholder="특이사항 입력"></textarea>
 
       <!-- 버튼 그룹 -->
       <div class="button-group">
         <button class="cancel-btn" @click="cancel">취소</button>
         <button class="save-btn" @click="saveCard">저장</button>
       </div>
-    </div>
+    </div>  
   </div>
 </template>
 
@@ -116,14 +157,12 @@ const uploadImage = (event) => {
   margin-right: 400px;
 }
 
-/* 전체 컨테이너 */
 .card-form {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* 폼 컨테이너 */
 .form-container {
   background: #f8f1ea;
   border-radius: 12px;
@@ -132,7 +171,6 @@ const uploadImage = (event) => {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* 프로필 사진 */
 .profile-section {
   display: flex;
   flex-direction: column;
@@ -155,7 +193,6 @@ const uploadImage = (event) => {
   margin-top: 5px;
 }
 
-/* 입력 필드 스타일 */
 label {
   display: block;
   font-weight: bold;
@@ -170,21 +207,18 @@ textarea {
   margin-top: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: white; /* ✅ 배경색 흰색으로 고정 */
-  color: #000; /* 텍스트 색은 검정색 */
+  background-color: white;
+  color: #000;
 }
 
-/* 성별 + 중성화 여부 한 줄 정렬 */
 .gender-neuter-group {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 10px;
   gap: 70px;
-  
 }
 
-/* 성별 */
 .gender-section {
   display: flex;
   flex-direction: column;
@@ -196,8 +230,9 @@ textarea {
   display: flex;
   gap: 10px;
 }
+
 .gender-buttons span {
-  font-size: 30px; /* 성별 아이콘 크기 증가 */
+  font-size: 30px;
 }
 
 .gender-buttons label {
@@ -206,7 +241,6 @@ textarea {
   gap: 5px;
 }
 
-/* 중성화 여부 */
 .neuter-section {
   display: flex;
   flex-direction: column;
@@ -218,14 +252,11 @@ textarea {
   align-items: center;
 }
 
-
-/* 생일 입력 */
 .birth-input {
   padding: 8px;
   width: 100%;
 }
 
-/* 버튼 그룹 */
 .button-group {
   display: flex;
   justify-content: center;
@@ -250,15 +281,14 @@ textarea {
   border-radius: 5px;
   cursor: pointer;
 }
-/* 성별 라디오 버튼 크기 키우기 */
+
 input[type="radio"] {
   width: 20px;
   height: 15px;
 }
 
-/* 중성화 체크박스 크기 키우기 */
 input[type="checkbox"] {
-  width: 20px;  
+  width: 20px;
   height: 20px;
 }
 </style>

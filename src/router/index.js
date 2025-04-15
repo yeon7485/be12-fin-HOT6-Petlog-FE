@@ -49,6 +49,7 @@ import ChatRoomScheduleDetail from "../pages/chat/ChatRoomScheduleDetail.vue";
 import UserLayout from "../pages/user/UserLayout.vue";
 import DetailList from "../pages/schedule/components/DetailList.vue";
 import DetailItem from "../pages/schedule/components/DetailItem.vue";
+import DetailRecordItem from "../pages/schedule/components/DetailRecordItem.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -118,6 +119,7 @@ const routes = [
     children: [
       { path: "detail", component: DetailList },
       { path: "detail/:id", component: DetailItem },
+      { path: "detail/record/:id", component: DetailRecordItem },
     ],
   },
 
@@ -128,17 +130,17 @@ const routes = [
     children: [
       { path: "information", component: InformationBoard },
       { path: "free", component: FreeBoard },
-      { path: ":boardType/post/:id/modify", component: PostRegister },
+      { path: ":boardType/post/:idx/modify", component: PostRegister },
       { path: ":boardType/register", component: PostRegister },
-      { path: ":boardType/post/:id", component: PostDetail },
+      { path: ":boardType/post/:idx", component: PostDetail },
 
       { path: "qna", component: QnaBoard },
       { path: "qna/register", component: QuestionRegister },
-      { path: "qna/:id/modify", component: QuestionRegister },
-      { path: "qna/:id", component: QuestionDetail },
+      { path: "qna/:idx/modify", component: QuestionRegister },
+      { path: "qna/:idx", component: QuestionDetail },
 
       { path: "qna/:questionId/answer/register", component: AnswerRegister },
-      { path: "qna/:questionId/answer/:id/modify", component: AnswerRegister,},
+      { path: "qna/:questionId/answer/:idx/modify", component: AnswerRegister,},
     ],
   },
 

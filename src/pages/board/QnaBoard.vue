@@ -1,35 +1,48 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuestionStore } from '/src/stores/useQuestionStore'
 import QuestionCard from '/src/pages/board/components/QuestionCard.vue'
+import axios from 'axios'
 
 const router = useRouter()
 const questionStore = useQuestionStore()
 
 const search = ref('')
 const keyword = ref('')
+const searchResults = ref([])
+
+const isSearching = computed(() => keyword.value.trim().length > 0)
+
+const safeQuestions = computed(() => {
+  const list = isSearching.value ? searchResults.value : questionStore.questions
+  return Array.isArray(list) ? list.filter(q => typeof q === 'object' && q !== null) : []
+})
 
 onMounted(() => {
   questionStore.fetchQuestions()
 })
 
-const filteredQuestions = computed(() => {
-  if (!keyword.value.trim()) return questionStore.questions
-
-  const q = keyword.value.toLowerCase()
-  return questionStore.questions.filter(question => {
-    return (
-      question.title.toLowerCase().includes(q) ||
-      question.writer.toLowerCase().includes(q) ||
-      question.contents.toLowerCase().includes(q) ||
-      question.tags.some(tag => tag.toLowerCase().includes(q))
-    )
-  })
-})
-
-function triggerSearch() {
+async function triggerSearch() {
   keyword.value = search.value
+
+  if (!keyword.value.trim()) {
+    searchResults.value = []
+    return
+  }
+
+  try {
+    const res = await axios.get(`/api/question/search?keyword=${keyword.value}`)
+    if (Array.isArray(res.data)) {
+      searchResults.value = res.data
+    } else {
+      console.warn('검색 결과가 배열이 아닙니다:', res.data)
+      searchResults.value = []
+    }
+  } catch (err) {
+    console.error('검색 실패:', err)
+    searchResults.value = []
+  }
 }
 
 function goToRegister() {
@@ -67,8 +80,8 @@ function goToRegister() {
     </div>
 
     <QuestionCard
-      v-for="question in filteredQuestions"
-      :key="question.id"
+      v-for="question in safeQuestions"
+      :key="question.idx"
       :question="question"
     />
 

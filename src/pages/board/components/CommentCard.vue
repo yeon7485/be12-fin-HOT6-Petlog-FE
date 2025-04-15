@@ -1,20 +1,18 @@
 <script setup>
 import { ref } from 'vue'
-import { useCommentStore } from '/src/stores/useCommentStore'
 
 const props = defineProps({
   comment: Object,
-  postId: Number
+  postIdx
+  : Number
 })
 
-const commentStore = useCommentStore()
-
 const isEditing = ref(false)
-const editedText = ref(props.comment.text)
+const editedText = ref(props.comment.contents)
 
 const startEdit = () => {
   isEditing.value = true
-  editedText.value = props.comment.text
+  editedText.value = props.comment.contents
 }
 
 const cancelEdit = () => {
@@ -23,15 +21,16 @@ const cancelEdit = () => {
 }
 
 const saveEdit = () => {
-  commentStore.editComment(props.postId, props.comment.id, editedText.value)
+  // commentStore.editComment(props.postId, props.comment.idx, editedText.value)
+  alert('수정 개발 중')
   isEditing.value = false
 }
 
 const deleteComment = () => {
   const confirmed = window.confirm('댓글을 삭제하시겠습니까?')
   if (confirmed) {
-    commentStore.deleteComment(props.postId, props.comment.id)
-    alert('댓글이 삭제되었습니다.')
+    // commentStore.deleteComment(props.postId, props.comment.idx)
+    alert('삭제 개발 중중')
   }
 }
 </script>
@@ -42,9 +41,9 @@ const deleteComment = () => {
       <img class="avatar" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
       <span class="nickname">{{ comment.writer }}</span>
       <span class="divider">ㅣ</span>
-      <span class="date">{{ comment.date }}</span>
+      <span class="date">{{ comment.createdAt }}</span>
 
-      <template v-if="comment.editable">
+      <template v-if="true">
         <img
           src="/src/assets/icons/write.png"
           class="icon_btn"
@@ -69,10 +68,11 @@ const deleteComment = () => {
     </div>
 
     <div v-else class="comment_text">
-      {{ comment.text }}
+      {{ comment.contents }}
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .comment_card {

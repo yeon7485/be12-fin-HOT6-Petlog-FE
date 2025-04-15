@@ -8,8 +8,8 @@ const route = useRoute()
 const router = useRouter()
 const store = useQuestionStore()
 
-const questionId = route.params.id ? Number(route.params.id) : null
-const isEdit = !!questionId
+const questionIdx = route.params.idx ? Number(route.params.idx) : null
+const isEdit = !!questionIdx
 
 const isModalOpen = ref(false)
 
@@ -28,7 +28,7 @@ onMounted(async () => {
   await store.fetchQuestions()
 
   if (isEdit) {
-    const target = store.getQuestionById(questionId)
+    const target = store.questions.find(q => q.idx === questionIdx)
     if (target) {
       form.value.title = target.title
       form.value.contents = target.contents
@@ -48,11 +48,14 @@ const handleCancel = () => {
   }
 }
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   const confirmed = window.confirm(isEdit ? '질문을 수정하시겠습니까?' : '질문을 등록하시겠습니까?')
   if (!confirmed) return
 
-  const tagsArray = form.value.tags.split(',').map(tag => tag.trim())
+  const tagsArray = form.value.tags
+    .split(',')
+    .map(tag => tag.trim())
+    .filter(tag => tag.length > 0)
 
   const questionData = {
     title: form.value.title,
@@ -60,18 +63,22 @@ const handleSubmit = () => {
     tags: tagsArray,
     writer: '닉네임',
     date: new Date().toLocaleDateString('ko-KR'),
-    status: '미해결',     
+    status: '미해결',
     commentCount: 0,
   }
 
   if (isEdit) {
-    store.updateQuestion(questionId, questionData)
-    alert('질문이 수정되었습니다.')
-    router.push(`/board/qna/${questionId}`)
+    alert('수정 기능은 아직 백엔드 연동되지 않았습니다.')
+    router.push(`/board/qna/${questionIdx}`)
   } else {
-    store.addQuestion(questionData)
-    alert('질문이 등록되었습니다.')
-    router.push('/board/qna')
+    try {
+      await store.createQuestion(questionData)
+      await store.fetchQuestions() 
+      alert('질문이 등록되었습니다.')
+      router.push('/board/qna')
+    } catch (err) {
+      alert('등록 실패하였습니다.')
+    }
   }
 }
 </script>
@@ -83,17 +90,17 @@ const handleSubmit = () => {
     <form @submit.prevent="handleSubmit" class="form">
       <div class="form_group">
         <label for="title">제목</label>
-        <input type="text" id="title" v-model="form.title" required />
+        <input type="text" id="title" v-model="form.title" placeholder="제목을 입력해주세요." required />
       </div>
 
       <div class="form_group">
         <label for="content">내용</label>
-        <textarea id="content" v-model="form.contents" rows="10" required></textarea>
+        <textarea id="content" v-model="form.contents" placeholder="내용을 입력해주세요." rows="10" required></textarea>
       </div>
 
       <div class="form_group">
-        <label for="tags">태그 (쉼표 구분)</label>
-        <input type="text" id="tags" v-model="form.tags" />
+        <label for="tags" >해시태그</label>
+        <input type="text" id="tags" v-model="form.tags" placeholder="예) 강아지, 강아지 중성화" />
       </div>
 
       <div class="form_group">
@@ -102,11 +109,11 @@ const handleSubmit = () => {
       </div>
 
       <div class="form_group">
-      <label>반려동물 카드 등록</label>
-      <button @click="selectPetCard" class="petcard_btn">카드 선택</button>
-    </div>
+        <label>반려동물 카드 등록</label>
+        <button @click="selectPetCard" class="petcard_btn">카드 선택</button>
+      </div>
 
-    <AnimalCardModal v-if="isModalOpen" @close="isModalOpen = false" />
+      <AnimalCardModal v-if="isModalOpen" @close="isModalOpen = false" />
 
       <div class="form_actions">
         <button type="button" class="cancel_button" @click="handleCancel">취소</button>
@@ -119,8 +126,8 @@ const handleSubmit = () => {
 <style scoped>
 .qna_container {
   max-width: 1200px;
-  margin: 0 auto 40px auto; 
-  padding: 40px; 
+  margin: 0 auto 40px auto;
+  padding: 40px;
   font-family: 'Arial', sans-serif;
   border: 1px solid #ddd;
   border-radius: 12px;

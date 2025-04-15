@@ -1,22 +1,32 @@
 <script setup>
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import NoticeDropdown from "./NoticeDropdown.vue"; // ✅ 알림 드롭다운 컴포넌트 import
+import { useUserStore } from "../../../stores/useUserStore";
+import NoticeDropdown from "./NoticeDropdown.vue";
 
 const router = useRouter();
+const userStore = useUserStore();
 
 const toHome = () => router.push("/");
 const dropdownOpen = ref(false);
-const alertOpen = ref(false); // ✅ 알림 드롭다운 상태
+const alertOpen = ref(false);
 
-const toggleDropdown = () => dropdownOpen.value = !dropdownOpen.value;
-const toggleAlert = () => alertOpen.value = !alertOpen.value;
+const toggleDropdown = () => (dropdownOpen.value = !dropdownOpen.value);
+const toggleAlert = () => (alertOpen.value = !alertOpen.value);
 
 const goToMyPage = () => router.push("/mypage");
 const logout = () => {
   alert("로그아웃 되었습니다.");
-  router.push("/user/login");
+  document.cookie = "ATOKEN=; Max-Age=0; path=/";
+  userStore.logout();
+  router.push("/");
 };
+
+const isLoggedIn = computed(() => userStore.isLogin);
+
+onMounted(() => {
+  userStore.loginCheck();
+});
 </script>
 
 <template>
@@ -33,19 +43,29 @@ const logout = () => {
         </div>
 
         <div class="user_box">
-          <!-- ✅ 알림 아이콘 클릭 시 드롭다운 토글 -->
-          <div class="alert-wrapper" @click="toggleAlert">
-            <img src="/src/assets/icons/alart.png" alt="alart" class="alart_icon" />
-            <NoticeDropdown v-if="alertOpen" class="notice_dropdown" />
-          </div>
+          <template v-if="!isLoggedIn">
+            <router-link to="/user/signup" class="signup">회원가입</router-link>
+            <div class="line"></div>
+            <router-link to="/user/login" class="login">로그인</router-link>
+          </template>
 
-          <div class="nickname_wrapper" @click="toggleDropdown">
-            <span :class="['nickname', { active: dropdownOpen }]">구름봄 님</span>
-            <div v-if="dropdownOpen" class="dropdown">
-              <div class="dropdown_item" @click="goToMyPage">마이페이지</div>
-              <div class="dropdown_item" @click="logout">로그아웃</div>
+          <template v-else>
+            <!-- ✅ 알림 아이콘 클릭 시 드롭다운 토글 -->
+            <div class="alert-wrapper" @click="toggleAlert">
+              <img src="/src/assets/icons/alart.png" alt="alart" class="alart_icon" />
+              <NoticeDropdown v-if="alertOpen" class="notice_dropdown" />
             </div>
-          </div>
+
+            <div class="nickname_wrapper" @click="toggleDropdown">
+              <span :class="['nickname', { active: dropdownOpen }]"
+                >{{ userStore.getNickname() }} 님</span
+              >
+              <div v-if="dropdownOpen" class="dropdown">
+                <div class="dropdown_item" @click="goToMyPage">마이페이지</div>
+                <div class="dropdown_item" @click="logout">로그아웃</div>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -103,6 +123,7 @@ const logout = () => {
 
 .user_box {
   display: flex;
+  align-items: center;
   gap: 12px;
   flex-shrink: 0;
   position: relative;
@@ -124,7 +145,7 @@ const logout = () => {
   right: 0;
   z-index: 100;
   background: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   width: 360px;
   padding: 12px 0;
@@ -138,10 +159,12 @@ const logout = () => {
   color: black;
   transition: color 0.3s;
 }
+.nickname:hover {
+  color: #8b4513;
+}
 
 .nickname.active {
   color: #8b4513;
-  font-weight: bold;
 }
 
 .dropdown {
@@ -165,5 +188,21 @@ const logout = () => {
 
 .dropdown_item:hover {
   background-color: #f5f5f5;
+}
+
+.line {
+  width: 1px;
+  height: 16px;
+  background-color: var(--gray500);
+}
+
+.signup {
+  text-decoration: none;
+  color: var(--main-color-brown);
+}
+
+.login {
+  text-decoration: none;
+  color: inherit;
 }
 </style>

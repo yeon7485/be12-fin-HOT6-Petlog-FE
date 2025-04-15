@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 export const useScheduleStore = defineStore("schedule", {
   state: () => ({
     currentDate: "",
-    type: "PLAN",
+    type: "SCHEDULE",
     plans: [
       {
         idx: 1,
@@ -70,6 +70,7 @@ export const useScheduleStore = defineStore("schedule", {
       recurring: true,
       repeatCycle: "일",
       repeatCount: 3,
+      repeatEndAt: "2025-04-07T12:00:00",
       startAt: "2025-04-07T11:00:00",
       endAt: "2025-04-07T12:00:00",
       placeId: "api_place_id",
@@ -81,6 +82,9 @@ export const useScheduleStore = defineStore("schedule", {
   actions: {
     setCurrentDate(date) {
       this.currentDate = date;
+    },
+    setItemDetail(data) {
+      this.planDetail = data;
     },
     getItemDetail(idx) {
       console.log(idx);

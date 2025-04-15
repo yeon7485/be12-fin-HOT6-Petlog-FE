@@ -3,6 +3,8 @@ import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import Card from "/src/pages/board/components/PostCard.vue"
 import { useBoardStore } from "/src/stores/useBoardStore.js"
+import axios from 'axios'
+
 
 const router = useRouter()
 const boardStore = useBoardStore()
@@ -12,9 +14,26 @@ const selectedCategory = ref("")
 
 const categories = ['강아지', '고양이', '햄스터', '도마뱀', '물고기']
 
-const triggerSearch = () => {
-  boardStore.searchPosts(searchQuery.value, selectedCategory.value)
+const triggerSearch = async () => {
+  if (!selectedCategory.value) {
+    alert("카테고리를 선택해주세요.")
+    return
+  }
+
+  try {
+    const { data } = await axios.get("/api/post/search", {
+      params: {
+        boardName: 'information',
+        category: selectedCategory.value,
+        keyword: searchQuery.value || ''
+      }
+    })
+    boardStore.filteredPosts = data
+  } catch (err) {
+    console.error("검색 실패:", err)
+  }
 }
+
 
 const goToWritePage = () => {
   router.push("/board/information/register")
@@ -23,6 +42,8 @@ const goToWritePage = () => {
 onMounted(() => {
   boardStore.fetchPosts("information")
 })
+
+
 </script>
 
 <template>
@@ -63,10 +84,11 @@ onMounted(() => {
       </thead>
       <tbody>
         <Card
-          v-for="post in boardStore.filteredPosts"
-          :key="post.id"
-          :post="post"
-          boardType="information"
+        v-for="(post, index) in boardStore.filteredPosts"
+         :key="post.idx"
+         :post="post"
+         :index="index + 1"
+         :boardType="'free'"
         />
       </tbody>
     </table>

@@ -1,23 +1,36 @@
 <script setup>
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
+import { useUserStore } from "../../stores/useUserStore";
 
 const router = useRouter();
 const toHome = () => {
   router.push("/");
 };
 
-const email = ref("");
-const password = ref("");
-const nickname = ref("");
+const userStore = useUserStore();
+
+const signupData = reactive({
+  email: "",
+  password: "",
+  nickname: "",
+  profileImageUrl: "",
+  role: "USER",
+});
+
 const agreed = ref(false);
 
-const handleSignup = () => {
+const handleSignup = async () => {
   if (!agreed.value) {
     alert("약관에 동의하셔야 회원가입이 가능합니다.");
     return;
   }
-  alert("회원가입이 완료되었습니다.");
+  const result = await userStore.signup(signupData);
+  console.log(result);
+  if (result.isSuccess) {
+    alert("회원가입이 완료되었습니다.");
+    router.push("/user/login");
+  }
 };
 </script>
 
@@ -27,23 +40,40 @@ const handleSignup = () => {
 
     <p class="login_text">
       이미 회원이신가요?
-      <router-link to="/login" class="login_link">로그인</router-link>
+      <router-link to="/user/login" class="login_link">로그인</router-link>
     </p>
 
-    <div class="signup_box">
+    <form class="signup_box">
       <div class="form_group">
         <label for="email">이메일</label>
-        <input type="email" id="email" v-model="email" placeholder="이메일을 입력해주세요." />
+        <input
+          type="email"
+          id="email"
+          autocomplete="username"
+          v-model="signupData.email"
+          placeholder="이메일을 입력해주세요."
+        />
       </div>
 
       <div class="form_group">
         <label for="password">비밀번호</label>
-        <input type="password" id="password" v-model="password" placeholder="비밀번호를 입력해주세요." />
+        <input
+          type="password"
+          id="password"
+          autocomplete="current-password"
+          v-model="signupData.password"
+          placeholder="비밀번호를 입력해주세요."
+        />
       </div>
 
       <div class="form_group">
         <label for="nickname">닉네임</label>
-        <input type="text" id="nickname" v-model="nickname" placeholder="닉네임을 입력해주세요." />
+        <input
+          type="text"
+          id="nickname"
+          v-model="signupData.nickname"
+          placeholder="닉네임을 입력해주세요."
+        />
       </div>
 
       <div class="agree">
@@ -56,13 +86,13 @@ const handleSignup = () => {
         </label>
       </div>
 
-      <button class="signup_btn" @click="handleSignup">회원가입</button>
+      <button type="button" class="signup_btn" @click="handleSignup">회원가입</button>
 
-      <button class="kakao_btn">
+      <button type="button" class="kakao_btn">
         <img src="/src/assets/icons/kakao.png" alt="카카오 아이콘" class="kakao_icon" />
         카카오로 회원가입
       </button>
-    </div>
+    </form>
   </div>
 </template>
 

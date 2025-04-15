@@ -21,14 +21,15 @@ const scheduleStore = useScheduleStore();
       </div>
       <p>{{ item.title }}</p>
       <img v-if="item.image" src="/src/assets/images/cat2.jpg" alt="image" class="record_img" />
-      <p v-if="scheduleStore.type === 'RECORD'" class="record_memo">{{ item.memo }}</p>
+      <p v-if="scheduleStore.type === 'DAILY_RECORD'" class="record_memo">{{ item.memo }}</p>
     </div>
   </div>
 </template>
 
 <style scoped>
 .schedule_card {
-  width: 100%;
+  padding: 0 3px;
+  box-sizing: border-box;
 }
 
 .category_box {

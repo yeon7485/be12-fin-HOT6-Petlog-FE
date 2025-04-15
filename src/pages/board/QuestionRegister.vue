@@ -18,8 +18,8 @@ const selectPetCard = () => {
 }
 
 const form = ref({
-  title: '',
-  contents: '',
+  qTitle: '',
+  content: '',
   tags: '',
   file: null,
 })
@@ -30,8 +30,8 @@ onMounted(async () => {
   if (isEdit) {
     const target = store.questions.find(q => q.idx === questionIdx)
     if (target) {
-      form.value.title = target.title
-      form.value.contents = target.contents
+      form.value.qTitle = target.qTitle
+      form.value.content = target.content
       form.value.tags = target.tags.join(', ')
     }
   }
@@ -58,11 +58,11 @@ const handleSubmit = async () => {
     .filter(tag => tag.length > 0)
 
   const questionData = {
-    title: form.value.title,
-    contents: form.value.contents,
+    qTitle: form.value.qTitle,
+    content: form.value.content,
     tags: tagsArray,
     writer: '닉네임',
-    date: new Date().toLocaleDateString('ko-KR'),
+    created_at: new Date().toLocaleDateString('ko-KR'),
     status: '미해결',
     commentCount: 0,
   }
@@ -90,12 +90,12 @@ const handleSubmit = async () => {
     <form @submit.prevent="handleSubmit" class="form">
       <div class="form_group">
         <label for="title">제목</label>
-        <input type="text" id="title" v-model="form.title" placeholder="제목을 입력해주세요." required />
+        <input type="text" id="title" v-model="form.qTitle" placeholder="제목을 입력해주세요." required />
       </div>
 
       <div class="form_group">
         <label for="content">내용</label>
-        <textarea id="content" v-model="form.contents" placeholder="내용을 입력해주세요." rows="10" required></textarea>
+        <textarea id="content" v-model="form.content" placeholder="내용을 입력해주세요." rows="10" required></textarea>
       </div>
 
       <div class="form_group">

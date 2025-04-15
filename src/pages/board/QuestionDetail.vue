@@ -82,7 +82,7 @@ const goToRegister = () => {
 
       <div class="post_title">
         <img class="icon_img" src="/src/assets/icons/question.png" alt="질문 아이콘" />
-        <span class="text">{{ question.title }}</span>
+        <span class="text">{{ question.qTitle }}</span>
       </div>
 
       <div class="user_info_line">
@@ -90,7 +90,7 @@ const goToRegister = () => {
           <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
           <span class="nickname">{{ question.writer }}</span>
           <span class="divider">ㅣ</span>
-          <span class="date">{{ question.date }}</span>
+          <span class="date">{{ question.created_at }}</span>
         </div>
         <div class="icons">
           <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="goToModify" />
@@ -102,7 +102,7 @@ const goToRegister = () => {
 
       <div class="content_area">
         <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
-        <p class="description">{{ question.contents }}</p>
+        <p class="description">{{ question.content }}</p>
         <div class="hashtags">
           <span v-for="tag in question.tags" :key="tag"># {{ tag }}</span>
         </div>

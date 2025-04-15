@@ -19,7 +19,7 @@ export const useCommentStore = defineStore("comment", () => {
       await axios.post("/api/comment/add", {
         postIdx: comment.postIdx,
         writer: comment.writer,
-        contents: comment.text,
+        content: comment.text,
       });
       await fetchComments(comment.postIdx); 
     } catch (e) {

@@ -34,7 +34,7 @@ const confirmAndSelect = async () => {
         <img class="profile_img" :src="answer.profileImage" alt="유저 이미지" />
         <span class="nickname">{{ answer.writer }}</span>
         <span class="divider">ㅣ</span>
-        <span class="date">{{ answer.date }}</span>
+        <span class="date">{{ answer.created_at }}</span>
       </div>
 
       <div v-if="answer.selected" class="selected_badge">
@@ -50,7 +50,7 @@ const confirmAndSelect = async () => {
 
     <div class="comment_body">
       <img v-if="answer.image" class="answer_img" :src="answer.image" alt="답변 이미지" />
-      {{ answer.contents }}
+      {{ answer.content }}
     </div>
 
     <div

@@ -80,7 +80,7 @@ const handleSubmit = async () => {
       <div class="post_box">
         <div class="post_title">
           <img class="icon_img" src="/src/assets/icons/question.png" alt="질문 아이콘" />
-          <span class="text">{{ question.title }}</span>
+          <span class="text">{{ question.qTitle }}</span>
         </div>
 
         <div class="user_info_line">
@@ -88,7 +88,7 @@ const handleSubmit = async () => {
             <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
             <span class="nickname">{{ question.writer }}</span>
             <span class="divider">ㅣ</span>
-            <span class="date">{{ question.date }}</span>
+            <span class="date">{{ question.created_at }}</span>
           </div>
         </div>
 

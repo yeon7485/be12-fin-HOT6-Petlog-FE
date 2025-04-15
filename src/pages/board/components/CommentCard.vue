@@ -8,11 +8,11 @@ const props = defineProps({
 })
 
 const isEditing = ref(false)
-const editedText = ref(props.comment.contents)
+const editedText = ref(props.comment.content)
 
 const startEdit = () => {
   isEditing.value = true
-  editedText.value = props.comment.contents
+  editedText.value = props.comment.content
 }
 
 const cancelEdit = () => {
@@ -41,7 +41,7 @@ const deleteComment = () => {
       <img class="avatar" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
       <span class="nickname">{{ comment.writer }}</span>
       <span class="divider">ㅣ</span>
-      <span class="date">{{ comment.createdAt }}</span>
+      <span class="date">{{ comment.created_at }}</span>
 
       <template v-if="true">
         <img
@@ -68,7 +68,7 @@ const deleteComment = () => {
     </div>
 
     <div v-else class="comment_text">
-      {{ comment.contents }}
+      {{ comment.content }}
     </div>
   </div>
 </template>

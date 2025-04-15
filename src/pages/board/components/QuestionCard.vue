@@ -9,9 +9,9 @@ defineProps({ question: Object })
         <img class="avatar" src="/src/assets/images/dog1.png" alt="유저 아바타" />
         <span class="author">{{ question.writer }}</span>
         <span class="divider">ㅣ</span>
-        <span class="date">{{ question.date }}</span>
+        <span class="date">{{ question.created_at }}</span>
       </div>
-    </div>
+    </div>    
 
     <div class="post_body">
       <div class="status_badge" :class="question.selected ? 'resolved' : 'unresolved'">
@@ -19,10 +19,10 @@ defineProps({ question: Object })
       </div>
 
       <router-link :to="`/board/qna/${question.idx}`" class="post_title">
-        {{ question.title }}
+        {{ question.qTitle || question.qtitle }}
       </router-link>
 
-      <p class="post_content">{{ question.contents }}</p>
+      <p class="post_content">{{ question.content }}</p>
 
       <div class="post_tags">
         <span v-for="tags in question.tags" :key="tags" class="tag"># {{ tags }}</span>
@@ -34,6 +34,8 @@ defineProps({ question: Object })
       </div>
     </div>
   </div>
+  <pre>{{ question }}</pre>
+
 </template>
 
 <style scoped>

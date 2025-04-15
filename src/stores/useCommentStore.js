@@ -16,7 +16,7 @@ export const useCommentStore = defineStore("comment", () => {
 
   const addComment = async (comment) => {
     try {
-      await axios.post("/api/comment/add", {
+      await axios.post("/api/comment/create", {
         postIdx: comment.postIdx,
         writer: comment.writer,
         content: comment.text,

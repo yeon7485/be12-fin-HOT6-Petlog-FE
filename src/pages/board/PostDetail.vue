@@ -30,16 +30,16 @@ const goToModify = () => {
   })
 }
 
-const confirmDeletePost = async () => {
-  if (window.confirm('게시글을 삭제하시겠습니까?')) {
-    try {
-      await axios.delete(`/api/post/delete/${postIdx}`)
-      alert('게시글이 삭제되었습니다.')
-      router.push(`/board/${boardType}`)
-    } catch (err) {
-      console.error('삭제 실패:', err)
-      alert('삭제에 실패하였습니다.')
-    }
+const handleDelete = async () => {
+  const confirmed = window.confirm('정말로 삭제하시겠습니까?')
+  if (!confirmed) return
+  try {
+    await axios.delete(`/api/post/delete/${postIdx}`)
+    alert('삭제되었습니다')
+    router.push(`/board/${route.params.boardType}`) 
+  } catch (e) {
+    alert('삭제 중 오류가 발생했습니다')
+    console.error(e)
   }
 }
 
@@ -72,7 +72,7 @@ const addComment = async () => {
         </div>
         <div class="icons">
           <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="goToModify" />
-          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="confirmDeletePost" />
+          <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="handleDelete" />
         </div>
       </div>
 

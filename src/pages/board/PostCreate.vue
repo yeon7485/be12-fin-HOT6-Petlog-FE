@@ -75,7 +75,12 @@ const handleSubmit = async () => {
 
   try {
     if (isEdit) {
+      await axios.put(`/api/post/update/${postIdx}`, {
+        ...form.value,
+        boardType: form.value.boardType,
+      })
       alert('수정이 완료되었습니다')
+      router.push(`/board/${form.value.boardType}/post/${postIdx}`)
     } else {
       await axios.post('/api/post/create', {
         ...form.value,
@@ -89,6 +94,7 @@ const handleSubmit = async () => {
     alert('작업에 실패하였습니다')
   }
 }
+
 
 const isModalOpen = ref(false)
 

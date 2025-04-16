@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import HomePage from "../pages/common/HomePage.vue";
 
 import LandingPage from "../pages/common/LandingPage.vue";
 import Chat from "../pages/chat/Chat.vue";
@@ -50,9 +51,52 @@ import UserLayout from "../pages/user/UserLayout.vue";
 import DetailList from "../pages/schedule/components/DetailList.vue";
 import DetailItem from "../pages/schedule/components/DetailItem.vue";
 import DetailRecordItem from "../pages/schedule/components/DetailRecordItem.vue";
+import { useUserStore } from "../stores/useUserStore";
+
+// admin 체크
+const adminOnlyGuard = (to, from, next) => {
+  const userStore = useUserStore();
+
+  if (userStore.type === "ADMIN") {
+    next();
+  } else {
+    alert("관리자만 접근 가능한 페이지입니다.");
+    next("/");
+  }
+};
+
+// 로그인 체크
+const redirectBasedOnLogin = (to, from, next) => {
+  const userStore = useUserStore();
+
+  if (userStore.isLogin) {
+    next("/home");
+  } else {
+    next();
+  }
+};
+
+const requireLogin = (to, from, next) => {
+  const userStore = useUserStore();
+
+  if (!userStore.isLogin) {
+    next("/");
+  } else {
+    next();
+  }
+};
 
 const routes = [
-  { path: "/", component: LandingPage },
+  {
+    path: "/",
+    component: LandingPage,
+    beforeEnter: redirectBasedOnLogin, // ✅ 가드 추가
+  },
+  {
+    path: "/home",
+    component: HomePage,
+    beforeEnter: requireLogin,
+  },
   { path: "/chat", component: Chat },
   { path: "/chatroom/:chatroomIdx", component: ChatRoom },
   { path: "/chatroom/:chatroomIdx/chatroom-info", component: ChatRoomInfo },
@@ -78,9 +122,9 @@ const routes = [
     ],
   },
   {
-    path: '/mypage/card/detail/:petId',
-    name: 'PetDetail',
-    component: () => import('../pages/mypage/MypageCardDetail.vue')
+    path: "/mypage/card/detail/:petId",
+    name: "PetDetail",
+    component: () => import("../pages/mypage/MypageCardDetail.vue"),
   },
   {
     path: "/mypage",
@@ -147,6 +191,7 @@ const routes = [
     path: "/admin",
     component: Admin,
     redirect: "/admin/profile",
+    beforeEnter: adminOnlyGuard,
     children: [
       { path: "profile", component: AdminProfile },
       { path: "category", component: AdminCategory },

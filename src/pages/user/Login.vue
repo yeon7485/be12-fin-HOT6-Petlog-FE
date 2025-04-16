@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from "vue";
+import { reactive, watch, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/useUserStore";
 
@@ -14,18 +14,20 @@ const loginData = reactive({
 });
 
 const userStore = useUserStore();
+console.log("초기 isLogin:", userStore.isLogin);
 
 const login = async () => {
   const result = await userStore.login(loginData);
   if (result.code !== 1102) {
     alert("로그인되었습니다.");
-    toHome();
+    router.push("/home");
   }
 };
 
 const kakaoLogin = () => {
   window.location.href = import.meta.env.VITE_KAKAO_LOGIN_URL;
   alert("로그인 되었습니다.");
+  router.push("/home");
 };
 </script>
 

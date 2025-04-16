@@ -43,12 +43,20 @@
 </template>
 
 <script setup>
-import ScheduleCard from '/src/pages/home/ScheduleCard.vue'
+import { onMounted } from "vue";
+import ScheduleCard from "../schedule/components/ScheduleCard.vue";
+import { useUserStore } from "../../stores/useUserStore";
+
+onMounted(async () => {
+  const userStore = useUserStore();
+  console.log("home", userStore.isLogin);
+  await userStore.loginCheck();
+});
 </script>
 
 <style scoped>
 .home {
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: "Noto Sans KR", sans-serif;
 }
 
 /* 로고와 텍스트 부분만 배경색 적용 */
@@ -136,7 +144,7 @@ import ScheduleCard from '/src/pages/home/ScheduleCard.vue'
 }
 
 .hashtags {
-  color: #8B4513;
+  color: #8b4513;
   font-size: 14px;
   margin-bottom: 4px;
   margin-top: 30px;

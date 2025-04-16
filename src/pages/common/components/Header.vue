@@ -14,11 +14,22 @@ const alertOpen = ref(false);
 const toggleDropdown = () => (dropdownOpen.value = !dropdownOpen.value);
 const toggleAlert = () => (alertOpen.value = !alertOpen.value);
 
-const goToMyPage = () => router.push("/mypage");
-const logout = () => {
-  userStore.logout();
-  alert("로그아웃 되었습니다.");
-  router.push("/");
+const goToMyPage = () => {
+  if (userStore.type === "ADMIN") {
+    router.push("/admin");
+  } else {
+    router.push("/mypage");
+  }
+};
+const logout = async () => {
+  const result = await userStore.logout();
+  if (result.isSuccess) {
+    alert("로그아웃 되었습니다.");
+    window.location.reload();
+    router.push("/");
+  } else {
+    alert("로그아웃 실패");
+  }
 };
 
 const isLoggedIn = computed(() => userStore.isLogin);

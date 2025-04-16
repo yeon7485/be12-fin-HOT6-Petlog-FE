@@ -21,7 +21,7 @@ export const useCommentStore = defineStore("comment", () => {
         writer: comment.writer,
         content: comment.text,
       });
-      await fetchComments(comment.postIdx); 
+      await fetchComments(comment.postIdx);
     } catch (e) {
       console.error("댓글 추가 실패:", e);
     }
@@ -30,7 +30,7 @@ export const useCommentStore = defineStore("comment", () => {
   const editComment = async (postIdx, commentIdx, content) => {
     try {
       await axios.put(`/api/comment/update/${commentIdx}`, {
-        postIdx, // 
+        postIdx,
         content,
       });
       await fetchComments(postIdx);
@@ -39,10 +39,21 @@ export const useCommentStore = defineStore("comment", () => {
     }
   };
 
+  const deleteComment = async (postIdx, commentIdx) => {
+    try {
+      await axios.delete(`/api/comment/delete/${commentIdx}`);
+      await fetchComments(postIdx);
+    } catch (e) {
+      console.error("댓글 삭제 실패:", e);
+      throw e;
+    }
+  };
+
   return {
     comments,
     fetchComments,
     addComment,
-    editComment
+    editComment,
+    deleteComment,
   };
 });

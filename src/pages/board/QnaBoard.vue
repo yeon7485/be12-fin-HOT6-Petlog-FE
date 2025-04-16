@@ -3,7 +3,6 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuestionStore } from '/src/stores/useQuestionStore'
 import QuestionCard from '/src/pages/board/components/QuestionCard.vue'
-import axios from 'axios'
 
 const router = useRouter()
 const questionStore = useQuestionStore()
@@ -31,24 +30,14 @@ async function triggerSearch() {
     return
   }
 
-  try {
-    const res = await axios.get(`/api/question/search?keyword=${keyword.value}`)
-    if (Array.isArray(res.data)) {
-      searchResults.value = res.data
-    } else {
-      console.warn('검색 결과가 배열이 아닙니다:', res.data)
-      searchResults.value = []
-    }
-  } catch (err) {
-    console.error('검색 실패:', err)
-    searchResults.value = []
-  }
+  searchResults.value = await questionStore.searchQuestions(keyword.value)
 }
 
 function goToRegister() {
   router.push('/board/qna/create')
 }
 </script>
+
 
 <template>
   <div class="qna_board">

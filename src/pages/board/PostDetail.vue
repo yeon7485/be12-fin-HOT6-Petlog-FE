@@ -1,12 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import { useBoardStore } from '/src/stores/useBoardStore'
 import { useCommentStore } from '/src/stores/useCommentStore'
 import CommentCard from './components/CommentCard.vue'
 
 const route = useRoute()
 const router = useRouter()
+const boardStore = useBoardStore()
 const commentStore = useCommentStore()
 
 const postIdx = Number(route.params.idx)
@@ -14,13 +15,8 @@ const boardType = route.params.boardType
 const post = ref(null)
 
 onMounted(async () => {
-  try {
-    const res = await axios.get(`/api/post/read/${postIdx}`)
-    post.value = res.data
-    await commentStore.fetchComments(postIdx)
-  } catch (err) {
-    console.error('게시글 조회 실패:', err)
-  }
+  post.value = await boardStore.getPostDetail(postIdx)
+  await commentStore.fetchComments(postIdx)
 })
 
 const goToModify = () => {
@@ -34,28 +30,26 @@ const handleDelete = async () => {
   const confirmed = window.confirm('정말로 삭제하시겠습니까?')
   if (!confirmed) return
   try {
-    await axios.delete(`/api/post/delete/${postIdx}`)
+    await boardStore.deletePost(postIdx)
     alert('삭제되었습니다')
-    router.push(`/board/${route.params.boardType}`) 
+    router.push(`/board/${boardType}`)
   } catch (e) {
     alert('삭제 중 오류가 발생했습니다')
-    console.error(e)
   }
 }
 
 const newComment = ref('')
 const addComment = async () => {
   if (!newComment.value.trim()) return
-
   await commentStore.addComment({
     postIdx: postIdx,
-    writer: '현재 사용자', 
+    writer: '현재 사용자',
     text: newComment.value
   })
-
   newComment.value = ''
 }
 </script>
+
 <template>
   <div v-if="post" class="wrapper">
     <div class="post_box">

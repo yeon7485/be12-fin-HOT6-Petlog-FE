@@ -1,14 +1,12 @@
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
 import { useCommentStore } from '/src/stores/useCommentStore'
 
 const commentStore = useCommentStore()
 
 const props = defineProps({
   comment: Object,
-  postIdx
-  : Number
+  postIdx: Number
 })
 
 const isEditing = ref(false)
@@ -39,20 +37,15 @@ const editComment = async () => {
   }
 };
 
-  
-const deleteComment = async (commentIdx) => {
+const deleteComment = async () => {
   const confirmed = window.confirm("댓글을 삭제하시겠습니까?");
   if (!confirmed) return;
 
   try {
-    await axios.delete(`/api/comment/delete/${commentIdx}`);
+    await commentStore.deleteComment(props.postIdx, props.comment.idx);
     alert("댓글이 삭제되었습니다");
-
-    await commentStore.fetchComments(props.postIdx);
   } catch (err) {
-    console.error("댓글 삭제 실패:", err);
     alert("댓글 삭제에 실패했습니다. 다시 시도해주세요.");
-    throw err;
   }
 };
 </script>
@@ -76,7 +69,7 @@ const deleteComment = async (commentIdx) => {
           src="/src/assets/icons/x-button.png"
           class="icon_btn"
           alt="삭제"
-          @click="deleteComment(comment.idx)"
+          @click="deleteComment"
         />
       </template>
     </div>
@@ -94,6 +87,7 @@ const deleteComment = async (commentIdx) => {
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .comment_card {

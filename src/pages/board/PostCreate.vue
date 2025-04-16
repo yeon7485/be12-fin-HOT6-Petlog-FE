@@ -3,7 +3,6 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBoardStore } from '/src/stores/useBoardStore'
 import AnimalCardModal from '/src/pages/board/components/AnimalCardModal.vue'
-import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -26,7 +25,7 @@ const form = ref({
   title: '',
   content: '',
   images: [],
-  writer: '익명' 
+  writer: '익명'
 })
 
 const previewImages = ref([])
@@ -47,7 +46,6 @@ onMounted(async () => {
 const handleFileChange = (event) => {
   const files = Array.from(event.target.files)
   form.value.images = files
-
   previewImages.value = []
   files.forEach(file => {
     const reader = new FileReader()
@@ -61,11 +59,10 @@ const handleFileChange = (event) => {
 const handleCancel = () => {
   const confirmed = window.confirm('작성을 취소하시겠습니까?')
   if (confirmed) {
-    if (isEdit) {
-      router.push(`/board/${form.value.boardType}/post/${postIdx}`)
-    } else {
-      router.push(`/board/${form.value.boardType}`)
-    }
+    const path = isEdit
+      ? `/board/${form.value.boardType}/post/${postIdx}`
+      : `/board/${form.value.boardType}`
+    router.push(path)
   }
 }
 
@@ -75,29 +72,20 @@ const handleSubmit = async () => {
 
   try {
     if (isEdit) {
-      await axios.put(`/api/post/update/${postIdx}`, {
-        ...form.value,
-        boardType: form.value.boardType,
-      })
+      await boardStore.updatePost(postIdx, form.value)
       alert('수정이 완료되었습니다')
       router.push(`/board/${form.value.boardType}/post/${postIdx}`)
     } else {
-      await axios.post('/api/post/create', {
-        ...form.value,
-        boardType: form.value.boardType
-      })
+      await boardStore.createPost(form.value)
       alert('등록이 완료되었습니다')
       router.push(`/board/${form.value.boardType}`)
     }
   } catch (err) {
-    console.error('처리 실패:', err)
     alert('작업에 실패하였습니다')
   }
 }
 
-
 const isModalOpen = ref(false)
-
 const selectPetCard = () => {
   isModalOpen.value = true
 }

@@ -35,7 +35,7 @@ onMounted(async () => {
       isNeutering: response.data.isNeutering,  
       birthdate: response.data.birthDate,
       breed: response.data.breed,
-      notes: response.data.specificInformation, 
+      specificInformation: response.data.specificInformation, 
       status: response.data.status
     };
   } catch (error) {

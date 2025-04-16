@@ -63,9 +63,10 @@ const deleteCard = async () => {
   const confirmDelete = window.confirm('정말 삭제하시겠습니까?');
   if (confirmDelete) {
     try {
+      // petId를 포함한 DELETE 요청
       await axios.delete(`http://localhost:8080/pet/${petId}`);
       alert('삭제되었습니다.');
-      router.push('/mypage/card');
+      router.push('/mypage/cardlist');  // 삭제 후 이동
     } catch (error) {
       console.error('삭제 실패:', error);
       alert('삭제 중 오류가 발생했습니다.');

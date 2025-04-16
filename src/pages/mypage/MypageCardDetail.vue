@@ -40,6 +40,7 @@ onMounted(async () => {
       specificInformation: response.data.specificInformation,
       profileImageUrl: imageUrl,
       isNeutering: response.data.isNeutering,
+      status: response.data.status
     };  
 
     profileImage.value = response.data.profileImageUrl;
@@ -103,6 +104,7 @@ const deleteCard = async () => {
         </p>
         <p><strong>나이</strong> <span>{{ card.age }}살</span></p>
         <p><strong>품종</strong> <span>{{ card.breed }}</span></p>
+        <p><strong>상태</strong> <span>{{ card.status || '정보 없음' }}</span></p>
         <p class="notes" v-if="card.specificInformation">
           <strong>특이사항</strong>
           <span v-html="card.specificInformation.replace(/\n/g, '<br>')"></span>

@@ -33,13 +33,14 @@ export const useUserStore = defineStore("user", {
         const response = await axios.post("/api/login", loginData, {
           withCredentials: true,
         });
-        if (response.status === 200) {
+
+        if (response.data.code === 200) {
           this.isLogin = true;
           this.nickname = response.data.userId;
-          return response.data;
-        } else {
-          alert("로그인에 실패하였습니다.");
+        } else if (response.data.code === 1102) {
+          alert(response.data.message + " 메일을 확인해주세요.");
         }
+        return response.data;
       } catch (error) {
         if (error.status === 401) {
           alert("이메일과 비밀번호를 다시 입력해주세요.");

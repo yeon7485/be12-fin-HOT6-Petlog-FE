@@ -17,9 +17,10 @@ const userStore = useUserStore();
 
 const login = async () => {
   const result = await userStore.login(loginData);
-  console.log(result);
-  alert("로그인되었습니다.");
-  toHome();
+  if (result.code !== 1102) {
+    alert("로그인되었습니다.");
+    toHome();
+  }
 };
 
 const kakaoLogin = () => {

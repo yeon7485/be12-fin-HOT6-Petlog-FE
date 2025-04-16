@@ -1,5 +1,9 @@
 <script setup>
 import { ref } from 'vue'
+import axios from 'axios'
+import { useCommentStore } from '/src/stores/useCommentStore'
+
+const commentStore = useCommentStore()
 
 const props = defineProps({
   comment: Object,
@@ -20,19 +24,37 @@ const cancelEdit = () => {
   editedText.value = ''
 }
 
-const saveEdit = () => {
-  // commentStore.editComment(props.postId, props.comment.idx, editedText.value)
-  alert('수정 개발 중')
-  isEditing.value = false
-}
-
-const deleteComment = () => {
-  const confirmed = window.confirm('댓글을 삭제하시겠습니까?')
-  if (confirmed) {
-    // commentStore.deleteComment(props.postId, props.comment.idx)
-    alert('삭제 개발 중중')
+const editComment = async () => {
+  if (editedText.value.trim() === '') {
+    alert('댓글 내용을 입력해주세요');
+    return;
   }
-}
+  try {
+    await commentStore.editComment(props.postIdx, props.comment.idx, editedText.value);
+    alert('댓글이 수정되었습니다');
+    isEditing.value = false;
+  } catch (err) {
+    alert('댓글 수정에 실패했습니다.');
+    console.error(err);
+  }
+};
+
+  
+const deleteComment = async (commentIdx) => {
+  const confirmed = window.confirm("댓글을 삭제하시겠습니까?");
+  if (!confirmed) return;
+
+  try {
+    await axios.delete(`/api/comment/delete/${commentIdx}`);
+    alert("댓글이 삭제되었습니다");
+
+    await commentStore.fetchComments(props.postIdx);
+  } catch (err) {
+    console.error("댓글 삭제 실패:", err);
+    alert("댓글 삭제에 실패했습니다. 다시 시도해주세요.");
+    throw err;
+  }
+};
 </script>
 
 <template>
@@ -54,14 +76,14 @@ const deleteComment = () => {
           src="/src/assets/icons/x-button.png"
           class="icon_btn"
           alt="삭제"
-          @click="deleteComment"
+          @click="deleteComment(comment.idx)"
         />
       </template>
     </div>
 
     <div v-if="isEditing">
       <div class="edit_buttons">
-        <span class="edit_save" @click="saveEdit">수정</span>
+        <span class="edit_save" @click="editComment">수정</span>
         <span class="edit_cancel" @click="cancelEdit">취소</span>
       </div>
       <input type="text" v-model="editedText" class="edit_input" />
@@ -72,7 +94,6 @@ const deleteComment = () => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .comment_card {

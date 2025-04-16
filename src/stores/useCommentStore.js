@@ -27,9 +27,22 @@ export const useCommentStore = defineStore("comment", () => {
     }
   };
 
+  const editComment = async (postIdx, commentIdx, content) => {
+    try {
+      await axios.put(`/api/comment/update/${commentIdx}`, {
+        postIdx, // 
+        content,
+      });
+      await fetchComments(postIdx);
+    } catch (e) {
+      console.error("댓글 수정 실패:", e);
+    }
+  };
+
   return {
     comments,
     fetchComments,
     addComment,
+    editComment
   };
 });

@@ -3,7 +3,6 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuestionStore } from '/src/stores/useQuestionStore'
 import AnimalCardModal from '/src/pages/board/components/AnimalCardModal.vue'
-import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,7 +12,6 @@ const questionIdx = route.params.idx ? Number(route.params.idx) : null
 const isEdit = computed(() => !!questionIdx)
 
 const isModalOpen = ref(false)
-
 const selectPetCard = () => {
   isModalOpen.value = true
 }
@@ -61,13 +59,13 @@ const handleSubmit = async () => {
     content: form.value.content,
     tags: tagsArray,
     writer: '닉네임',
-    image: form.value.image || '', // 이미지 필드 추가
+    image: form.value.image || '',
     selected: false,
   }
 
   try {
     if (isEdit.value) {
-      await axios.put(`/api/question/update/${questionIdx}`, questionData)
+      await store.updateQuestion(questionIdx, questionData)
       alert('질문이 수정되었습니다.')
       router.push(`/board/qna/${questionIdx}`)
     } else {
@@ -82,6 +80,7 @@ const handleSubmit = async () => {
   }
 }
 </script>
+
 
 <template>
   <div class="qna_container">

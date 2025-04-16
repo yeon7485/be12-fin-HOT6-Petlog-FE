@@ -3,7 +3,6 @@ import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import Card from "/src/pages/board/components/PostCard.vue"
 import { useBoardStore } from "/src/stores/useBoardStore.js"
-import axios from 'axios'
 
 const router = useRouter()
 const boardStore = useBoardStore()
@@ -19,20 +18,12 @@ const triggerSearch = async () => {
     return
   }
 
-  try {
-    const { data } = await axios.get("/api/post/search", {
-      params: {
-        boardName: 'free',
-        category: selectedCategory.value,
-        keyword: searchQuery.value || ''
-      }
-    })
-    boardStore.filteredPosts = data
-  } catch (err) {
-    console.error("검색 실패:", err)
-  }
+  await boardStore.searchPosts({
+    boardName: 'free',
+    category: selectedCategory.value,
+    keyword: searchQuery.value || ''
+  })
 }
-
 
 const goToWritePage = () => {
   router.push("/board/free/create")
@@ -41,7 +32,6 @@ const goToWritePage = () => {
 onMounted(() => {
   boardStore.fetchPosts("free")
 })
-
 </script>
 
 <template>
@@ -82,11 +72,11 @@ onMounted(() => {
       </thead>
       <tbody>
         <Card
-        v-for="(post, index) in boardStore.filteredPosts"
-         :key="post.idx"
-         :post="post"
-         :index="index+1"
-         :boardType="'free'"
+          v-for="(post, index) in boardStore.filteredPosts"
+          :key="post.idx"
+          :post="post"
+          :index="index + 1"
+          :boardType="'free'"
         />
       </tbody>
     </table>
@@ -102,6 +92,7 @@ onMounted(() => {
     <button class="write_btn" @click="goToWritePage">글쓰기</button>
   </div>
 </template>
+
 
 <style scoped>
 .board_header {

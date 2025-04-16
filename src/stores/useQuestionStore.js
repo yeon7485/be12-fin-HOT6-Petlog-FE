@@ -4,7 +4,7 @@ import axios from "axios";
 
 export const useQuestionStore = defineStore("question", () => {
   const questions = ref([]);
-  const selectedQuestion = ref(null); 
+  const selectedQuestion = ref(null);
 
   const fetchQuestions = async () => {
     try {
@@ -28,6 +28,7 @@ export const useQuestionStore = defineStore("question", () => {
   const readQuestion = async (idx) => {
     try {
       const res = await axios.get(`/api/question/read/${idx}`);
+      selectedQuestion.value = res.data;
       return res.data;
     } catch (error) {
       console.error("질문 단건 조회 실패:", error);
@@ -35,25 +36,30 @@ export const useQuestionStore = defineStore("question", () => {
     }
   };
 
-  const setSelectedQuestion = (q) => {
-    selectedQuestion.value = q;
-  };
-
   const deleteQuestion = async (idx) => {
-    await axios.delete(`/api/question/delete/${idx}`);
-    await fetchQuestions();
+    try {
+      await axios.delete(`/api/question/delete/${idx}`);
+      await fetchQuestions();
+    } catch (error) {
+      console.error("질문 삭제 실패:", error);
+      throw error;
+    }
   };
-
 
   const refreshQuestionStatus = async (idx) => {
+    const id = Number(idx);
+    if (isNaN(id)) {
+      console.warn("❗ 유효하지 않은 question idx:", idx);
+      return;
+    }
+
     try {
-      const updated = await readQuestion(idx);
-      const index = questions.value.findIndex((q) => q.idx === idx);
+      const updated = await readQuestion(id);
+      const index = questions.value.findIndex((q) => q.idx === id);
       if (index !== -1) {
         questions.value[index] = updated;
       }
-
-      if (selectedQuestion.value?.idx === idx) {
+      if (!selectedQuestion.value || selectedQuestion.value.idx === id) {
         selectedQuestion.value = updated;
       }
     } catch (e) {
@@ -61,14 +67,40 @@ export const useQuestionStore = defineStore("question", () => {
     }
   };
 
+  const searchQuestions = async (keyword) => {
+    try {
+      const res = await axios.get(`/api/question/search?keyword=${keyword}`);
+      return Array.isArray(res.data) ? res.data : [];
+    } catch (error) {
+      console.error("질문 검색 실패:", error);
+      return [];
+    }
+  };
+
+  const setSelectedQuestion = (q) => {
+    selectedQuestion.value = q;
+  };
+
+  const updateQuestion = async (idx, questionData) => {
+    try {
+      await axios.put(`/api/question/update/${idx}`, questionData);
+    } catch (error) {
+      console.error("질문 수정 실패:", error);
+      throw error;
+    }
+  };
+
+
   return {
     questions,
+    selectedQuestion,
     fetchQuestions,
     createQuestion,
     readQuestion,
-    selectedQuestion,
-    setSelectedQuestion,
-    refreshQuestionStatus,
     deleteQuestion,
+    refreshQuestionStatus,
+    searchQuestions,
+    setSelectedQuestion,
+    updateQuestion,
   };
 });

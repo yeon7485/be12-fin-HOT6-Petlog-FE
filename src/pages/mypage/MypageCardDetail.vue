@@ -85,14 +85,14 @@ const deleteCard = async () => {
       </div>
 
       <div class="profile-section">
-        <img :src="profileImage" alt="프로필 이미지" class="profile-img" />
-        <h2 class="name">{{ card.name }}</h2>
-        <p class="sub-info">
-          <span class="gender" :class="{ male: card.gender === '남', female: card.gender === '여' }">
-            {{ card.gender === '남' ? '♂️' : '♀️' }}
-          </span>
-        </p>
-      </div>
+  <img :src="profileImage" alt="프로필 이미지" class="profile-img" />
+  <h2 class="name">{{ card.name }}</h2>
+  <p class="sub-info">
+    <span class="gender" :class="{ male: card.gender === '남' || card.gender === 'male', female: card.gender === '여' || card.gender === 'female' }">
+      {{ card.gender === '남' || card.gender === 'male' ? '♂' : '♀' }}
+    </span>
+  </p>
+</div>
 
       <div class="info-box">
         <p><strong>생일</strong> <span>{{ card.birthDate }}</span></p>

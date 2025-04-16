@@ -1,55 +1,113 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router'; // Vue Router 사용
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+
+// URL 경로에서 petId를 가져오기
+const router = useRouter();
+const route = useRoute();
+const petId = route.params.petId; // URL에서 petId 추출
 
 const card = ref({
+  id: "",  // ID 값을 빈 문자열로 초기화
   name: '',
   breed: '',
   gender: '',
   birthdate: '',
-  neutered: false,
+  isNeutered: false,
   notes: '',
   status: '',
 });
 
-onMounted(() => {
-  card.value = {
-    name: '빙빙',
-    breed: '코리안숏헤어',
-    gender: '♀️',
-    birthdate: '2017-04-01',
-    neutered: true,
-    notes: '성격 더러움\n꼬리가 잘려있음',
-    status: '정상',
-  };
+const statuses = ['정상', '실종', '파양', '사망'];
+
+onMounted(async () => {
+  try {
+    // 실제 반려동물 정보를 받아오는 API 호출
+    const response = await axios.get(`http://localhost:8080/pet/${petId}`); // 실제 API URL로 변경
+    
+    // 받아온 데이터로 card 값 업데이트
+    card.value = {
+      id: response.data.id,  // id 값을 받아오기
+      name: response.data.name,
+      gender: response.data.gender,
+      isNeutering: response.data.isNeutering,  
+      birthdate: response.data.birthDate,
+      breed: response.data.breed,
+      notes: response.data.specificInformation, 
+      status: response.data.status
+    };
+  } catch (error) {
+    console.error('카드 정보를 가져오는 중 오류 발생:', error);
+  }
 });
 
-const statuses = ['정상', '실종', '파양', '사망'];
+const saveCard = async () => {
+  try {
+    const formData = new FormData();
+
+    const petData = {
+      id: card.value.id,
+      name: card.value.name,
+      gender: card.value.gender,
+      isNeutering: card.value.isNeutering,  
+      birthDate: card.value.birthDate,  
+      breed: card.value.breed,
+      specificInformation: card.value.specificInformation,  
+      status: card.value.status
+    };
+
+    // petData를 FormData에 추가
+    formData.append("pet", new Blob([JSON.stringify(petData)], { type: "application/json" }));
+
+    // 서버로 FormData 전송 (multipart/form-data)
+    const response = await axios.put(`http://localhost:8080/pet/${petId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    alert("카드가 성공적으로 수정되었습니다!");
+    router.push("/mypage/cardlist"); // ✅ 저장 후 이동
+  } catch (err) {
+    console.error("카드 수정 실패:", err);
+    alert("수정 중 오류가 발생했습니다.");
+  }
+};
 </script>
 
 <template>
-  <h1 class ="title">반려동물 정보 수정</h1>
+  <h1 class="title">반려동물 정보 수정</h1>
   <div class="form-container">
-    
 
+    <!-- 프로필 사진 (나중에 처리) -->
     <div class="profile-section">
       <img src="/src/assets/images/cat1.jpg" class="profile-img" />
     </div>
 
+    <!-- 이름 -->
     <input v-model="card.name" placeholder="이름" class="input" />
 
+    <!-- 성별 -->
     <div class="gender-section">
       <label><input type="radio" value="♂️" v-model="card.gender" /> ♂️</label>
       <label><input type="radio" value="♀️" v-model="card.gender" /> ♀️</label>
-      <label><input type="checkbox" v-model="card.neutered" /> 중성화 유무</label>
+      <label><input type="checkbox" v-model="card.isNeutering" /> 중성화 유무</label>
     </div>
 
+    <!-- 생일 -->
     <div class="birthdate-section">
-      <input type="date" v-model="card.birthdate" />
+      <input type="date" v-model="card.birthDate" />
     </div>
 
+    <!-- 품종 -->
     <input v-model="card.breed" placeholder="품종" class="input" />
-    <textarea v-model="card.notes" placeholder="특이사항" class="textarea" />
 
+    <!-- 특이사항 -->
+    <textarea v-model="card.specificInformation" placeholder="특이사항" class="textarea" />
+
+    <!-- 상태 -->
     <div class="status-section">
       <label v-for="s in statuses" :key="s" class="status-option">
         <input type="radio" :value="s" v-model="card.status" />
@@ -57,9 +115,10 @@ const statuses = ['정상', '실종', '파양', '사망'];
       </label>
     </div>
 
+    <!-- 버튼 그룹 -->
     <div class="button-group">
-      <button class="cancel-btn">취소</button>
-      <button class="save-btn">저장</button>
+      <button @click="goToCardList" class="cancel-btn">취소</button>  <!-- 취소 버튼 -->
+      <button @click="saveCard" class="save-btn">저장</button>  <!-- 저장 버튼 -->
     </div>
   </div>
 </template>
@@ -68,7 +127,7 @@ const statuses = ['정상', '실종', '파양', '사망'];
 .title {
   margin-bottom: 30px;
   margin-left: auto;
-  margin-right: 410px;
+  margin-right: 60%;
   width: fit-content;
 }
 

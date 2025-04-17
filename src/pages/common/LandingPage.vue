@@ -5,16 +5,9 @@ import { useUserStore } from "../../stores/useUserStore";
 import logo from "/src/assets/images/logo.png";
 
 const userStore = useUserStore();
-const router = useRouter();
+
 onMounted(async () => {
   await userStore.loginCheck();
-});
-
-watchEffect(() => {
-  console.log(userStore.isLogin);
-  if (userStore.isLogin) {
-    router.replace("/home");
-  }
 });
 </script>
 

@@ -1,5 +1,14 @@
 <script setup>
-import { addMonths, endOfMonth, format, getDay, getDaysInMonth, parseISO, startOfMonth, subMonths } from "date-fns";
+import {
+  addMonths,
+  endOfMonth,
+  format,
+  getDay,
+  getDaysInMonth,
+  parseISO,
+  startOfMonth,
+  subMonths,
+} from "date-fns";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
@@ -67,6 +76,19 @@ const getEventsForDate = (date) => {
   const dateStr = format(date, "yyyy-MM-dd");
 
   return scheduleStore.plans.filter((event) => {
+    // const start = parseISO(event.startAt || event.date);
+    // const end = event.endAt ? parseISO(event.endAt) : null;
+
+    // if (end) {
+    //   return (
+    //     date >= new Date(format(start, "yyyy-MM-dd")) &&
+    //     date <= new Date(format(end, "yyyy-MM-dd"))
+    //   );
+    // } else {
+    //   const startStr = format(start, "yyyy-MM-dd");
+    //   return dateStr === startStr;
+    // }
+
     const eventDateStr = format(parseISO(event.date), "yyyy-MM-dd");
     return eventDateStr === dateStr;
   });
@@ -92,7 +114,7 @@ const nextMonth = () => {
   }
 };
 
-const handleRegisterClick = () => {
+const handleCreateClick = () => {
   props.onOpenModal();
 };
 
@@ -130,14 +152,19 @@ const handleEventClick = (event) => {
           </div>
         </div>
       </div>
-      <button class="create_btn" @click="handleRegisterClick">
+      <button class="create_btn" @click="handleCreateClick">
         <img src="/src/assets/icons/plus.png" alt="+" />
         만들기
       </button>
     </div>
 
     <div class="calendar_grid">
-      <div class="day_label" v-for="(day, index) in days" :key="index" :class="{ sunday: index === 0, saturday: index === 6 }">
+      <div
+        class="day_label"
+        v-for="(day, index) in days"
+        :key="index"
+        :class="{ sunday: index === 0, saturday: index === 6 }"
+      >
         {{ day }}
       </div>
 
@@ -145,7 +172,10 @@ const handleEventClick = (event) => {
         class="calendar_cell"
         v-for="(item, index) in calendarDates"
         :key="item.date.toISOString()"
-        :class="{ not_this_month: !item.isCurrentMonth, today_cell: format(item.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') }"
+        :class="{
+          not_this_month: !item.isCurrentMonth,
+          today_cell: format(item.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd'),
+        }"
       >
         <div
           class="date_number"

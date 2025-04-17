@@ -20,14 +20,14 @@ const login = async () => {
   const result = await userStore.login(loginData);
   if (result.code !== 1102) {
     alert("로그인되었습니다.");
-    router.push("/");
+    router.replace("/");
   }
 };
 
 const kakaoLogin = () => {
   window.location.href = import.meta.env.VITE_KAKAO_LOGIN_URL;
   alert("로그인 되었습니다.");
-  router.push("/");
+  router.replace("/");
 };
 </script>
 

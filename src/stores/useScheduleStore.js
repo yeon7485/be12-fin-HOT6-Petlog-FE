@@ -1,3 +1,4 @@
+import axios from "axios";
 import { defineStore } from "pinia";
 
 export const useScheduleStore = defineStore("schedule", {
@@ -89,6 +90,18 @@ export const useScheduleStore = defineStore("schedule", {
     getItemDetail(idx) {
       console.log(idx);
       return this.planDetail;
+    },
+
+    async createSchedule(petIdx, planData) {
+      try {
+        const response = await axios.post(`/api/schedule/pet/${petIdx}`, planData);
+        console.log(response);
+
+        return response.data;
+      } catch (err) {
+        alert("일정 등록에 실패했습니다.");
+        console.log(err);
+      }
     },
   },
 });

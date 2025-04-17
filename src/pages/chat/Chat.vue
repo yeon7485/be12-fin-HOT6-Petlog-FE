@@ -10,8 +10,20 @@
         </div>
         <!-- 상단 버튼들 -->
         <div class="chat-header-actions">
-          <button class="chat-button chat-button--group">그룹 채팅방</button>
-          <button class="chat-button chat-button--personal">내 채팅방</button>
+          <button
+            class="chat-button"
+            :class="{ 'chat-button--group': !isMyRoomView }"
+            @click="showAllRooms"
+          >
+            그룹 채팅방
+          </button>
+          <button
+            class="chat-button"
+            :class="{ 'chat-button--personal': isMyRoomView }"
+            @click="showMyRooms"
+          >
+            내 채팅방
+          </button>
           <button class="chat-button chat-button--create" @click="openModal">
             <img
               src="../../assets/images/iconoir_chat-plus-in.png"
@@ -44,19 +56,21 @@
         <input
           type="text"
           class="modal-input"
+          v-model="roomName"
           placeholder="채팅방 이름을 입력해주세요."
         />
 
         <label class="modal-label">해시태그</label>
         <textarea
           class="modal-textarea"
+          v-model="roomTags"
           placeholder="앞에 #를 붙여 해시태그를 입력해주세요.&#10;ex) #산책 #강아지 #소통"
         ></textarea>
       </div>
 
       <div class="modal-actions">
         <button class="cancel-button" @click="closeModal">취소</button>
-        <button class="confirm-button">완료</button>
+        <button class="confirm-button" @click="createRoom">완료</button>
       </div>
     </div>
   </div>
@@ -68,9 +82,28 @@ import { useChatStore } from "../../stores/useChatStroe";
 import ChatCard from "./components/ChatCard.vue";
 const chatStore = useChatStore();
 const showModal = ref(false); // true일 경우 모달이 보임
+const roomName = ref("");
+const roomTags = ref("");
+const isMyRoomView = ref(false); // false면 전체방, true면 내 채팅방
+const showAllRooms = async () => {
+  await chatStore.loadRooms();
+  isMyRoomView.value = false;
+};
 
+const showMyRooms = async () => {
+  await chatStore.loadMyChatRooms();
+  isMyRoomView.value = true;
+};
 const closeModal = () => {
   showModal.value = false;
+  roomName.value = "";
+  roomTags.value = "";
+};
+
+const createRoom = async () => {
+  await chatStore.createChatRoom(roomName.value, roomTags.value);
+  await chatStore.loadRooms(); // 🔁 목록 새로 불러오기
+  closeModal();
 };
 
 const openModal = () => {

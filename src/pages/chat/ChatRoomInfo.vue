@@ -48,7 +48,7 @@
       <h3 class="section-title">
         대화상대 {{ chatStore.chatRoomUsers.length }}
       </h3>
-      <div class="member-list">
+      <div class="member-list" ref="scrollContainer" @scroll="handleScroll">
         <UserCard
           v-for="user in chatStore.chatRoomUsers"
           :key="user.idx"
@@ -83,6 +83,14 @@ const chatroomIdx = route.params.chatroomIdx;
 
 const title = ref("");
 const hashtagsText = ref("");
+const scrollContainer = ref(null);
+
+const handleScroll = (e) => {
+  const { scrollTop, clientHeight, scrollHeight } = e.target;
+  if (scrollTop + clientHeight >= scrollHeight - 10) {
+    chatStore.fetchUsers(chatroomIdx);
+  }
+};
 
 // 저장 버튼 클릭 시
 const save = async () => {
@@ -107,6 +115,7 @@ const cancel = () => {
   isEditing.value = false;
 };
 onMounted(() => {
+  chatStore.resetUsers();
   chatStore.fetchUsers(chatroomIdx);
   chatStore.getRoomInfo(chatroomIdx);
   title.value = chatStore.chatRoomInfo.title;

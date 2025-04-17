@@ -19,8 +19,8 @@
 
     <!-- 텍스트 메시지 -->
     <template v-if="message.type === 'text'">
-      <div class="chat-bubble">{{ message.text }}</div>
-      <span class="chat-time">{{ formatTime(message.timestamp) }}</span>
+      <div class="chat-bubble">{{ message.message }}</div>
+      <span class="chat-time">{{ formatTime(message.createdAt) }}</span>
     </template>
 
     <!-- 반려동물 카드 메시지 -->

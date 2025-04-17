@@ -10,7 +10,7 @@ const route = useRoute();
 
 <template>
   <Header v-if="!route.path.startsWith('/user')" />
-  <RouterView></RouterView>
+  <router-view></router-view>
 </template>
 
 <style scoped></style>

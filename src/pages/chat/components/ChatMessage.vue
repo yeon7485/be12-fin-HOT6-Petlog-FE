@@ -13,7 +13,7 @@
           :src="message.profileImage || defaultProfile"
           class="profile-img"
         />
-        <div class="username">{{ message.username || "알 수 없음" }}</div>
+        <div class="username">{{ message.nickname || "알 수 없음" }}</div>
       </div>
     </template>
 

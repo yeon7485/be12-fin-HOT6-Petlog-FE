@@ -35,6 +35,10 @@ export const useChatStore = defineStore("chat", {
       });
     },
 
+    async leaveChatRoom(roomIdx) {
+      await axios.delete(`/api/chat/chatroom/${roomIdx}/leave`);
+    },
+
     async loadMessages(roomId) {
       try {
         const res = await axios.get(`/api/chat/chatroom/${roomId}/chat`);
@@ -107,8 +111,11 @@ export const useChatStore = defineStore("chat", {
     },
     async fetchMessages(roomId) {
       try {
-        const { data } = await axios.get(`/api/chatroom/${roomId}/messages`);
-        this.chatMessages = data;
+        const { response } = await axios.get(
+          `/api/chatroom/${roomId}/messages`
+        );
+        this.chatMessages = response.data.result;
+        console.log(chatMessages);
       } catch (err) {
         console.error("💥 메시지 불러오기 실패:", err);
       }
@@ -134,16 +141,9 @@ export const useChatStore = defineStore("chat", {
 
     async getRoomInfo(chatroomIdx) {
       try {
-        const response = {
-          data: {
-            idx: 1,
-            title: "서울숲 산책하실 분",
-            hashtags: ["햄스터", "친구", "삐약"],
-            participants: 6,
-          },
-        };
+        const response = await axios.get(`/api/chat/chatroom/${chatroomIdx}`);
 
-        this.chatRoomInfo = response.data;
+        this.chatRoomInfo = response.data.result;
       } catch (error) {
         console.error("채팅방 정보 불러오기 실패:", error);
       }

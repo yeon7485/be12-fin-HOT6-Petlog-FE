@@ -43,7 +43,7 @@ const confirmAndSelect = async () => {
         <img class="profile_img" :src="answer.profileImage" alt="유저 이미지" />
         <span class="nickname">{{ answer.writer }}</span>
         <span class="divider">ㅣ</span>
-        <span class="date">{{ answer.created_at }}</span>
+        <span class="date">{{ answer.createdAt }}</span>
       </div>
 
       <div class="icons">

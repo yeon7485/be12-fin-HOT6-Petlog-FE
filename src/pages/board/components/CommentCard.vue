@@ -59,9 +59,8 @@ const deleteComment = async () => {
       <img class="avatar" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
       <span class="nickname">{{ comment.writer }}</span>
       <span class="divider">ㅣ</span>
-      <span class="date">{{ comment.created_at }}</span>
+      <span class="date">{{ comment.createdAt }}</span>
 
-      <!-- ✅ 작성자 본인일 때만 수정/삭제 버튼 표시 -->
       <template v-if="comment.userIdx === currentUserIdx">
         <img
           src="/src/assets/icons/write.png"

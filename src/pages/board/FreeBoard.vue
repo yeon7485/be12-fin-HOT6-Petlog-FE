@@ -112,12 +112,29 @@ onMounted(() => {
 }
 
 .category_dropdown {
-  padding: 10px;
+  padding: 10px 14px;
   font-size: 14px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background-color: white;
-  width: 180px;
+  border-radius: 20px;
+  border: 1px solid #a1887f;
+  background-color: #fdf6f1;
+  color: #4E342E;
+  appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(93, 64, 55, 0.1);
+  transition: all 0.2s ease;
+}
+
+.category_dropdown:hover {
+  border-color: #8d6e63;
+  background-color: #fcefe7;
+}
+
+.category_dropdown:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.3);
 }
 
 .search_input_wrap {
@@ -153,12 +170,13 @@ onMounted(() => {
 }
 
 .board_table th {
-  background-color: #fafafa;
+  background-color: #d7ccc8;
   text-align: left;
-  padding: 12px 8px;
-  border-bottom: 2px solid #ccc;
+  padding: 10px 6px;
+  border-bottom: 2px solid #a1887f;
   font-size: 15px;
   font-weight: 600;
+  color: #4E342E;
 }
 
 .pagination {
@@ -174,11 +192,12 @@ onMounted(() => {
   border: none;
   background: none;
   cursor: pointer;
+  color: #5D4037;
 }
 
 .write_btn {
   float: right;
-  background: #6a0104;
+  background: #6D4C41;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -188,6 +207,6 @@ onMounted(() => {
 }
 
 .write_btn:hover {
-  background: #8b0000;
+  background: #5D4037;
 }
 </style>

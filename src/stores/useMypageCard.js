@@ -8,7 +8,7 @@ export const useMypageCard = defineStore('mypageCard', {
   actions: {
     async fetchPets(userId) {
       try {
-        const response = await axios.get('http://localhost:8080/pet/user/1')
+        const response = await axios.get('/api/pet/user/1')
         this.pets = response.data
       } catch (error) {
         console.error('반려동물 목록을 불러오는 데 실패했습니다.', error)
@@ -17,7 +17,7 @@ export const useMypageCard = defineStore('mypageCard', {
 
     async addPet(pet) {
       try {
-        const response = await axios.post('http://localhost:8080/pet', pet)
+        const response = await axios.post('/api/pet', pet)
         this.pets.push(response.data)
       } catch (error) {
         console.error('반려동물 추가 실패:', error)
@@ -26,7 +26,7 @@ export const useMypageCard = defineStore('mypageCard', {
 
     async removePet(id) {
       try {
-        await axios.delete(`http://localhost:8080/pet/${id}`)
+        await axios.delete(`/api/pet/${id}`)
         this.pets = this.pets.filter(p => p.idx !== id)
       } catch (error) {
         console.error('반려동물 삭제 실패:', error)

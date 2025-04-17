@@ -1,14 +1,6 @@
 <script setup>
-import { onMounted, watchEffect } from "vue";
-import { RouterLink, useRouter } from "vue-router";
-import { useUserStore } from "../../stores/useUserStore";
+import { RouterLink } from "vue-router";
 import logo from "/src/assets/images/logo.png";
-
-const userStore = useUserStore();
-
-onMounted(async () => {
-  await userStore.loginCheck();
-});
 </script>
 
 <template>

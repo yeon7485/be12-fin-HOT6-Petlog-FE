@@ -95,6 +95,7 @@ onMounted(() => {
   chatStore.connectStomp(1, () => {
     console.log("🟢 연결된 후 실행할 추가 작업!");
   });
+  chatStore.loadMessages(chatroomIdx);
 });
 
 // 더미 테스트용 객체 예시 (실제 데이터와 연결 시 수정 가능)
@@ -111,9 +112,6 @@ const examplePet = {
 
 const isModalOpen = ref(false);
 
-onMounted(() => {
-  chatStore.getRoomInfo(chatroomIdx); // 테스트 데이터 로딩
-});
 const roomTitle = computed(() => chatStore.chatRoomInfo?.title || "채팅방");
 </script>
 <style scoped>

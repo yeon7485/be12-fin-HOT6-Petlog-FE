@@ -19,9 +19,31 @@ export const useChatStore = defineStore("chat", {
     messages: [],
     stompClient: null,
     currentUserId: 2,
+    myChatRooms: [],
+    hasNext: true,
+    lastUserId: null,
   }),
 
   actions: {
+    async enterChatRoom(roomId) {
+      // ✅ 1. 초기 메시지 로딩
+      await this.loadMessages(roomId);
+
+      // ✅ 2. WebSocket 연결 및 실시간 구독
+      this.connectStomp(roomId, () => {
+        console.log("📡 실시간 구독 시작!");
+      });
+    },
+
+    async loadMessages(roomId) {
+      try {
+        const res = await axios.get(`/api/chat/chatroom/${roomId}/chat`);
+        this.messages = res.data.result;
+        console.log("📥 초기 메시지 로딩 완료:", res.data.result);
+      } catch (e) {
+        console.error("❌ 메시지 로딩 실패:", e);
+      }
+    },
     connectStomp(roomId, onConnectedCallback) {
       const socket = new SockJS("/ws");
 
@@ -33,13 +55,11 @@ export const useChatStore = defineStore("chat", {
           console.log("✅ STOMP 연결 성공");
 
           // 채팅방 구독
-          this.stompClient.subscribe(
-            `/topic/chat/room/${roomId}`,
-            (message) => {
-              const msg = JSON.parse(message.body);
-              this.receiveMessage(msg);
-            }
-          );
+          this.stompClient.subscribe(`/topic/chat/${roomId}`, (message) => {
+            const msg = JSON.parse(message.body);
+            console.log("msg");
+            this.receiveMessage(msg);
+          });
 
           if (onConnectedCallback) onConnectedCallback();
         },
@@ -65,7 +85,6 @@ export const useChatStore = defineStore("chat", {
           destination: `/app/chat/${roomId}`,
           body: JSON.stringify(msg),
         });
-        this.messages.push(msg); // Optimistic UI
       } else {
         console.warn("⛔ STOMP 연결되지 않음 (테스트 메시지 추가)");
         this.messages.push({ ...msg, testMode: true });
@@ -97,30 +116,17 @@ export const useChatStore = defineStore("chat", {
 
     async loadRooms() {
       try {
-        // 임시로 mock 데이터 사용
-        const response = {
-          data: [
-            {
-              idx: 1,
-              title: "서울숲 산책하실 분",
-              hashtags: ["햄스터", "친구", "삐약"],
-              participants: 6,
-            },
-            {
-              idx: 2,
-              title: "햄스터 친구 구해요",
-              hashtags: ["햄스터", "친구", "삐약"],
-              participants: 6,
-            },
-            {
-              idx: 3,
-              title: "햄스터 친구 구해요",
-              hashtags: ["햄스터", "친구", "삐약"],
-              participants: 6,
-            },
-          ],
-        };
-        this.chatRooms = response.data;
+        const response = await axios.get(`/api/chat/`);
+        this.chatRooms = response.data.result;
+      } catch (error) {
+        console.error("채팅방 목록 불러오기 실패:", error);
+      }
+    },
+
+    async loadMyChatRooms() {
+      try {
+        const response = await axios.get(`/api/chat/chatrooms/me`);
+        this.chatRooms = response.data.result;
       } catch (error) {
         console.error("채팅방 목록 불러오기 실패:", error);
       }
@@ -143,71 +149,28 @@ export const useChatStore = defineStore("chat", {
       }
     },
 
-    async fetchUsers(roomIdx) {
-      try {
-        const response = {
-          data: [
-            {
-              idx: 1,
-              imageUrl: "../../assets/images/cat1.jpg",
-              userName: "agdddh",
-            },
-            {
-              idx: 2,
-              imageUrl: "srcassetsimagescat1.jpg",
-              userName: roomIdx,
-            },
-            {
-              idx: 3,
-              imageUrl: "srcassetsimagescat1.jpg",
-              userName: roomIdx,
-            },
-            {
-              idx: 4,
-              imageUrl: "srcassetsimagescat1.jpg",
-              userName: "agh",
-            },
-            {
-              idx: 5,
-              imageUrl: "srcassetsimagescat1.jpg",
-              userName: "agh",
-            },
-            {
-              idx: 3,
-              imageUrl: "srcassetsimagescat1.jpg",
-              userName: "agh",
-            },
-            {
-              idx: 3,
-              imageUrl: "srcassetsimagescat1.jpg",
-              userName: "agh",
-            },
-            {
-              idx: 3,
-              imageUrl: "srcassetsimagescat1.jpg",
-              userName: "agh",
-            },
-            {
-              idx: 3,
-              imageUrl: "srcassetsimagescat1.jpg",
-              userName: "agh",
-            },
-            {
-              idx: 3,
-              imageUrl: "srcassetsimagescat1.jpg",
-              userName: "agh",
-            },
-            {
-              idx: 3,
-              imageUrl: "srcassetsimagescat1.jpg",
-              userName: "agh",
-            },
-          ],
-        };
-        this.chatRoomUsers = response.data;
-      } catch (err) {
-        console.error("❌ 멤버 목록 불러오기 실패:", err);
+    async fetchUsers(chatRoomId) {
+      if (!this.hasNext) return;
+
+      const res = await axios.get(`/api/chat/chatroom/${chatRoomId}/users`, {
+        params: {
+          lastUserId: this.lastUserId,
+          size: 20,
+        },
+      });
+
+      const { content, hasNext } = res.data.result;
+      this.chatRoomUsers.push(...content);
+      this.hasNext = hasNext;
+      if (content.length > 0) {
+        this.lastUserId = content[content.length - 1].idx;
       }
+    },
+
+    resetUsers() {
+      this.chatRoomUsers = [];
+      this.hasNext = true;
+      this.lastUserId = null;
     },
 
     async getChatRoomScheduleList(roomIdx) {
@@ -352,6 +315,20 @@ export const useChatStore = defineStore("chat", {
 
     resetUnread() {
       this.unreadCount = 0;
+    },
+
+    async createChatRoom(title, tags) {
+      const hashtags = tags
+        .split("#")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag !== "");
+
+      const payload = {
+        title: title,
+        hashtags: hashtags,
+      };
+
+      await axios.post("/api/chat", payload);
     },
   },
 });

@@ -10,25 +10,23 @@ const petId = route.params.petId; // 📌 URL에서 petId 추출
 let card = ref(null);  // 'let'으로 변경하여 재할당 가능하게 만듦
 const profileImage = ref('');
 
-// 중성화 여부 체크박스 값 (true 또는 false로 전송)
 const calculateAge = (birthDate) => {
-  const birth = new Date(birthDate);
+  const birth = new Date(birthDate);  // birth는 변경되지 않으므로 const로 유지
   const today = new Date();
-  const age = today.getFullYear() - birth.getFullYear();
-  const month = today.getMonth() - birth.getMonth();
+  let age = today.getFullYear() - birth.getFullYear();  // age는 let으로 선언하여 변경 가능하게 만듦
+  let month = today.getMonth() - birth.getMonth();  // month도 let으로 선언하여 변경 가능하게 만듦
   if (month < 0 || (month === 0 && today.getDate() < birth.getDate())) {
-    age--;
+    age--;  // 이제 age를 변경할 수 있음
   }
-  return age;
+  return age;  // 정상적으로 age 반환
 };
 
-// ✅ 펫 정보 불러오기
 onMounted(async () => {
   try {
-    const response = await axios.get(`http://localhost:8080/pet/${petId}`);
-    console.log('🐾 상세 정보:', response.data);
-
-    // 서버에서 받은 프로필 이미지 URL을 전체 URL로 변환
+    const response = await axios.get(`/api/pet/${petId}`);
+    console.log('🐾 상세 정보:', response.data);  // 받은 데이터 출력
+    
+    // profileImageUrl과 나이 계산 등의 값도 확인하기
     const imageUrl = response.data.profileImageUrl ? `http://localhost:8080${response.data.profileImageUrl}` : "/default-profile.png";
 
     card.value = {
@@ -41,7 +39,7 @@ onMounted(async () => {
       profileImageUrl: imageUrl,
       isNeutering: response.data.isNeutering,
       status: response.data.status
-    };  
+    };
 
     profileImage.value = response.data.profileImageUrl;
   } catch (e) {
@@ -65,7 +63,7 @@ const deleteCard = async () => {
   if (confirmDelete) {
     try {
       // petId를 포함한 DELETE 요청
-      await axios.delete(`http://localhost:8080/pet/${petId}`);
+      await axios.delete(`/api/pet/${petId}`);
       alert('삭제되었습니다.');
       router.push('/mypage/cardlist');  // 삭제 후 이동
     } catch (error) {

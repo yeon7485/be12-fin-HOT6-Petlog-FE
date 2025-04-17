@@ -25,22 +25,23 @@ const logout = async () => {
   const result = await userStore.logout();
   if (result.isSuccess) {
     alert("로그아웃 되었습니다.");
-    window.location.reload();
-    router.push("/");
+    router.replace("/");
   } else {
     alert("로그아웃 실패");
   }
 };
 
 const isLoggedIn = computed(() => userStore.isLogin);
+const isLoading = ref(true);
 
 onMounted(() => {
   userStore.loginCheck();
+  isLoading.value = false;
 });
 </script>
 
 <template>
-  <header class="header">
+  <header v-if="!isLoading" class="header">
     <div class="header_container">
       <div class="header_box">
         <img src="/src/assets/images/logo.png" alt="logo" class="logo_img" @click="toHome" />

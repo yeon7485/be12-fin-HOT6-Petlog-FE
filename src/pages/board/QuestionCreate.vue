@@ -58,7 +58,6 @@ const handleSubmit = async () => {
     qTitle: form.value.qTitle,
     content: form.value.content,
     tags: tagsArray,
-    writer: '닉네임',
     image: form.value.image || '',
     selected: false,
   }
@@ -80,7 +79,6 @@ const handleSubmit = async () => {
   }
 }
 </script>
-
 
 <template>
   <div class="qna_container">

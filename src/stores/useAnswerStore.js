@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
+import { useUserStore } from "/src/stores/useUserStore";
 
 export const useAnswerStore = defineStore("answer", () => {
   const answers = ref([]);
+  const userStore = useUserStore();
 
   const fetchAnswersByQuestionId = async (questionId) => {
     try {
@@ -19,6 +21,7 @@ export const useAnswerStore = defineStore("answer", () => {
       await axios.post("/api/answer/create", {
         questionIdx,
         content,
+        image: "", 
       });
     } catch (err) {
       console.error("답변 등록 실패:", err);
@@ -40,11 +43,7 @@ export const useAnswerStore = defineStore("answer", () => {
 
   const selectAnswer = async (answerIdx) => {
     try {
-      await axios.post(`/api/answer/${answerIdx}/select`, null, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      await axios.post(`/api/answer/${answerIdx}/select`);
     } catch (err) {
       console.error("답변 채택 실패:", err);
       throw err;
@@ -64,7 +63,7 @@ export const useAnswerStore = defineStore("answer", () => {
       throw err;
     }
   };
-  
+
   const deleteAnswer = async (answerIdx) => {
     try {
       await axios.delete(`/api/answer/delete/${answerIdx}`);

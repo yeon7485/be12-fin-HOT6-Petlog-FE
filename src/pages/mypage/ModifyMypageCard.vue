@@ -1,14 +1,23 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router'; // Vue Router 사용
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
-// URL 경로에서 petId를 가져오기
-const router = useRouter();
-const route = useRoute();
-const petId = route.params.petId; // URL에서 petId 추출
+// 세션에서 user 객체를 가져오고, 그 안에서 idx 값을 추출하는 함수
+function getSessionUserIdx() {
+  const user = sessionStorage.getItem('user'); // 세션 스토리지에서 user 값을 가져옴
+  console.log('세션에 저장된 user:', user); // user 값 출력
+  if (user) {
+    const parsedUser = JSON.parse(user);
+    console.log('Parsed User:', parsedUser); // user 객체 출력
+    return parsedUser.idx; // user가 존재하면 그 안에서 idx 값을 반환
+  }
+  return null; // user가 없다면 null 반환
+}
 
+const router = useRouter(); // 라우터 인스턴스
+
+const petId = ref("");  // petId 값
 const card = ref({
   id: "",  // ID 값을 빈 문자열로 초기화
   name: '',
@@ -18,25 +27,42 @@ const card = ref({
   isNeutered: false,
   notes: '',
   status: '',
+  userId: ""  // 사용자 ID를 추가
 });
 
+// 상태값 설정
 const statuses = ['정상', '실종', '파양', '사망'];
 
+// URL 경로에서 petId를 가져오기
 onMounted(async () => {
+  // 사용자 정보에서 userId를 가져옴
+  const userId = getSessionUserIdx();
+
+  if (!userId) {
+    console.error("세션에 유저 정보가 없습니다.");
+    alert("로그인 정보가 없습니다.");
+    router.push("/user/login");
+    return;
+  }
+
   try {
-    // 실제 반려동물 정보를 받아오는 API 호출
-    const response = await axios.get(`http://localhost:8080/pet/${petId}`); // 실제 API URL로 변경
-    
+    // URL에서 petId 추출
+    const petId = router.currentRoute.value.params.petId;
+
+    // 반려동물 정보를 가져오는 API 호출
+    const response = await axios.get(`/api/pet/${petId}`);
+
     // 받아온 데이터로 card 값 업데이트
     card.value = {
-      id: response.data.id,  // id 값을 받아오기
+      id: response.data.id,
       name: response.data.name,
       gender: response.data.gender,
       isNeutering: response.data.isNeutering,  
       birthdate: response.data.birthDate,
       breed: response.data.breed,
       specificInformation: response.data.specificInformation, 
-      status: response.data.status
+      status: response.data.status,
+      userId: userId  // 유저 ID를 추가
     };
   } catch (error) {
     console.error('카드 정보를 가져오는 중 오류 발생:', error);
@@ -55,14 +81,15 @@ const saveCard = async () => {
       birthDate: card.value.birthDate,  
       breed: card.value.breed,
       specificInformation: card.value.specificInformation,  
-      status: card.value.status
+      status: card.value.status,
+      userId: card.value.userId  // userId 포함
     };
 
     // petData를 FormData에 추가
     formData.append("pet", new Blob([JSON.stringify(petData)], { type: "application/json" }));
 
     // 서버로 FormData 전송 (multipart/form-data)
-    const response = await axios.put(`http://localhost:8080/pet/${petId}`, formData, {
+    const response = await axios.put(`/api/pet/${card.value.id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -74,6 +101,11 @@ const saveCard = async () => {
     console.error("카드 수정 실패:", err);
     alert("수정 중 오류가 발생했습니다.");
   }
+};
+
+// 취소 버튼 클릭 시 이동
+const goToCardList = () => {
+  router.push("/mypage/cardlist");  // 반려동물 카드 목록으로 이동
 };
 </script>
 

@@ -1,27 +1,42 @@
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router"; // ✅ 라우터 사용
-import axios from "axios";
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
 
-const router = useRouter(); // ✅ 인스턴스
+// 라우터 인스턴스
+const router = useRouter();
 
-const profileImage = ref("");
+// 프로필 이미지 미리보기
+const profileImage = ref('');
 
+// 선택된 파일
+const selectedFile = ref(null);
+
+// 반려동물 카드 데이터
 const card = ref({
-  name: "",
-  gender: "",
-  isNeutering: false, // 기본값은 false (체크되지 않은 상태)
-  birthDate: "",
-  breed: "",
-  specificInformation: "",
-  userId: 1, 
+  name: '',
+  gender: '',
+  isNeutering: false,  // 중성화 여부
+  birthDate: '',
+  breed: '',
+  specificInformation: '',
+  userId: null,  // 나중에 세션에서 추출한 userId 값을 넣을 예정
 });
 
 // 파일 입력 요소 참조
 const fileInput = ref(null);
 
-// 이미지 파일 객체
-const selectedFile = ref(null);
+// 세션에서 user 객체를 가져오고, 그 안에서 idx 값을 추출하는 함수
+function getSessionUserIdx() {
+  const user = sessionStorage.getItem('user'); // 세션 스토리지에서 user 값을 가져옴
+  console.log('세션에 저장된 user:', user); // user 값 출력
+  if (user) {
+    const parsedUser = JSON.parse(user);
+    console.log('Parsed User:', parsedUser); // user 객체 출력
+    return parsedUser.idx; // user가 존재하면 그 안에서 idx 값을 반환
+  }
+  return null; // user가 없다면 null 반환
+}
 
 // 파일 선택 창 열기
 const triggerFileInput = () => {
@@ -41,11 +56,43 @@ const uploadImage = (event) => {
   }
 };
 
+// 서버로 프리사인된 URL을 요청하여 받아오는 함수
+const getPresignedUrl = async (fileName, contentType) => {
+  const response = await axios.get('/api/pet/generate-presigned-url', {
+    params: { fileName: fileName, contentType: contentType }
+  });
+  return response.data;
+};
+
+// 파일을 S3에 업로드하는 함수
+const uploadToS3 = async (url, file) => {
+  try {
+    await axios.put(url, file, {
+      headers: {
+        'Content-Type': file.type
+      }
+    });
+    return true;
+  } catch (err) {
+    console.error('파일 업로드 실패:', err);
+    return false;
+  }
+};
+
 // 카드 저장 함수
 const saveCard = async () => {
   try {
     const formData = new FormData();
 
+    // 세션에서 가져온 userId 설정
+    const userId = getSessionUserIdx();
+    if (!userId) {
+      alert('로그인 정보가 없습니다.');
+      router.push('/user/login');
+      return;
+    }
+
+    // 반려동물 카드 데이터
     const petData = {
       name: card.value.name,
       gender: card.value.gender,
@@ -53,42 +100,50 @@ const saveCard = async () => {
       birthDate: card.value.birthDate,
       breed: card.value.breed,
       specificInformation: card.value.specificInformation,  // 특이사항
-      userId: card.value.userId,
+      userId: userId,  // 세션에서 가져온 userId 추가
     };
-
-    console.log("중성화 여부:", typeof(petData.isNeutering));
-    
-    console.log("중성화 여부:", (petData.isNeutering)); // 값을 로그로 확인
 
     // JSON 데이터를 FormData로 추가
     formData.append(
-      "pet",
-      new Blob([JSON.stringify(petData)], { type: "application/json" })
+      'pet',
+      new Blob([JSON.stringify(petData)], { type: 'application/json' })
     );
 
-    // 프로필 이미지 추가
+    let imageUrl = null;
     if (selectedFile.value) {
-      formData.append("profileImage", selectedFile.value);
+      // 프리사인된 URL 요청
+      const presignedUrl = await getPresignedUrl(selectedFile.value.name, selectedFile.value.type);
+
+      // S3에 파일 업로드
+      const uploadSuccess = await uploadToS3(presignedUrl, selectedFile.value);
+      if (uploadSuccess) {
+        imageUrl = presignedUrl.split('?')[0];  // 프리사인된 URL에서 파일 URL 부분만 사용
+      }
+    }
+
+    // 프로필 이미지 URL 추가
+    if (imageUrl) {
+      formData.append('profileImage', imageUrl);
     }
 
     // 서버로 FormData 전송 (multipart/form-data)
-    const response = await axios.post("http://localhost:8080/pet/create", formData, {
+    const response = await axios.post('/api/pet/create', formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
     });
 
-    alert("카드가 성공적으로 생성되었습니다!");
-    router.push("/mypage/cardlist"); // ✅ 저장 후 이동
+    alert('카드가 성공적으로 생성되었습니다!');
+    router.push('/mypage/cardlist'); // 저장 후 이동
   } catch (err) {
-    console.error("카드 등록 실패:", err);
-    alert("등록 중 오류가 발생했습니다.");
+    console.error('카드 등록 실패:', err);
+    alert('등록 중 오류가 발생했습니다.');
   }
 };
 
 // 취소 버튼 클릭 시 실행될 함수
 const cancel = () => {
-  router.push("/mypage/cardlist"); // ✅ 취소 시 이동
+  router.push('/mypage/cardlist'); // 취소 시 이동
 };
 </script>
 
@@ -152,6 +207,7 @@ const cancel = () => {
     </div>  
   </div>
 </template>
+
 
 <style scoped>
 .title {

@@ -26,13 +26,14 @@ const card = ref({
 // 파일 입력 요소 참조
 const fileInput = ref(null);
 
+// 이미지 업로드 상태
+const isUploading = ref(false);
+
 // 세션에서 user 객체를 가져오고, 그 안에서 idx 값을 추출하는 함수
 function getSessionUserIdx() {
   const user = sessionStorage.getItem('user'); // 세션 스토리지에서 user 값을 가져옴
-  console.log('세션에 저장된 user:', user); // user 값 출력
   if (user) {
     const parsedUser = JSON.parse(user);
-    console.log('Parsed User:', parsedUser); // user 객체 출력
     return parsedUser.idx; // user가 존재하면 그 안에서 idx 값을 반환
   }
   return null; // user가 없다면 null 반환
@@ -53,29 +54,6 @@ const uploadImage = (event) => {
       profileImage.value = e.target.result;
     };
     reader.readAsDataURL(file);
-  }
-};
-
-// 서버로 프리사인된 URL을 요청하여 받아오는 함수
-const getPresignedUrl = async (fileName, contentType) => {
-  const response = await axios.get('/api/pet/generate-presigned-url', {
-    params: { fileName: fileName, contentType: contentType }
-  });
-  return response.data;
-};
-
-// 파일을 S3에 업로드하는 함수
-const uploadToS3 = async (url, file) => {
-  try {
-    await axios.put(url, file, {
-      headers: {
-        'Content-Type': file.type
-      }
-    });
-    return true;
-  } catch (err) {
-    console.error('파일 업로드 실패:', err);
-    return false;
   }
 };
 
@@ -109,24 +87,14 @@ const saveCard = async () => {
       new Blob([JSON.stringify(petData)], { type: 'application/json' })
     );
 
-    let imageUrl = null;
+    // 이미지 파일이 있을 경우 FormData에 추가
     if (selectedFile.value) {
-      // 프리사인된 URL 요청
-      const presignedUrl = await getPresignedUrl(selectedFile.value.name, selectedFile.value.type);
-
-      // S3에 파일 업로드
-      const uploadSuccess = await uploadToS3(presignedUrl, selectedFile.value);
-      if (uploadSuccess) {
-        imageUrl = presignedUrl.split('?')[0];  // 프리사인된 URL에서 파일 URL 부분만 사용
-      }
+      formData.append('profileImage', selectedFile.value);
     }
 
-    // 프로필 이미지 URL 추가
-    if (imageUrl) {
-      formData.append('profileImage', imageUrl);
-    }
+    isUploading.value = true; // 업로드 시작
 
-    // 서버로 FormData 전송 (multipart/form-data)
+    // 최종적으로 반려동물 카드 생성 API 요청
     const response = await axios.post('/api/pet/create', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -138,6 +106,8 @@ const saveCard = async () => {
   } catch (err) {
     console.error('카드 등록 실패:', err);
     alert('등록 중 오류가 발생했습니다.');
+  } finally {
+    isUploading.value = false;
   }
 };
 
@@ -202,7 +172,7 @@ const cancel = () => {
       <!-- 버튼 그룹 -->
       <div class="button-group">
         <button class="cancel-btn" @click="cancel">취소</button>
-        <button class="save-btn" @click="saveCard">저장</button>
+        <button class="save-btn" @click="saveCard" :disabled="isUploading">저장</button>
       </div>
     </div>  
   </div>

@@ -43,7 +43,8 @@ export const useBoardStore = defineStore("board", () => {
 
   const createPost = async (postData) => {
     try {
-      await axios.post("/api/post/create", postData);
+      const { writer, ...sanitized } = postData;
+      await axios.post("/api/post/create", sanitized);
     } catch (err) {
       console.error("게시글 등록 실패:", err);
       throw err;
@@ -52,7 +53,8 @@ export const useBoardStore = defineStore("board", () => {
 
   const updatePost = async (postIdx, postData) => {
     try {
-      await axios.put(`/api/post/update/${postIdx}`, postData);
+      const { writer, ...sanitized } = postData;
+      await axios.put(`/api/post/update/${postIdx}`, sanitized);
     } catch (err) {
       console.error("게시글 수정 실패:", err);
       throw err;

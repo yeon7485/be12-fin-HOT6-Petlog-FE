@@ -1,18 +1,26 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBoardStore } from '/src/stores/useBoardStore'
 import { useCommentStore } from '/src/stores/useCommentStore'
+import { useUserStore } from '/src/stores/useUserStore'
 import CommentCard from './components/CommentCard.vue'
 
 const route = useRoute()
 const router = useRouter()
 const boardStore = useBoardStore()
 const commentStore = useCommentStore()
+const userStore = useUserStore()
 
 const postIdx = Number(route.params.idx)
 const boardType = route.params.boardType
 const post = ref(null)
+
+const isOwner = computed(() =>
+  userStore.nickname &&
+  post.value?.writer &&
+  userStore.nickname === post.value.writer
+)
 
 onMounted(async () => {
   post.value = await boardStore.getPostDetail(postIdx)
@@ -43,7 +51,8 @@ const addComment = async () => {
   if (!newComment.value.trim()) return
   await commentStore.addComment({
     postIdx: postIdx,
-    writer: '현재 사용자',
+    userIdx: userStore.userIdx,
+    writer: userStore.nickname,
     text: newComment.value
   })
   newComment.value = ''
@@ -64,7 +73,8 @@ const addComment = async () => {
           <span class="divider">ㅣ</span>
           <span class="date">{{ post.created_at }}</span>
         </div>
-        <div class="icons">
+
+        <div class="icons" v-if="isOwner">
           <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정 아이콘" @click="goToModify" />
           <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제 아이콘" @click="handleDelete" />
         </div>
@@ -78,6 +88,7 @@ const addComment = async () => {
       </div>
     </div>
   </div>
+
   <div class="comment_section">
     <label class="comment_label">
       <img class="label_icon" src="/src/assets/icons/write-letter.png" alt="댓글 아이콘" />
@@ -90,8 +101,9 @@ const addComment = async () => {
         class="comment_input"
         placeholder="댓글을 작성해주세요."
         v-model="newComment"
+        :disabled="!userStore.isLogin"
       />
-      <button class="submit_btn" @click="addComment">등록</button>
+      <button class="submit_btn" @click="addComment" :disabled="!userStore.isLogin">등록</button>
     </div>
 
     <CommentCard
@@ -102,6 +114,7 @@ const addComment = async () => {
     />
   </div>
 </template>
+
 
 <style scoped>
 .wrapper {

@@ -2,11 +2,13 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBoardStore } from '/src/stores/useBoardStore'
+import { useUserStore } from '/src/stores/useUserStore'
 import AnimalCardModal from '/src/pages/board/components/AnimalCardModal.vue'
 
 const route = useRoute()
 const router = useRouter()
 const boardStore = useBoardStore()
+const userStore = useUserStore()
 
 const postIdx = route.params.idx ? Number(route.params.idx) : null
 const boardTypeFromRoute = route.params.boardType || ''
@@ -25,12 +27,20 @@ const form = ref({
   title: '',
   content: '',
   images: [],
-  writer: '익명'
+  writer: ''
 })
 
 const previewImages = ref([])
 
 onMounted(async () => {
+  if (!userStore.isLogin) {
+    alert('로그인 후 이용해주세요.')
+    router.push('/user/login')
+    return
+  }
+
+  form.value.writer = userStore.nickname
+
   if (isEdit) {
     await boardStore.fetchPosts(boardTypeFromRoute)
     const target = boardStore.posts.find(p => p.idx === postIdx)

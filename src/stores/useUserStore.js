@@ -3,11 +3,13 @@ import { defineStore } from "pinia";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
-    type: "",
-    nickname: "",
-    isLogin: false,
-    idx: 0,
+    type: "", // 사용자 타입 (USER / ADMIN 등)
+    nickname: "", // 사용자 닉네임 또는 이메일
+    userIdx: null, // 백엔드에서 받은 고유 사용자 번호
+    isLogin: false, // 로그인 상태
+    idx: 0, // 일부 응답 포맷 대응용
   }),
+
   persist: {
     storage: sessionStorage,
     paths: ["type", "nickname"],
@@ -36,17 +38,26 @@ export const useUserStore = defineStore("user", {
           withCredentials: true,
         });
 
-        if (response.data.isSuccess) {
+        const res = response.data;
+
+        // 성공 처리 (두 가지 포맷 대응)
+        const success = res.isSuccess || res.code === 200;
+
+        if (success) {
           this.isLogin = true;
-          this.nickname = response.data.userId;
-          this.type = response.data.role;
-          this.idx = response.data.idx;
-        } else if (response.data.code === 1102) {
-          alert(response.data.message + " 메일을 확인해주세요.");
+          this.nickname = res.userId ?? res.nickname ?? "";
+          this.type = res.role ?? "";
+          this.userIdx = res.userIdx ?? res.idx ?? 0;
+          this.idx = res.idx ?? res.userIdx ?? 0;
+        } else if (res.code === 1102) {
+          alert((res.message ?? "인증 필요") + " 메일을 확인해주세요.");
+        } else {
+          alert("로그인에 실패하였습니다.");
         }
-        return response.data;
+
+        return res;
       } catch (error) {
-        if (error.status === 401) {
+        if (error?.response?.status === 401) {
           alert("이메일과 비밀번호를 다시 입력해주세요.");
         } else {
           alert("로그인에 실패하였습니다.");
@@ -61,28 +72,41 @@ export const useUserStore = defineStore("user", {
           withCredentials: true,
         });
 
-        console.log(response);
         const res = response.data.result;
 
-        if (response.data.result.login) {
-          this.isLogin = res.login;
-          this.nickname = res.nickname;
-          this.type = res.role;
+        if (res.login) {
+          this.isLogin = true;
+          this.nickname = res.nickname ?? "";
+          this.type = res.role ?? "";
+          this.userIdx = res.userIdx ?? res.idx ?? 0;
+          this.idx = res.idx ?? res.userIdx ?? 0;
         } else {
           this.isLogin = false;
+          this.userIdx = null;
+          this.idx = 0;
         }
       } catch (error) {
         this.isLogin = false;
+        this.userIdx = null;
+        this.idx = 0;
       }
     },
 
     async logout() {
       try {
-        const response = await axios.post("/api/user/logout", {}, { withCredentials: true });
+        const response = await axios.post(
+          "/api/user/logout",
+          {},
+          {
+            withCredentials: true,
+          }
+        );
 
         this.nickname = "";
+        this.userIdx = null;
         this.isLogin = false;
         this.type = "";
+        this.idx = 0;
 
         return response.data;
       } catch (error) {

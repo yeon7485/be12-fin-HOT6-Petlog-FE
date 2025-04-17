@@ -1,18 +1,23 @@
 <script setup>
 import { useAnswerStore } from '/src/stores/useAnswerStore'
 import { useQuestionStore } from '/src/stores/useQuestionStore'
+import { useUserStore } from '/src/stores/useUserStore'
 import { useRoute } from 'vue-router'
 
-const emit = defineEmits(['modify', 'delete', 'select'])
+const emit = defineEmits(['modify', 'delete', 'select', 'selected'])
 
 const props = defineProps({
   answer: Object,
+  questionIdx: {
+    type: Number,
+    required: true,
+  },
 })
 
 const answerStore = useAnswerStore()
 const questionStore = useQuestionStore()
+const userStore = useUserStore()
 const route = useRoute()
-const questionIdx = Number(route.params.questionId)
 
 const confirmAndSelect = async () => {
   const confirmed = window.confirm('이 답변을 채택하시겠습니까?')
@@ -20,10 +25,13 @@ const confirmAndSelect = async () => {
 
   try {
     await answerStore.selectAnswer(props.answer.idx)
-    await questionStore.refreshQuestionStatus(questionIdx)
+    await questionStore.refreshQuestionStatus(props.questionIdx)
+
     alert('채택이 완료되었습니다.')
+    emit('selected')
   } catch (e) {
     alert('채택 실패')
+    console.error(e)
   }
 }
 </script>
@@ -45,7 +53,7 @@ const confirmAndSelect = async () => {
             <span class="selected_text">질문자가 채택한 답변</span>
           </div>
         </template>
-        <template v-else>
+        <template v-else-if="userStore.nickname === answer.writer">
           <img
             src="/src/assets/icons/write.png"
             class="icon_btn"
@@ -68,7 +76,7 @@ const confirmAndSelect = async () => {
     </div>
 
     <div
-      v-if="!answer.selected && !answerStore.answers.some(a => a.selected)"
+      v-if="!answer.selected && !answerStore.answers.some(a => a.selected) && userStore.nickname !== answer.writer"
       class="select_btn_area"
     >
       <button class="select_btn" @click="confirmAndSelect">채택하기</button>

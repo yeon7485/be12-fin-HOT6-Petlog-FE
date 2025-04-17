@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
+import { useUserStore } from "/src/stores/useUserStore"; 
 
 export const useCommentStore = defineStore("comment", () => {
   const comments = ref([]);
+  const userStore = useUserStore(); 
 
   const fetchComments = async (postIdx) => {
     try {
@@ -16,12 +18,16 @@ export const useCommentStore = defineStore("comment", () => {
 
   const addComment = async (comment) => {
     try {
+      console.log("댓글 작성 요청 전 userIdx:", userStore.userIdx);
       await axios.post("/api/comment/create", {
+        
         postIdx: comment.postIdx,
         writer: comment.writer,
         content: comment.text,
+        userIdx: userStore.userIdx, 
       });
       await fetchComments(comment.postIdx);
+      
     } catch (e) {
       console.error("댓글 추가 실패:", e);
     }

@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAnswerStore } from '/src/stores/useAnswerStore'
 import { useQuestionStore } from '/src/stores/useQuestionStore'
+import { useUserStore } from '/src/stores/useUserStore'
 import AnswerCard from '/src/pages/board/components/AnswerCard.vue'
 
 const router = useRouter()
@@ -10,6 +11,7 @@ const route = useRoute()
 
 const questionStore = useQuestionStore()
 const answerStore = useAnswerStore()
+const userStore = useUserStore()
 
 const question = ref(null)
 const questionIdx = Number(route.params.idx)
@@ -17,6 +19,15 @@ const questionIdx = Number(route.params.idx)
 const hasSelectedAnswer = computed(() =>
   answerStore.answers.some((a) => a.selected)
 )
+
+const isOwner = computed(() => {
+  return (
+    userStore.isLogin &&
+    userStore.nickname &&
+    question.value?.writer &&
+    question.value.writer === userStore.nickname
+  )
+})
 
 onMounted(async () => {
   try {
@@ -42,12 +53,6 @@ const handleDelete = async () => {
 }
 
 const handleSelectAnswer = async (answerId) => {
-  if (!answerId || isNaN(answerId)) {
-    console.error("잘못된 answerId:", answerId)
-    console.log("✅ 채택 후 갱신할 질문 ID:", questionIdx);
-    return
-  }
-
   const confirmed = window.confirm('현재 답변을 채택하시겠습니까?')
   if (!confirmed) return
 
@@ -60,6 +65,10 @@ const handleSelectAnswer = async (answerId) => {
     alert('채택 실패')
     console.error(err)
   }
+}
+
+const handleSelectedAnswer = () => {
+  router.push('/board/qna')
 }
 
 const confirmDeleteAnswer = async (answerId) => {
@@ -105,7 +114,7 @@ const goToRegister = () => {
           <span class="divider">ㅣ</span>
           <span class="date">{{ question.created_at }}</span>
         </div>
-        <div class="icons">
+        <div class="icons" v-if="isOwner">
           <img
             v-if="!hasSelectedAnswer"
             src="/src/assets/icons/write.png"
@@ -132,7 +141,10 @@ const goToRegister = () => {
         </div>
       </div>
 
-      <div class="action_area" v-if="!hasSelectedAnswer">
+      <div
+        class="action_area"
+        v-if="!hasSelectedAnswer && userStore.isLogin && userStore.nickname !== question.writer"
+      >
         <button class="reply_btn" @click="goToRegister">답변하기</button>
       </div>
     </div>
@@ -177,13 +189,15 @@ const goToRegister = () => {
       </div>
 
       <AnswerCard
-        v-for="answer in answerStore.answers"
-        :key="answer.idx"
-        :answer="answer"
-        @select="handleSelectAnswer"
-        @modify="goToModifyAnswer"
-        @delete="(id) => confirmDeleteAnswer(id)"
-      />
+  v-for="answer in answerStore.answers"
+  :key="answer.idx"
+  :answer="answer"
+  :question-idx="questionIdx"       
+  @select="handleSelectAnswer"
+  @modify="goToModifyAnswer"
+  @delete="(id) => confirmDeleteAnswer(id)"
+  @selected="handleSelectedAnswer"
+/>
     </div>
   </div>
 </template>

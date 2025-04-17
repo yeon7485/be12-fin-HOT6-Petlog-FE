@@ -92,23 +92,11 @@ const currentUserId = 1; // 실제론 로그인된 유저 ID
 
 onMounted(() => {
   chatStore.getRoomInfo(chatroomIdx);
-  chatStore.connectStomp(1, () => {
+  chatStore.connectStomp(chatroomIdx, () => {
     console.log("🟢 연결된 후 실행할 추가 작업!");
   });
   chatStore.loadMessages(chatroomIdx);
 });
-
-// 더미 테스트용 객체 예시 (실제 데이터와 연결 시 수정 가능)
-const examplePet = {
-  name: "봄",
-  gender: "여",
-  birth: "2017.04.01",
-  breed: "말티즈",
-  age: "8살",
-  neutered: false,
-  specialNote: "슬개골 수술\n온순하고 착하고 귀여움",
-  image: "../../assets/images/Ellipse12.png",
-};
 
 const isModalOpen = ref(false);
 

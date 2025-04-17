@@ -112,7 +112,7 @@ const goToRegister = () => {
           <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
           <span class="nickname">{{ question.writer }}</span>
           <span class="divider">ㅣ</span>
-          <span class="date">{{ question.created_at }}</span>
+          <span class="date">{{ question.createdAt }}</span>
         </div>
         <div class="icons" v-if="isOwner">
           <img

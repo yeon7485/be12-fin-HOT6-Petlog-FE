@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "../pages/common/HomePage.vue";
 
-import LandingPage from "../pages/common/LandingPage.vue";
 import Chat from "../pages/chat/Chat.vue";
 import ChatRoom from "../pages/chat/ChatRoom.vue";
 import ChatRoomInfo from "../pages/chat/ChatRoomInfo.vue";
@@ -65,37 +64,10 @@ const adminOnlyGuard = (to, from, next) => {
   }
 };
 
-// 로그인 체크
-const redirectBasedOnLogin = (to, from, next) => {
-  const userStore = useUserStore();
-
-  if (userStore.isLogin) {
-    next("/home");
-  } else {
-    next();
-  }
-};
-
-const requireLogin = (to, from, next) => {
-  const userStore = useUserStore();
-
-  if (!userStore.isLogin) {
-    next("/");
-  } else {
-    next();
-  }
-};
-
 const routes = [
   {
     path: "/",
-    component: LandingPage,
-    beforeEnter: redirectBasedOnLogin, // ✅ 가드 추가
-  },
-  {
-    path: "/home",
     component: HomePage,
-    beforeEnter: requireLogin,
   },
   { path: "/chat", component: Chat },
   { path: "/chatroom/:chatroomIdx", component: ChatRoom },
@@ -122,14 +94,14 @@ const routes = [
     ],
   },
   {
-    path: '/mypage/card/detail/:petId',
-    name: 'MypageCardDetail',
-    component: () => import('../pages/mypage/MypageCardDetail.vue')
+    path: "/mypage/card/detail/:petId",
+    name: "MypageCardDetail",
+    component: () => import("../pages/mypage/MypageCardDetail.vue"),
   },
   {
-    path: '/mypage/card/change/:petId',
-    name: 'MypageCardChange',
-    component: () => import('../pages/mypage/ModifyMypageCard.vue')
+    path: "/mypage/card/change/:petId",
+    name: "MypageCardChange",
+    component: () => import("../pages/mypage/ModifyMypageCard.vue"),
   },
   {
     path: "/mypage",

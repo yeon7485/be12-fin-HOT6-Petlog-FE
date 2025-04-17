@@ -122,9 +122,14 @@ const routes = [
     ],
   },
   {
-    path: "/mypage/card/detail/:petId",
-    name: "PetDetail",
-    component: () => import("../pages/mypage/MypageCardDetail.vue"),
+    path: '/mypage/card/detail/:petId',
+    name: 'MypageCardDetail',
+    component: () => import('../pages/mypage/MypageCardDetail.vue')
+  },
+  {
+    path: '/mypage/card/change/:petId',
+    name: 'MypageCardChange',
+    component: () => import('../pages/mypage/ModifyMypageCard.vue')
   },
   {
     path: "/mypage",
@@ -134,11 +139,6 @@ const routes = [
       { path: "profile", component: MypageProfile },
       { path: "cardlist", component: MypageCardList },
       { path: "card/create", component: MypageCardCreate },
-      {
-        path: "card/change",
-        name: "MypageCardChange",
-        component: MypageCardChange,
-      },
       { path: "question", component: MypageQuestion },
       { path: "answer", component: MypageAnswer },
       { path: "post", component: MypagePost },

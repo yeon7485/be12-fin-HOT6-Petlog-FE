@@ -63,9 +63,10 @@ const deleteCard = async () => {
   const confirmDelete = window.confirm('정말 삭제하시겠습니까?');
   if (confirmDelete) {
     try {
+      // petId를 포함한 DELETE 요청
       await axios.delete(`http://localhost:8080/pet/${petId}`);
       alert('삭제되었습니다.');
-      router.push('/mypage/card');
+      router.push('/mypage/cardlist');  // 삭제 후 이동
     } catch (error) {
       console.error('삭제 실패:', error);
       alert('삭제 중 오류가 발생했습니다.');
@@ -85,14 +86,14 @@ const deleteCard = async () => {
       </div>
 
       <div class="profile-section">
-        <img :src="profileImage" alt="프로필 이미지" class="profile-img" />
-        <h2 class="name">{{ card.name }}</h2>
-        <p class="sub-info">
-          <span class="gender" :class="{ male: card.gender === '남', female: card.gender === '여' }">
-            {{ card.gender === '남' ? '♂️' : '♀️' }}
-          </span>
-        </p>
-      </div>
+  <img :src="profileImage" alt="프로필 이미지" class="profile-img" />
+  <h2 class="name">{{ card.name }}</h2>
+  <p class="sub-info">
+    <span class="gender" :class="{ male: card.gender === '남' || card.gender === 'male', female: card.gender === '여' || card.gender === 'female' }">
+      {{ card.gender === '남' || card.gender === 'male' ? '♂' : '♀' }}
+    </span>
+  </p>
+</div>
 
       <div class="info-box">
         <p><strong>생일</strong> <span>{{ card.birthDate }}</span></p>

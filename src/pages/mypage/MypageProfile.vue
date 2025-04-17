@@ -114,7 +114,7 @@ const handleDeleteConfirm = (enteredPassword) => {
 .title {
   font-size: 32px;
   font-weight: bold;
-  margin-left: 70px;
+  margin-left: 30%;
 }
 .container {
   display: flex;

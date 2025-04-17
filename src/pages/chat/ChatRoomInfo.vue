@@ -61,21 +61,22 @@
     <!-- 나가기 버튼 -->
     <div class="chatroom-leave-wrapper">
       <img src="../../assets/images/mdi_logout.svg" />
-      <button class="leave-button">나가기</button>
+      <button class="leave-button" @click="leaveChatRoom">나가기</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { RouterLink } from "vue-router";
-import { onMounted, readonly, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
 import UserCard from "./components/UserCard.vue";
 import { useChatStore } from "../../stores/useChatStroe";
 const chatStore = useChatStore();
 
 const route = useRoute();
+const router = useRouter();
 
 const isEditing = ref(false); // ✨ 수정 모드 여부
 
@@ -90,6 +91,11 @@ const handleScroll = (e) => {
   if (scrollTop + clientHeight >= scrollHeight - 10) {
     chatStore.fetchUsers(chatroomIdx);
   }
+};
+
+const leaveChatRoom = () => {
+  chatStore.leaveChatRoom(chatroomIdx);
+  router.push("/");
 };
 
 // 저장 버튼 클릭 시
@@ -114,13 +120,16 @@ const cancel = () => {
     .join(" ");
   isEditing.value = false;
 };
-onMounted(() => {
+onMounted(async () => {
   chatStore.resetUsers();
-  chatStore.fetchUsers(chatroomIdx);
-  chatStore.getRoomInfo(chatroomIdx);
+
+  await chatStore.fetchUsers(chatroomIdx);
+  await chatStore.getRoomInfo(chatroomIdx);
+
   title.value = chatStore.chatRoomInfo.title;
+
   const tags = chatStore.chatRoomInfo.hashtags;
-  hashtagsText.value = tags
+  hashtagsText.value = (tags ?? [])
     .map((tag) => (tag.startsWith("#") ? tag : `#${tag}`))
     .join(" ");
 });

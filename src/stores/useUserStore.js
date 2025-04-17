@@ -6,6 +6,7 @@ export const useUserStore = defineStore("user", {
     type: "",
     nickname: "",
     isLogin: false,
+    idx: 0,
   }),
   persist: {
     storage: sessionStorage,
@@ -39,7 +40,7 @@ export const useUserStore = defineStore("user", {
           this.isLogin = true;
           this.nickname = response.data.userId;
           this.type = response.data.role;
-          console.log("this.isLogin 후:", this.isLogin);
+          this.idx = response.data.idx;
         } else if (response.data.code === 1102) {
           alert(response.data.message + " 메일을 확인해주세요.");
         }

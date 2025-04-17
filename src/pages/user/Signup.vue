@@ -35,7 +35,7 @@ const handleSignup = async () => {
 
 const kakaoSignup = () => {
   window.location.href = import.meta.env.VITE_KAKAO_LOGIN_URL;
-  alert("회원가입되었습니다.");
+  alert("회원가입이 완료되었습니다.");
 };
 </script>
 

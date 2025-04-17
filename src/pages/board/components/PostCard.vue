@@ -30,7 +30,7 @@ const goToDetail = () => {
       </span>
     </td>
     <td>{{ post.writer }}</td>
-    <td>{{ post.created_at }}</td>
+    <td>{{ post.createdAt }}</td>
   </tr>
 </template>
 
@@ -40,25 +40,46 @@ const goToDetail = () => {
   transition: background-color 0.2s ease;
 }
 .post_row:hover {
-  background-color: #f5f5f5;
+  background-color: #efebe9;
 }
+
 .post_title {
-  max-width: 300px;
+  display: inline-block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: inline-flex;
-  align-items: center;
+  max-width: 100%;
+  color: #5D4037;
 }
+
+td:nth-child(3) {
+  max-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+td:nth-child(1) { width: 10%; }       
+td:nth-child(2) { width: 20%; }       
+td:nth-child(3) { width: 35%; }       
+td:nth-child(4) { width: 20%; }      
+td:nth-child(5) { width: 20%; }   
+
 .image_icon {
   width: 10px;
   height: 10px;
   margin-left: 4px;
 }
+
 td {
-  padding: 12px 8px;
+  padding: 10px 6px;
   text-align: left;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #d7ccc8;
   font-size: 14px;
+  color: #4E342E;
 }
 </style>
+
+
+
+

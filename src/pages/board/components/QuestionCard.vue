@@ -9,7 +9,7 @@ defineProps({ question: Object })
         <img class="avatar" src="/src/assets/images/dog1.png" alt="유저 아바타" />
         <span class="author">{{ question.writer }}</span>
         <span class="divider">ㅣ</span>
-        <span class="date">{{ question.created_at }}</span>
+        <span class="date">{{ question.createdAt }}</span>
       </div>
     </div>    
 

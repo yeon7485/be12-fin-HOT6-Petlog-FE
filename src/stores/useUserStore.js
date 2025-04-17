@@ -3,12 +3,14 @@ import { defineStore } from "pinia";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
-    type: "USER",
+    type: "",
     nickname: "",
     isLogin: false,
+    idx: 0,
   }),
   persist: {
     storage: sessionStorage,
+    paths: ["type", "nickname"],
   },
 
   actions: {
@@ -34,9 +36,11 @@ export const useUserStore = defineStore("user", {
           withCredentials: true,
         });
 
-        if (response.data.code === 200) {
+        if (response.data.isSuccess) {
           this.isLogin = true;
           this.nickname = response.data.userId;
+          this.type = response.data.role;
+          this.idx = response.data.idx;
         } else if (response.data.code === 1102) {
           alert(response.data.message + " 메일을 확인해주세요.");
         }
@@ -58,11 +62,12 @@ export const useUserStore = defineStore("user", {
         });
 
         console.log(response);
+        const res = response.data.result;
 
         if (response.data.result.login) {
-          this.isLogin = response.data.result.login;
-          this.nickname = response.data.result.nickname;
-          console.log(response.data);
+          this.isLogin = res.login;
+          this.nickname = res.nickname;
+          this.type = res.role;
         } else {
           this.isLogin = false;
         }
@@ -74,9 +79,12 @@ export const useUserStore = defineStore("user", {
     async logout() {
       try {
         const response = await axios.post("/api/user/logout", {}, { withCredentials: true });
-        console.log(response);
+
         this.nickname = "";
         this.isLogin = false;
+        this.type = "";
+
+        return response.data;
       } catch (error) {
         console.log(error);
       }

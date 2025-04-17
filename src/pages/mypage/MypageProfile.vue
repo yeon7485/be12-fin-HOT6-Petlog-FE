@@ -25,6 +25,9 @@ const petCards = ref([]);
 const isLoading = ref(true); // 로딩 상태 변수
 const editingNickname = ref(false); // 닉네임 편집 여부
 
+// 프로필 이미지 업로드 상태
+const selectedImage = ref(null);
+
 // 모달 상태 관리
 const isPasswordModalOpen = ref(false); // 비밀번호 변경 모달 상태
 const isDeleteModalOpen = ref(false); // 회원 탈퇴 모달 상태
@@ -66,14 +69,12 @@ onMounted(() => {
 
 // 파일 변경 처리
 const onFileChange = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      profileImageUrl.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
+  selectedImage.value = event.target.files[0]; // 선택된 파일을 저장
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    profileImageUrl.value = e.target.result; // 파일 미리보기
+  };
+  reader.readAsDataURL(selectedImage.value); // 파일 읽기
 };
 
 // 닉네임 편집 처리
@@ -104,6 +105,34 @@ const closeDeleteModal = () => {
 const handleDeleteConfirm = (enteredPassword) => {
   alert(`회원 탈퇴가 처리되었습니다. 비밀번호: ${enteredPassword}`);
 };
+
+// 프로필 이미지 저장
+const saveProfileImage = async () => {
+  if (!selectedImage.value) {
+    alert("변경할 이미지가 없습니다.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("profileImage", selectedImage.value); // 선택된 파일을 FormData에 추가
+
+  const userId = getSessionUserIdx();
+  try {
+    const response = await axios.post(`/api/user/${userId}/profileImage`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    if (response.status === 200) {
+      alert("프로필 이미지가 저장되었습니다.");
+      profileImageUrl.value = response.data.profileImageUrl; // 업로드된 이미지 URL을 업데이트
+    }
+  } catch (error) {
+    console.error("프로필 이미지 저장 실패:", error);
+    alert("프로필 이미지 저장에 실패했습니다.");
+  }
+};
 </script>
 
 <template>
@@ -120,6 +149,9 @@ const handleDeleteConfirm = (enteredPassword) => {
         <div class="camera-icon">📷</div>
       </label>
     </div>
+
+    <!-- 프로필 이미지 저장 버튼 -->
+    <button class="save-image-btn" @click="saveProfileImage">프로필 이미지 저장</button>
 
     <!-- 닉네임 -->
     <div class="name-section">
@@ -156,6 +188,8 @@ const handleDeleteConfirm = (enteredPassword) => {
 
     <!-- 회원 탈퇴 -->
     <button class="delete-link" @click="openDeleteModal">회원탈퇴</button>
+
+    
   </div>
 
   <!-- 비밀번호 변경 모달 -->
@@ -254,8 +288,9 @@ const handleDeleteConfirm = (enteredPassword) => {
   cursor: not-allowed;
 }
 .password-btn {
-  background: #ddd;
+  background: #A0522D;
   border: none;
+  color: white;
   padding: 10px 15px;
   font-size: 18px;
   border-radius: 4px;
@@ -275,5 +310,19 @@ const handleDeleteConfirm = (enteredPassword) => {
 }
 .delete-link:hover {
   text-decoration: underline;
+}
+.save-image-btn {
+  background: #A0522D;
+  color: white;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.save-image-btn:hover {
+  background: #A0522D
 }
 </style>

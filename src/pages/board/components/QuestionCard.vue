@@ -29,8 +29,8 @@ defineProps({ question: Object })
       </div>
 
       <div class="comment_count">
-        <img src="/src/assets/icons/comment.png" alt="댓글 아이콘" class="comment_icon" />
-        {{ question.commentCount }}
+        <img src="/src/assets/icons/comment.png" alt="답변 아이콘" class="comment_icon" />
+        {{ question.answerCount }}
       </div>
     </div>
   </div>
@@ -52,7 +52,7 @@ defineProps({ question: Object })
   font-size: 14px;
   color: #777;
   margin-bottom: 10px;
-  gap: 6px;
+  gap: 5px;
 }
 
 .divider {
@@ -71,7 +71,7 @@ defineProps({ question: Object })
 }
 
 .post_title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   margin-bottom: 6px;
   display: inline-block;
@@ -84,14 +84,14 @@ defineProps({ question: Object })
 }
 
 .post_content {
-  font-size: 14px;
+  font-size: 17px;
   color: #333;
   margin-bottom: 10px;
 }
 
 .post_tags {
   margin-top: 8px;
-  font-size: 13px;
+  font-size: 14px;
   color: #999;
 }
 
@@ -100,16 +100,16 @@ defineProps({ question: Object })
 }
 
 .comment_icon {
-  width: 16px;
-  height: 16px;
+  width: 13px;
+  height: 13px;
   vertical-align: middle;
-  margin-right: 4px;
+  margin-right: 2px;
 }
 
 .comment_count {
-  font-size: 13px;
-  color: #888;
-  margin-top: 5px;
+  font-size: 12px;
+  color: #000000;
+  margin-top: 6px;
 }
 
 .status_badge {

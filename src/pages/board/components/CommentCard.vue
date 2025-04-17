@@ -1,8 +1,11 @@
 <script setup>
 import { ref } from 'vue'
+import { useUserStore } from '/src/stores/useUserStore'
 import { useCommentStore } from '/src/stores/useCommentStore'
 
 const commentStore = useCommentStore()
+const userStore = useUserStore()
+const currentUserIdx = userStore.userIdx
 
 const props = defineProps({
   comment: Object,
@@ -58,7 +61,8 @@ const deleteComment = async () => {
       <span class="divider">ㅣ</span>
       <span class="date">{{ comment.created_at }}</span>
 
-      <template v-if="true">
+      <!-- ✅ 작성자 본인일 때만 수정/삭제 버튼 표시 -->
+      <template v-if="comment.userIdx === currentUserIdx">
         <img
           src="/src/assets/icons/write.png"
           class="icon_btn"

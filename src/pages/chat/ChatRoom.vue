@@ -79,18 +79,20 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
 import { useChatStore } from "../../stores/useChatStroe";
+import { useUserStore } from "../../stores/useUserStore";
 import ChatMessages from "./components/ChatMessages.vue";
 import ChatInput from "./components/ChatInput.vue";
 const chatStore = useChatStore();
-
+const userStore = useUserStore();
 const route = useRoute();
 const chatroomIdx = route.params.chatroomIdx;
 const petDetailModalOpen = ref(false);
 const selectedPet = ref(null);
 
-const currentUserId = 1; // 실제론 로그인된 유저 ID
+const currentUserId = userStore.idx; // 실제론 로그인된 유저 ID
 
 onMounted(() => {
+  console.log(currentUserId);
   chatStore.getRoomInfo(chatroomIdx);
   chatStore.connectStomp(chatroomIdx, () => {
     console.log("🟢 연결된 후 실행할 추가 작업!");

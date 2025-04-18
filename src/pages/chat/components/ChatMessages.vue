@@ -4,7 +4,7 @@
       v-for="(msg, idx) in messages"
       :key="idx"
       :message="msg"
-      :isMine="msg.senderId === currentUserId"
+      :isMine="msg.senderIdx === currentUserId"
       @show-pet="(pet) => $emit('show-pet', pet)"
     />
   </div>

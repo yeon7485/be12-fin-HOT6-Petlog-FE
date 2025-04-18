@@ -61,7 +61,7 @@ export const useChatStore = defineStore("chat", {
           // 채팅방 구독
           this.stompClient.subscribe(`/topic/chat/${roomId}`, (message) => {
             const msg = JSON.parse(message.body);
-            console.log("msg");
+            console.log(msg);
             this.receiveMessage(msg);
           });
 
@@ -124,7 +124,7 @@ export const useChatStore = defineStore("chat", {
     async loadRooms() {
       try {
         const response = await axios.get(`/api/chat/`);
-        this.chatRooms = response.data.result;
+        this.chatRooms = response.data.result.content;
       } catch (error) {
         console.error("채팅방 목록 불러오기 실패:", error);
       }
@@ -133,9 +133,9 @@ export const useChatStore = defineStore("chat", {
     async loadMyChatRooms() {
       try {
         const response = await axios.get(`/api/chat/chatrooms/me`);
-        this.chatRooms = response.data.result;
+        this.chatRooms = response.data.result.content;
       } catch (error) {
-        console.error("채팅방 목록 불러오기 실패:", error);
+        throw error;
       }
     },
 

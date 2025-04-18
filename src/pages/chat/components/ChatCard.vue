@@ -9,7 +9,13 @@ const props = defineProps({
 <template>
   <router-link :to="`/chatroom/${room.idx}`">
     <div class="chat-card">
-      <div class="chat-title">{{ room.title }}</div>
+      <div class="chat-title">
+        {{ room.title }}
+
+        <span v-if="room.isParticipating" class="participating-badge"
+          >참여중</span
+        >
+      </div>
       <div class="chat-tags">
         <span v-for="tag in room.hashtags" :key="tag">#{{ tag }}</span>
       </div>
@@ -46,6 +52,16 @@ const props = defineProps({
   line-height: normal;
 }
 
+.participating-badge {
+  margin-left: 8px;
+  padding: 2px 6px;
+  background-color: #e0f2f1;
+  color: #00796b;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid #00796b22;
+}
 .chat-tags {
   display: flex;
   flex-wrap: wrap;

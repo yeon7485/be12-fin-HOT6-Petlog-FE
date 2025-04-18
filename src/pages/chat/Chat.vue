@@ -3,10 +3,23 @@
     <div class="chat-content-wrapper">
       <div class="chat">채팅</div>
       <div class="chat-toolbar">
-        <!-- 검색창 -->
-        <div class="search-input-wrapper">
-          <img src="../../assets/images/material-symbols_search.png" />
-          <input class="search-box" placeholder="제목, 태그 검색 ..." />
+        <div class="search-area">
+          <!-- 검색창 -->
+          <div class="search-input-wrapper">
+            <img src="../../assets/images/material-symbols_search.png" />
+            <input
+              class="search-box"
+              v-model="searchInput"
+              @input="onSearchInput"
+              placeholder="채팅방 제목이나 #해시태그로 검색해보세요"
+            />
+          </div>
+          <div class="selected-tags-wrapper" v-if="selectedTags.length">
+            <span class="selected-tag" v-for="tag in selectedTags" :key="tag">
+              #{{ tag }}
+              <button class="remove-tag" @click="removeTag(tag)">×</button>
+            </span>
+          </div>
         </div>
         <!-- 상단 버튼들 -->
         <div class="chat-header-actions">
@@ -80,6 +93,10 @@
 import { ref, onMounted } from "vue";
 import { useChatStore } from "../../stores/useChatStroe";
 import ChatCard from "./components/ChatCard.vue";
+import { handleChatRoomError } from "../../utils/errorHandler";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 const chatStore = useChatStore();
 const showModal = ref(false); // true일 경우 모달이 보임
 const roomName = ref("");
@@ -90,9 +107,35 @@ const showAllRooms = async () => {
   isMyRoomView.value = false;
 };
 
+const searchInput = ref("");
+const selectedTags = ref([]);
+
+// 사용자가 입력한 값에서 #태그를 추출해서 selectedTags에 추가
+const onSearchInput = () => {
+  const tagMatches = searchInput.value.match(/#(\S+)/g) || [];
+  selectedTags.value = [
+    ...new Set(tagMatches.map((tag) => tag.replace("#", ""))),
+  ];
+
+  // 👉 이 시점에 API 호출
+  chatStore.searchRooms({
+    keyword: searchInput.value.replace(/#\S+/g, "").trim(),
+    tags: selectedTags.value,
+  });
+};
+
+const removeTag = (tagToRemove) => {
+  selectedTags.value = selectedTags.value.filter((tag) => tag !== tagToRemove);
+  onSearchInput(); // 태그 제거 후 검색 갱신
+};
+
 const showMyRooms = async () => {
-  await chatStore.loadMyChatRooms();
-  isMyRoomView.value = true;
+  try {
+    await chatStore.loadMyChatRooms();
+    isMyRoomView.value = true;
+  } catch (error) {
+    handleChatRoomError(error, router);
+  }
 };
 const closeModal = () => {
   showModal.value = false;
@@ -119,7 +162,7 @@ onMounted(() => {
 .chat-toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start; /* ✅ 버튼들이 위에 고정되도록 설정 */
 }
 .chat {
   color: #000;
@@ -186,6 +229,43 @@ onMounted(() => {
   font-size: 14px;
 }
 
+/* ✅ 검색창 + 태그 전체 묶는 영역 */
+.search-area {
+  flex: 1; /* 가로로 가능한 공간을 차지하되 */
+  max-width: 500px;
+}
+
+.selected-tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0; /* 기존 margin 제거 */
+}
+
+.selected-tag {
+  background-color: #ffd966;
+  color: #333;
+  border-radius: 16px;
+  padding: 4px 10px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.remove-tag {
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+.selected-tag button {
+  margin-left: 6px;
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
 .chat-list {
   display: flex;
   flex-direction: column;

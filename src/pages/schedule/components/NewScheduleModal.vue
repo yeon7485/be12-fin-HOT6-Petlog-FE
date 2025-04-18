@@ -6,6 +6,8 @@ const props = defineProps({
   onClose: Function,
 });
 
+const emit = defineEmits(["schedule-created"]);
+
 const scheduleStore = useScheduleStore();
 
 const isDropdownOpen = ref(false);
@@ -139,9 +141,11 @@ const handleCreateSchedule = async () => {
     alert("시작 날짜와 시간을 선택해주세요.");
   } else {
     if (scheduleStore.type === "SCHEDULE") {
-      const result = scheduleStore.createSchedule(selectedPet.value.idx, planData);
+      const result = await scheduleStore.createSchedule(selectedPet.value.idx, planData);
+      console.log(result.isSuccess);
       if (result.isSuccess) {
         alert("일정이 등록되었습니다.");
+        emit("schedule-created");
         closeModal();
       }
     }

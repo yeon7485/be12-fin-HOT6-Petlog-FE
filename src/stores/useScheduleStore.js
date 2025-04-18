@@ -95,11 +95,23 @@ export const useScheduleStore = defineStore("schedule", {
     async createSchedule(petIdx, planData) {
       try {
         const response = await axios.post(`/api/schedule/pet/${petIdx}`, planData);
-        console.log(response);
+        console.log(response.data);
 
         return response.data;
       } catch (err) {
         alert("일정 등록에 실패했습니다.");
+        console.log(err);
+      }
+    },
+
+    async getAllSchedule() {
+      try {
+        const response = await axios.get("/api/schedule/pet");
+
+        this.plans = response.data.result;
+        return response.data;
+      } catch (err) {
+        console.log("err");
         console.log(err);
       }
     },

@@ -9,7 +9,7 @@ import {
   startOfMonth,
   subMonths,
 } from "date-fns";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 import { hexToRgba } from "../../../utils/color";
@@ -76,20 +76,7 @@ const getEventsForDate = (date) => {
   const dateStr = format(date, "yyyy-MM-dd");
 
   return scheduleStore.plans.filter((event) => {
-    // const start = parseISO(event.startAt || event.date);
-    // const end = event.endAt ? parseISO(event.endAt) : null;
-
-    // if (end) {
-    //   return (
-    //     date >= new Date(format(start, "yyyy-MM-dd")) &&
-    //     date <= new Date(format(end, "yyyy-MM-dd"))
-    //   );
-    // } else {
-    //   const startStr = format(start, "yyyy-MM-dd");
-    //   return dateStr === startStr;
-    // }
-
-    const eventDateStr = format(parseISO(event.date), "yyyy-MM-dd");
+    const eventDateStr = format(parseISO(event.startAt), "yyyy-MM-dd");
     return eventDateStr === dateStr;
   });
 };

@@ -1,6 +1,7 @@
 <script setup>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useScheduleStore } from "../../stores/useScheduleStore";
 import SelectPetModal from "../common/components/SelectPetModal.vue";
 import Calendar from "./components/Calendar.vue";
 import NewScheduleModal from "./components/NewScheduleModal.vue";
@@ -9,9 +10,11 @@ import DetailSchedule from "./DetailSchedule.vue";
 const isNewScheduleModalOpen = ref(false);
 const isPetModalOpen = ref(false);
 const isDetailMode = ref(false);
+const isLoading = ref(true);
 
 const selectedPet = ref({});
 
+const scheduleStore = useScheduleStore();
 const router = useRouter();
 const route = useRoute();
 
@@ -27,6 +30,13 @@ watch(
   },
   { immediate: true }
 );
+
+const fetchSchedule = async () => {
+  const result = await scheduleStore.getAllSchedule();
+  if (result.isSuccess) {
+    isLoading.value = false;
+  }
+};
 
 const openDetail = () => {
   isDetailMode.value = true;
@@ -59,6 +69,14 @@ const handlePetSelect = (pet) => {
   selectedPet.value = pet;
   closePetModal();
 };
+
+const handleScheduleCreated = () => {
+  fetchSchedule();
+};
+
+onMounted(async () => {
+  await fetchSchedule();
+});
 </script>
 
 <template>
@@ -85,11 +103,15 @@ const handlePetSelect = (pet) => {
         />
       </div>
       <div class="calendar">
-        <Calendar :onOpenModal="openNewScheduleModal" :onDetail="openDetail" />
+        <Calendar v-if="!isLoading" :onOpenModal="openNewScheduleModal" :onDetail="openDetail" />
       </div>
 
       <!-- 모달 -->
-      <NewScheduleModal v-if="isNewScheduleModalOpen" :onClose="closeNewScheduleModal" />
+      <NewScheduleModal
+        v-if="isNewScheduleModalOpen"
+        :onClose="closeNewScheduleModal"
+        @schedule-created="handleScheduleCreated"
+      />
       <SelectPetModal
         v-if="isPetModalOpen"
         :onClose="closePetModal"

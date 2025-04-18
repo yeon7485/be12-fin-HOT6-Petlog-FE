@@ -1,137 +1,60 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import CommentCard from '../board/components/CommentCard.vue'
 
-// 댓글 데이터 (백엔드 API에서 불러올 수도 있음)
-const comments = ref([
-  { text: "우리 강아지가 더 귀여운거 같은데요.", time: "21:37", postTitle: "자유게시판 글 제목입니다.", commentCount: 2 },
-  { text: "친해지고 싶어요 !!!", time: "22.12.27 08:33", postTitle: "자유게시판 글 제목입니다.", commentCount: 27 },
-]);
+const comments = ref([])
 
-// 페이지네이션 관련 데이터
-const currentPage = ref(1);
-const itemsPerPage = 10; // 한 페이지에 보여줄 댓글 개수
-const totalPages = computed(() => Math.ceil(comments.value.length / itemsPerPage));
+const getSessionUserIdx = () => {
+  const user = JSON.parse(sessionStorage.getItem('user'))
+  return user?.idx || null
+}
 
-const prevPage = () => {
-  if (currentPage.value > 1) currentPage.value--;
-};
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) currentPage.value++;
-};
+const fetchComments = async () => {
+  const userId = getSessionUserIdx()
+  if (!userId) {
+    alert('세션 정보가 없습니다.')
+    return
+  }
+
+  try {
+    const res = await axios.get(`/api/comment/list/user/${userId}`)
+    comments.value = res.data
+  } catch (e) {
+    console.error('❌ 댓글 불러오기 실패', e)
+  }
+}
+
+onMounted(fetchComments)
 </script>
 
 <template>
   <div class="mypage-comments">
     <h2 class="title">내가 쓴 댓글</h2>
-    <table class="comment-table">
-      <thead>
-        <tr>
-          <th>댓글</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(comment, index) in comments" :key="index">
-          <td>
-            <p class="comment-text">{{ comment.text }}</p>
-            <div class="comment-meta">
-              <span class="comment-time">{{ comment.time }}</span>
-              <span class="comment-post-title">
-                {{ comment.postTitle }}
-                <span v-if="comment.commentCount" class="comment-count">[{{ comment.commentCount }}]</span>
-              </span>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
 
-    <!-- 페이지네이션 -->
-    <div class="pagination">
-      <button @click="prevPage" :disabled="currentPage === 1">‹</button>
-      <span>{{ currentPage }}</span>
-      <button @click="nextPage" :disabled="currentPage >= totalPages">›</button>
+    <div v-if="comments.length === 0">
+      작성한 댓글이 없습니다.
     </div>
+
+    <CommentCard
+      v-for="comment in comments"
+      :key="comment.idx"
+      :comment="comment"
+      :post-idx="comment.postIdx"
+      :is-my-page="true"
+    />
   </div>
 </template>
 
-
 <style scoped>
 .mypage-comments {
-  width: 100%;
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
 }
-
 .title {
   font-size: 32px;
   font-weight: bold;
-  margin-bottom: 20px;
-  align-self: flex-start; 
-}
-
-.comment-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 70px;
-}
-
-.comment-table th, .comment-table td {
-  border-bottom: 1px solid #ddd;
-  padding: 10px;
-  text-align: left;
-}
-
-.comment-table th {
-  font-weight: bold;
-  background: #f9f9f9;
-}
-
-.comment-text {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-}
-
-.comment-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #666;
-  margin-top: 5px;
-}
-
-.comment-time {
-  font-weight: bold;
-}
-
-.comment-post-title {
-  font-weight: 500;
-}
-
-.comment-count {
-  color: red;
-  font-weight: bold;
-  margin-left: 5px;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 15px;
-  gap: 10px;
-}
-
-.pagination button {
-  border: none;
-  background: none;
-  font-size: 16px;
-  cursor: pointer;
-  color: #333;
-}
-
-.pagination button:disabled {
-  color: #ccc;
-  cursor: default;
+  margin-bottom: 24px;
 }
 </style>

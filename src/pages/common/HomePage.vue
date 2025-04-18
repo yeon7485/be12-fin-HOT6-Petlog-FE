@@ -14,13 +14,53 @@ onMounted(async () => {
 </script>
 
 <template>
-  <template v-if="isLoading">
-    <!-- 로딩 중일 때는 아무것도 보여주지 않음 -->
-  </template>
+  <template v-if="isLoading"> </template>
   <template v-else-if="!userStore.isLogin">
     <LandingPage />
   </template>
-  <template v-else> </template>
+  <template v-else>
+    <div class="home">
+      <!-- 배경색 적용 영역: 로고 + 텍스트까지만 -->
+      <div class="logo-area">
+        <img src="/src/assets/images/logo.png" alt="펫로그 로고" class="logo-img" />
+        <div class="subtitle-wrapper">
+          <p class="subtitle">일정 관리부터 커뮤니티까지,<br />반려생활을 더 편리하게!</p>
+        </div>
+      </div>
+
+      <!-- 오늘의 일정 -->
+      <section class="today-schedule">
+        <div class="section-header">
+          <img src="/src/assets/icons/calendar.png" alt="일정 아이콘" class="section-icon" />
+          <h2 class="section-title">오늘의 일정</h2>
+        </div>
+        <div class="card-wrapper">
+          <ScheduleCard v-for="n in 3" :key="n" />
+        </div>
+      </section>
+
+      <!-- 참여 중인 채팅방 -->
+      <section class="chat-room">
+        <div class="section-header">
+          <img src="/src/assets/icons/chat.png" alt="채팅 아이콘" class="section-icon" />
+          <h2 class="section-title">참여 중인 채팅방</h2>
+        </div>
+        <div class="chat-card">
+          <div class="chat-card-content">
+            <div class="chat-info">
+              <div class="chat-texts">
+                <p class="message">
+                  <strong>서울숲에서 같이 멍멍이 산책시킬 사람 !!</strong>
+                </p>
+                <p class="hashtags">#산책 #멍멍 #서울숲</p>
+              </div>
+              <p class="participants">👥 6명 참여 중</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </template>
 </template>
 
 <style scoped>

@@ -62,7 +62,6 @@ export const useUserStore = defineStore("user", {
           withCredentials: true,
         });
 
-        console.log(response);
         const res = response.data.result;
 
         if (response.data.result.login) {

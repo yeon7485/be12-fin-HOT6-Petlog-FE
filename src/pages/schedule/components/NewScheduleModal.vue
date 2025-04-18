@@ -6,15 +6,17 @@ const props = defineProps({
   onClose: Function,
 });
 
+const emit = defineEmits(["schedule-created"]);
+
 const scheduleStore = useScheduleStore();
 
 const isDropdownOpen = ref(false);
 const isCateDropdownOpen = ref(false);
 const pets = ref([
-  { imageUrl: "/src/assets/images/dog1.png", name: "봄" },
-  { imageUrl: "/src/assets/images/dog2.jpeg", name: "구름" },
-  { imageUrl: "/src/assets/images/cat1.jpg", name: "솜" },
-  { imageUrl: "/src/assets/images/cat2.jpg", name: "빙봉" },
+  { idx: 1, imageUrl: "/src/assets/images/dog1.png", name: "봄" },
+  { idx: 2, imageUrl: "/src/assets/images/dog2.jpeg", name: "구름" },
+  { idx: 3, imageUrl: "/src/assets/images/cat1.jpg", name: "솜" },
+  { idx: 4, imageUrl: "/src/assets/images/cat2.jpg", name: "빙봉" },
 ]);
 
 const planCategories = ref([
@@ -39,12 +41,15 @@ const selectedCate = ref({});
 
 const planData = reactive({
   title: "",
-  startTime: "",
-  endTime: "",
+  placeId: "",
   memo: "",
-  isRepeat: false,
+  categoryIdx: 0,
+  startAt: "",
+  endAt: "",
+  recurring: false,
   repeatCycle: "일",
   repeatCount: 1,
+  repeatEndAt: "",
 });
 
 const recordData = reactive({
@@ -110,6 +115,9 @@ const selectType = (type) => {
 
 const selectCate = (category) => {
   selectedCate.value = category;
+  if (scheduleStore.type === "SCHEDULE") {
+    planData.categoryIdx = selectedCate.value.idx;
+  }
   isCateDropdownOpen.value = false;
 };
 
@@ -124,10 +132,30 @@ const handleFileChange = (event) => {
   }
 };
 
+const handleCreateSchedule = async () => {
+  if (planData.categoryIdx === 0) {
+    alert("카테고리를 선택해주세요.");
+  } else if (planData.title === "") {
+    alert("제목을 입력해주세요.");
+  } else if (planData.startAt === "") {
+    alert("시작 날짜와 시간을 선택해주세요.");
+  } else {
+    if (scheduleStore.type === "SCHEDULE") {
+      const result = await scheduleStore.createSchedule(selectedPet.value.idx, planData);
+      console.log(result.isSuccess);
+      if (result.isSuccess) {
+        alert("일정이 등록되었습니다.");
+        emit("schedule-created");
+        closeModal();
+      }
+    }
+  }
+};
+
 // 종료 시간이 시작 시간보다 빠를 수 없도록 감시
-watch([planData.startTime, planData.endTime], ([start, end]) => {
+watch([planData.startAt, planData.endAt], ([start, end]) => {
   if (start && end && new Date(end) < new Date(start)) {
-    planData.endTime = start; // 종료 시간을 시작 시간에 맞춤
+    planData.endAt = start; // 종료 시간을 시작 시간에 맞춤
   }
 });
 </script>
@@ -233,13 +261,13 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
               <div class="time_box">
                 <div>
                   <label>시작 시간</label>
-                  <input v-model="planData.startTime" type="datetime-local" class="input_time" />
+                  <input v-model="planData.startAt" type="datetime-local" class="input_time" />
                 </div>
                 <div>
                   <label>종료 시간</label>
                   <input
-                    v-model="planData.endTime"
-                    :min="planData.startTime"
+                    v-model="planData.endAt"
+                    :min="planData.startAt"
                     type="datetime-local"
                     class="input_time"
                   />
@@ -265,12 +293,12 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
               <!-- 반복 설정 -->
               <div>
                 <label>반복 설정</label>
-                <v-switch v-model="planData.isRepeat" color="#60BE2F"></v-switch>
+                <v-switch v-model="planData.recurring" color="#60BE2F"></v-switch>
 
-                <div v-if="planData.isRepeat">
+                <div v-if="planData.recurring">
                   <div>
                     <label>반복 종료 날짜</label>
-                    <input v-model="planData.repeat_end_date" type="date" class="input_time" />
+                    <input v-model="planData.repeatEndAt" type="date" class="input_time" />
                   </div>
 
                   <v-radio-group
@@ -346,7 +374,7 @@ watch([planData.startTime, planData.endTime], ([start, end]) => {
 
           <div class="btn_box">
             <button @click="closeModal" class="cancel_btn">취소</button>
-            <button @click="" class="save_btn">저장</button>
+            <button @click="handleCreateSchedule" class="save_btn">저장</button>
           </div>
         </div>
       </div>

@@ -25,7 +25,11 @@ const logout = async () => {
   const result = await userStore.logout();
   if (result.isSuccess) {
     alert("로그아웃 되었습니다.");
-    router.replace("/");
+    if (router.currentRoute.value.path === "/") {
+      window.location.reload();
+    } else {
+      router.push("/");
+    }
   } else {
     alert("로그아웃 실패");
   }
@@ -47,10 +51,10 @@ onMounted(() => {
         <img src="/src/assets/images/logo.png" alt="logo" class="logo_img" @click="toHome" />
 
         <div class="menu_box">
-          <router-link to="/schedule" class="menu">일정</router-link>
-          <router-link to="/place" class="menu">지도</router-link>
-          <router-link to="/board" class="menu">게시판</router-link>
-          <router-link to="/chat" class="menu">채팅</router-link>
+          <a href="/schedule" class="menu">일정</a>
+          <a href="/place" class="menu">지도</a>
+          <a href="/board" class="menu">게시판</a>
+          <a href="/chat" class="menu">채팅</a>
         </div>
 
         <div class="user_box">

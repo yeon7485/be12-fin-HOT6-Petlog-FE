@@ -1,6 +1,15 @@
 <script setup>
-import { addMonths, endOfMonth, format, getDay, getDaysInMonth, parseISO, startOfMonth, subMonths } from "date-fns";
-import { computed, ref } from "vue";
+import {
+  addMonths,
+  endOfMonth,
+  format,
+  getDay,
+  getDaysInMonth,
+  parseISO,
+  startOfMonth,
+  subMonths,
+} from "date-fns";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 import { hexToRgba } from "../../../utils/color";
@@ -67,7 +76,7 @@ const getEventsForDate = (date) => {
   const dateStr = format(date, "yyyy-MM-dd");
 
   return scheduleStore.plans.filter((event) => {
-    const eventDateStr = format(parseISO(event.date), "yyyy-MM-dd");
+    const eventDateStr = format(parseISO(event.startAt), "yyyy-MM-dd");
     return eventDateStr === dateStr;
   });
 };
@@ -92,7 +101,7 @@ const nextMonth = () => {
   }
 };
 
-const handleRegisterClick = () => {
+const handleCreateClick = () => {
   props.onOpenModal();
 };
 
@@ -130,14 +139,19 @@ const handleEventClick = (event) => {
           </div>
         </div>
       </div>
-      <button class="create_btn" @click="handleRegisterClick">
+      <button class="create_btn" @click="handleCreateClick">
         <img src="/src/assets/icons/plus.png" alt="+" />
         만들기
       </button>
     </div>
 
     <div class="calendar_grid">
-      <div class="day_label" v-for="(day, index) in days" :key="index" :class="{ sunday: index === 0, saturday: index === 6 }">
+      <div
+        class="day_label"
+        v-for="(day, index) in days"
+        :key="index"
+        :class="{ sunday: index === 0, saturday: index === 6 }"
+      >
         {{ day }}
       </div>
 
@@ -145,7 +159,10 @@ const handleEventClick = (event) => {
         class="calendar_cell"
         v-for="(item, index) in calendarDates"
         :key="item.date.toISOString()"
-        :class="{ not_this_month: !item.isCurrentMonth, today_cell: format(item.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') }"
+        :class="{
+          not_this_month: !item.isCurrentMonth,
+          today_cell: format(item.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd'),
+        }"
       >
         <div
           class="date_number"

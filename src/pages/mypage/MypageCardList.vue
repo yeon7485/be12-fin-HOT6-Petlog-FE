@@ -72,13 +72,16 @@ const goToDetail = (pet) => {
     </div>
 
     <div class="pet-cards" v-if="pets.length">
-      <PetCard
-        v-for="pet in pets"
-        :key="pet.idx"
-        :pet="pet"
-        @click="() => goToDetail(pet)"
-      />
-    </div>
+  <PetCard
+    v-for="pet in pets"
+    :key="pet.idx"
+    :pet="{
+      ...pet,
+      image: pet.profileImageUrl || '/default-profile.png'
+    }"
+    @click="() => goToDetail(pet)"
+  />
+</div>
     <div v-else style="margin-top: 150px;">반려동물이 없습니다.</div>
   </div>
 </template>

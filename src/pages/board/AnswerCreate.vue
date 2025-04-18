@@ -15,20 +15,21 @@ const questionId = Number(route.params.questionId)
 const isEdit = !isNaN(answerId) && answerId > 0
 
 const content = ref('')
-const fileName = ref('')
+const files = ref([])
 const previewImage = ref('')
-const originalImage = ref('')
+const originalImageUrls = ref([])
 const question = ref(null)
 
 const handleFileChange = (e) => {
-  const file = e.target.files[0]
-  if (file) {
-    fileName.value = file.name
+  const selectedFiles = Array.from(e.target.files)
+  files.value = selectedFiles
+
+  if (selectedFiles.length > 0) {
     const reader = new FileReader()
     reader.onload = (e) => {
       previewImage.value = e.target.result
     }
-    reader.readAsDataURL(file)
+    reader.readAsDataURL(selectedFiles[0])
   }
 }
 
@@ -43,8 +44,8 @@ onMounted(async () => {
     const target = await answerStore.getAnswerByIdFromServer(answerId)
     if (target) {
       content.value = target.content
-      originalImage.value = target.image
-      previewImage.value = target.image
+      originalImageUrls.value = target.imageUrls || []
+      previewImage.value = target.imageUrls?.[0] || ''
     }
   }
 })
@@ -61,10 +62,10 @@ const handleSubmit = async () => {
 
   try {
     if (isEdit) {
-      await answerStore.updateAnswer(answerId, content.value, previewImage.value || originalImage.value || '')
+      await answerStore.updateAnswer(answerId, content.value, files.value)
       alert('답변이 수정되었습니다.')
     } else {
-      await answerStore.registerAnswer(question.value.idx, content.value)
+      await answerStore.registerAnswer(question.value.idx, content.value, files.value)
       alert('답변이 등록되었습니다.')
     }
     router.push(`/board/qna/${questionId}`)
@@ -124,6 +125,7 @@ const handleSubmit = async () => {
               id="fileInput"
               type="file"
               class="file_input"
+              multiple
               @change="handleFileChange"
             />
             <span v-if="fileName" class="file_name">{{ fileName }}</span>

@@ -1,11 +1,9 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
-import { useUserStore } from "/src/stores/useUserStore";
 
 export const useAnswerStore = defineStore("answer", () => {
   const answers = ref([]);
-  const userStore = useUserStore();
 
   const fetchAnswersByQuestionId = async (questionId) => {
     try {
@@ -16,12 +14,21 @@ export const useAnswerStore = defineStore("answer", () => {
     }
   };
 
-  const registerAnswer = async (questionIdx, content) => {
+  const registerAnswer = async (questionIdx, content, files = []) => {
     try {
-      await axios.post("/api/answer/create", {
-        questionIdx,
-        content,
-        image: "", 
+      const formData = new FormData();
+      const answerData = { questionIdx, content };
+      const jsonBlob = new Blob([JSON.stringify(answerData)], {
+        type: "application/json",
+      });
+      formData.append("answer", jsonBlob);
+
+      files.forEach((file) => {
+        formData.append("images", file);
+      });
+
+      await axios.post("/api/answer/create", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
     } catch (err) {
       console.error("답변 등록 실패:", err);
@@ -29,11 +36,21 @@ export const useAnswerStore = defineStore("answer", () => {
     }
   };
 
-  const updateAnswer = async (answerId, content, image = "") => {
+  const updateAnswer = async (answerId, content, files = []) => {
     try {
-      await axios.put(`/api/answer/update/${answerId}`, {
-        content,
-        image,
+      const formData = new FormData();
+      const answerData = { content };
+      const jsonBlob = new Blob([JSON.stringify(answerData)], {
+        type: "application/json",
+      });
+      formData.append("answer", jsonBlob);
+
+      files.forEach((file) => {
+        formData.append("images", file);
+      });
+
+      await axios.put(`/api/answer/update/${answerId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
     } catch (err) {
       console.error("답변 수정 실패:", err);

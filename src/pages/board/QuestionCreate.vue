@@ -35,7 +35,7 @@ onMounted(async () => {
 })
 
 const handleFileChange = (event) => {
-  form.value.file = event.target.files[0]
+  form.value.file = Array.from(event.target.files)
 }
 
 const handleCancel = () => {
@@ -60,6 +60,7 @@ const handleSubmit = async () => {
     tags: tagsArray,
     image: form.value.image || '',
     selected: false,
+    file: form.value.file // ✅ 이미지 파일 포함
   }
 
   try {
@@ -102,7 +103,7 @@ const handleSubmit = async () => {
 
       <div class="form_group">
         <label for="file">사진 등록</label>
-        <input type="file" id="file" @change="handleFileChange" />
+        <input type="file" id="file" multiple @change="handleFileChange" />
       </div>
 
       <div class="form_group">

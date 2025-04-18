@@ -15,15 +15,53 @@ export const useQuestionStore = defineStore("question", () => {
     }
   };
 
-  const createQuestion = async (questionData) => {
-    try {
-      const res = await axios.post("/api/question/create", questionData);
-      return res.data;
-    } catch (error) {
-      console.error("질문 등록 실패:", error);
-      throw error;
+const createQuestion = async (questionData) => {
+  try {
+    const formData = new FormData();
+    const questionBlob = new Blob([JSON.stringify(questionData)], {
+      type: "application/json",
+    });
+    formData.append("question", questionBlob);
+
+    if (Array.isArray(questionData.file)) {
+      questionData.file.forEach((file) => {
+        formData.append("images", file);
+      });
     }
-  };
+
+    const res = await axios.post("/api/question/create", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("질문 등록 실패:", error);
+    throw error;
+  }
+};
+
+const updateQuestion = async (idx, questionData) => {
+  try {
+    const formData = new FormData();
+    const questionBlob = new Blob([JSON.stringify(questionData)], {
+      type: "application/json",
+    });
+    formData.append("question", questionBlob);
+
+    if (Array.isArray(questionData.file)) {
+      questionData.file.forEach((file) => {
+        formData.append("images", file);
+      });
+    }
+
+    await axios.put(`/api/question/update/${idx}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  } catch (error) {
+    console.error("질문 수정 실패:", error);
+    throw error;
+  }
+};
 
   const readQuestion = async (idx) => {
     try {
@@ -79,15 +117,6 @@ export const useQuestionStore = defineStore("question", () => {
 
   const setSelectedQuestion = (q) => {
     selectedQuestion.value = q;
-  };
-
-  const updateQuestion = async (idx, questionData) => {
-    try {
-      await axios.put(`/api/question/update/${idx}`, questionData);
-    } catch (error) {
-      console.error("질문 수정 실패:", error);
-      throw error;
-    }
   };
 
   return {

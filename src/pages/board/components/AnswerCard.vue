@@ -39,6 +39,7 @@ const confirmAndSelect = async () => {
 const goToQuestionDetail = () => {
   router.push(`/board/qna/${props.questionIdx}`)
 }
+
 </script>
 
 <template>
@@ -77,9 +78,17 @@ const goToQuestionDetail = () => {
     </div>
 
     <div class="comment_body">
-      <img v-if="answer.image" class="answer_img" :src="answer.image" alt="답변 이미지" />
-      {{ answer.content }}
-    </div>
+  <div v-if="answer.imageUrls && answer.imageUrls.length">
+    <img
+      v-for="(url, index) in answer.imageUrls"
+      :key="index"
+      class="answer_img"
+      :src="url"
+      alt="답변 이미지"
+    />
+  </div>
+  {{ answer.content }}
+</div>
 
     <!-- 채택 버튼은 질문 상세에서만 보이게 하려면 조건 분기 가능 -->
     <div

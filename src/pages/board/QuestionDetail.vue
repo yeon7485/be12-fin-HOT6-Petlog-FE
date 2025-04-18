@@ -109,7 +109,12 @@ const goToRegister = () => {
 
       <div class="user_info_line">
         <div class="user_info">
-          <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
+          <img
+            v-if="question.image"
+            class="profile_img"
+            :src="question.image"
+            alt="질문 이미지"
+          />
           <span class="nickname">{{ question.writer }}</span>
           <span class="divider">ㅣ</span>
           <span class="date">{{ question.createdAt }}</span>
@@ -134,7 +139,15 @@ const goToRegister = () => {
       <hr class="divider_line" />
 
       <div class="content_area">
-        <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
+        <div v-if="question.imageUrls && question.imageUrls.length">
+          <img
+            v-for="(url, index) in question.imageUrls"
+            :key="index"
+            class="dog_img"
+            :src="url"
+            alt="질문 첨부 이미지"
+          />
+        </div>
         <p class="description">{{ question.content }}</p>
         <div class="hashtags">
           <span v-for="tag in question.tags" :key="tag"># {{ tag }}</span>
@@ -189,18 +202,19 @@ const goToRegister = () => {
       </div>
 
       <AnswerCard
-  v-for="answer in answerStore.answers"
-  :key="answer.idx"
-  :answer="answer"
-  :question-idx="questionIdx"       
-  @select="handleSelectAnswer"
-  @modify="goToModifyAnswer"
-  @delete="(id) => confirmDeleteAnswer(id)"
-  @selected="handleSelectedAnswer"
-/>
+        v-for="answer in answerStore.answers"
+        :key="answer.idx"
+        :answer="answer"
+        :question-idx="questionIdx"
+        @select="handleSelectAnswer"
+        @modify="goToModifyAnswer"
+        @delete="(id) => confirmDeleteAnswer(id)"
+        @selected="handleSelectedAnswer"
+      />
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .wrapper {

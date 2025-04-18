@@ -44,6 +44,7 @@ defineProps({ question: Object })
   background-color: #fff;
   padding: 20px 30px;
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .user_info {

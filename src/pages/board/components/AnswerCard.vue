@@ -1,8 +1,8 @@
 <script setup>
+import { useRouter } from 'vue-router'
 import { useAnswerStore } from '/src/stores/useAnswerStore'
 import { useQuestionStore } from '/src/stores/useQuestionStore'
 import { useUserStore } from '/src/stores/useUserStore'
-import { useRoute } from 'vue-router'
 
 const emit = defineEmits(['modify', 'delete', 'select', 'selected'])
 
@@ -14,10 +14,10 @@ const props = defineProps({
   },
 })
 
+const router = useRouter()
 const answerStore = useAnswerStore()
 const questionStore = useQuestionStore()
 const userStore = useUserStore()
-const route = useRoute()
 
 const confirmAndSelect = async () => {
   const confirmed = window.confirm('이 답변을 채택하시겠습니까?')
@@ -34,10 +34,16 @@ const confirmAndSelect = async () => {
     console.error(e)
   }
 }
+
+// ✅ 질문 상세 페이지로 이동
+const goToQuestionDetail = () => {
+  router.push(`/board/qna/${props.questionIdx}`)
+}
 </script>
 
 <template>
-  <div class="answer_card" :class="{ selected: answer.selected }">
+  <!-- ✅ 클릭 이벤트 추가 -->
+  <div class="answer_card" :class="{ selected: answer.selected }" @click="goToQuestionDetail">
     <div class="user_header">
       <div class="left_info">
         <img class="profile_img" :src="answer.profileImage" alt="유저 이미지" />
@@ -58,13 +64,13 @@ const confirmAndSelect = async () => {
             src="/src/assets/icons/write.png"
             class="icon_btn"
             alt="수정 아이콘"
-            @click="emit('modify', answer.idx)"
+            @click.stop="emit('modify', answer.idx)"
           />
           <img
             src="/src/assets/icons/x-button.png"
             class="icon_btn"
             alt="삭제 아이콘"
-            @click="emit('delete', answer.idx)"
+            @click.stop="emit('delete', answer.idx)"
           />
         </template>
       </div>
@@ -75,11 +81,12 @@ const confirmAndSelect = async () => {
       {{ answer.content }}
     </div>
 
+    <!-- 채택 버튼은 질문 상세에서만 보이게 하려면 조건 분기 가능 -->
     <div
       v-if="!answer.selected && !answerStore.answers.some(a => a.selected) && userStore.nickname !== answer.writer"
       class="select_btn_area"
     >
-      <button class="select_btn" @click="confirmAndSelect">채택하기</button>
+      <button class="select_btn" @click.stop="confirmAndSelect">채택하기</button>
     </div>
   </div>
 </template>

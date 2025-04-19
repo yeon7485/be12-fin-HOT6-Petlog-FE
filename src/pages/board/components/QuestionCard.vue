@@ -20,7 +20,12 @@ defineProps({ question: Object })
 
       <router-link :to="`/board/qna/${question.idx}`" class="post_title">
         {{ question.qTitle || question.qtitle }}
-      </router-link>
+        <img
+         v-if="question.imageUrls && question.imageUrls.length > 0"
+          src="/src/assets/icons/image.png"
+          alt="이미지 있음"
+          class="image_icon"/>
+       </router-link>
 
       <p class="post_content">{{ question.content }}</p>
 
@@ -131,5 +136,11 @@ defineProps({ question: Object })
 .status_badge.unresolved {
   background-color: #f2f2f2;
   color: #555;
+}
+.image_icon {
+  width: 14px;
+  height: 14px;
+  margin-left: 6px;
+  vertical-align: middle;
 }
 </style>

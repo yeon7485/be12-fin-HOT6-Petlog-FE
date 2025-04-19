@@ -97,7 +97,20 @@ const handleSubmit = async () => {
         <hr class="divider_line" />
 
         <div class="content_area">
-          <img class="dog_img" src="/src/assets/images/dog1.png" alt="강아지 이미지" />
+          <!-- ✅ 질문 이미지 출력 -->
+          <div
+            v-if="question.imageUrls && question.imageUrls.length"
+            class="image_preview_area"
+          >
+            <img
+              v-for="(img, index) in question.imageUrls"
+              :key="index"
+              :src="img"
+              alt="질문 이미지"
+              class="question_img"
+            />
+          </div>
+
           <p class="description">{{ question.content }}</p>
           <div class="hashtags">
             <span v-for="tag in question.tags" :key="tag"># {{ tag }}</span>
@@ -128,7 +141,6 @@ const handleSubmit = async () => {
               multiple
               @change="handleFileChange"
             />
-            <span v-if="fileName" class="file_name">{{ fileName }}</span>
             <img v-if="previewImage" :src="previewImage" alt="미리보기 이미지" class="preview_img" />
           </div>
 
@@ -149,7 +161,6 @@ const handleSubmit = async () => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .container {
@@ -215,11 +226,17 @@ const handleSubmit = async () => {
 .content_area {
   margin-top: 20px;
 }
-.dog_img {
-  width: 100%;
-  max-width: 260px;
-  border-radius: 8px;
+.image_preview_area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 16px;
+}
+.question_img {
+  width: 120px;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 .description {
   font-size: 16px;
@@ -296,12 +313,6 @@ const handleSubmit = async () => {
 
 .file_input {
   font-size: 14px;
-}
-
-.file_name {
-  margin-top: 4px;
-  color: #555;
-  font-size: 13px;
 }
 
 .preview_img {

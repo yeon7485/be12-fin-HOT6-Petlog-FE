@@ -19,16 +19,16 @@ const goToDetail = () => {
     <td>{{ index }}</td>
     <td>{{ post.category }}</td>
     <td>
-      <span class="post_title">
-        {{ post.title }}
-        <img
-          v-if="post.imageUrl"
-          src="/src/assets/icons/image.png"
-          alt="image"
-          class="image_icon"
-        />
-      </span>
-    </td>
+  <span class="post_title">
+    {{ post.title }}
+    <img
+      v-if="post.imageUrls && post.imageUrls.length > 0"
+      src="/src/assets/icons/image.png"
+      alt="image"
+      class="image_icon"
+    />
+  </span>
+</td>
     <td>{{ post.writer }}</td>
     <td>{{ post.createdAt }}</td>
   </tr>

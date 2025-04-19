@@ -1,27 +1,83 @@
+<script setup>
+import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useCategoryStore } from '../../stores/useCategoryStore.js'
+
+const route = useRoute()
+const router = useRouter()
+const store = useCategoryStore()
+
+const category = ref({
+  idx: Number(route.query.idx) || null,
+  name: route.query.name || '',
+  color: route.query.color || '#00BCD4'
+})
+
+const availableColors = [
+  '#00BCD4', '#F44336', '#E91E63', '#9C27B0', '#673AB7',
+  '#3F51B5', '#2196F3', '#03A9F4', '#4CAF50', '#8BC34A',
+  '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722',
+  '#795548', '#9E9E9E', '#607D8B'
+]
+
+const selectColor = (color) => {
+  category.value.color = color
+}
+
+const save = async () => {
+  if (!category.value.name.trim()) {
+    alert('카테고리 이름을 입력해주세요.')
+    return
+  }
+
+  if (!category.value.color) {
+    alert('카테고리 색상을 선택해주세요.')
+    return
+  }
+
+  const payload = {
+    idx: category.value.idx,
+    name: category.value.name,
+    color: category.value.color,
+    description: ''
+  }
+
+  try {
+    await store.updateCategory('DAILY_RECORD', payload)
+    alert('카테고리 수정이 완료되었습니다.')
+    router.push('/admin/category/record')
+  } catch (err) {
+    alert('카테고리 수정 중 오류가 발생했습니다.')
+    console.error(err)
+  }
+}
+
+const cancel = () => {
+  router.push('/admin/category/record')
+}
+</script>
+
 <template>
   <div class="category-manager">
-    
-    
-    <!-- 메인 콘텐츠 -->
     <div class="main-content">
       <div class="form-container">
-        <h1>기록 카테고리</h1>
-        
+        <h1>기록 카테고리 수정</h1>
+
         <div class="form-group">
           <label for="categoryName">카테고리 이름</label>
-          <input 
-            type="text" 
-            id="categoryName" 
-            v-model="category.name" 
-            placeholder="기록 목적을 입력해주세요. (예: 체중, 체온)"
-          >
+          <input
+            type="text"
+            id="categoryName"
+            v-model="category.name"
+            placeholder="카테고리 이름을 입력하세요"
+          />
         </div>
-        
+
         <div class="form-group">
           <label>카테고리 색상</label>
           <div class="color-selector">
-            <div 
-              v-for="color in availableColors" 
+            <div
+              v-for="color in availableColors"
               :key="color"
               class="color-option"
               :class="{ selected: category.color === color }"
@@ -30,7 +86,7 @@
             ></div>
           </div>
         </div>
-        
+
         <div class="form-actions">
           <button class="cancel-button" @click="cancel">취소</button>
           <button class="save-button" @click="save">저장</button>
@@ -40,91 +96,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'CategoryForm',
-  data() {
-    return {
-      category: {
-        name: '',
-        color: '#00BCD4' // 기본 색상 (이미지에 보이는 청록색)
-      },
-      availableColors: [
-        '#00BCD4', // 청록색 (기본)
-        '#F44336', // 빨간색
-        '#E91E63', // 핑크
-        '#9C27B0', // 보라색
-        '#673AB7', // 진보라색
-        '#3F51B5', // 남색
-        '#2196F3', // 파란색
-        '#03A9F4', // 하늘색
-        '#4CAF50', // 녹색
-        '#8BC34A', // 연두색
-        '#CDDC39', // 라임
-        '#FFEB3B', // 노란색
-        '#FFC107', // 황색
-        '#FF9800', // 주황색
-        '#FF5722', // 주홍색
-        '#795548', // 갈색
-        '#9E9E9E', // 회색
-        '#607D8B'  // 청회색
-      ]
-    }
-  },
-  methods: {
-    selectColor(color) {
-      this.category.color = color;
-    },
-    save() {
-      if (!this.category.name.trim()) {
-        alert('카테고리 이름을 입력해주세요.');
-        return;
-      }
-      
-      // 여기서 저장 로직 구현 (예: API 호출 또는 부모 컴포넌트에 이벤트 발생)
-      this.$emit('save', { ...this.category });
-      console.log('저장된 카테고리:', this.category);
-      
-      // 실제 애플리케이션에서는 저장 후 리디렉션 또는 폼 초기화
-      this.resetForm();
-    },
-    cancel() {
-      // 취소 로직 (예: 이전 페이지로 이동 또는 폼 초기화)
-      this.resetForm();
-      this.$emit('cancel');
-    },
-    resetForm() {
-      this.category = {
-        name: '',
-        color: '#00BCD4'
-      };
-    }
-  }
-}
-</script>
-
 <style scoped>
 .category-manager {
   display: flex;
   min-height: 100vh;
   font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-}
-
-.sidebar {
-  width: 180px;
-  background-color: white;
-  border-right: 1px solid #eaeaea;
-  padding: 20px 0;
-}
-
-.menu-item {
-  padding: 12px 20px;
-  cursor: pointer;
-}
-
-.menu-item.active {
-  color: #e53935;
-  font-weight: 600;
 }
 
 .main-content {
@@ -143,7 +119,7 @@ export default {
 h1 {
   font-size: 20px;
   font-weight: 600;
-  margin: 0 0 30px 0;
+  margin-bottom: 30px;
 }
 
 .form-group {
@@ -163,10 +139,6 @@ input {
   border: 1px solid #eaeaea;
   border-radius: 4px;
   font-size: 14px;
-}
-
-input::placeholder {
-  color: #aaa;
 }
 
 .color-selector {

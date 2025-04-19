@@ -42,6 +42,7 @@ const handleClick = (category) => {
   margin: 0px auto;
   font-family: 'Arial', sans-serif;
   position: relative;
+  margin-left: 40%;
 }
 .title {
   font-size: 32px;
@@ -49,7 +50,7 @@ const handleClick = (category) => {
   top: 20px;
   left: 20px;
   margin-bottom: 30px;
-  margin-left: 50px;
+  margin-left: 40%;
 }
 .category-list {
   display: flex;

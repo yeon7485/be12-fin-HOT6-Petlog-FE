@@ -1,3 +1,48 @@
+<script setup>
+import { useCategoryStore } from '../../stores/useCategoryStore.js'
+import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import CategoryItem from './components/CategoryItem.vue'
+
+const store = useCategoryStore()
+const router = useRouter()
+
+const showCreateModal = ref(false)
+const newType = ref({ name: '' })
+const boardTypes = computed(() => store.boardTypes)
+
+const createType = async () => {
+  if (newType.value.name.trim()) {
+    await store.addCategory('BOARD_TYPE', { ...newType.value })
+    showCreateModal.value = false
+    newType.value = { name: '' }
+  }
+}
+
+const editType = (index) => {
+  const type = boardTypes.value[index]
+  router.push({
+    path: '/admin/category/boardtype/fix',
+    query: {
+      idx: type.idx,       // 🟢 이거 추가!
+      name: type.name
+    }
+  })
+}
+
+const deleteType = async (index) => {
+  const type = boardTypes.value[index]
+  if (confirm(`${type.name} 타입을 삭제하시겠습니까?`)) {
+    await store.deleteCategory('BOARD_TYPE', type)
+  }
+}
+
+// ✅ 새로고침 시 데이터 로딩
+onMounted(() => {
+  store.fetchCategories('BOARD_TYPE')
+})
+</script>
+
 <template>
   <div class="record-manager">
     <div class="main-content">
@@ -43,64 +88,6 @@
   </div>
 </template>
 
-<script>
-import { useCategoryStore } from '../../stores/useCategoryStore.js'
-import { useRouter } from 'vue-router'
-import { ref, computed } from 'vue'
-import CategoryItem from './components/CategoryItem.vue'
-
-export default {
-  name: 'BoardTypeManager',
-  components: {
-    CategoryItem,
-  },
-  setup() {
-    const store = useCategoryStore()
-    const router = useRouter()
-
-    const showCreateModal = ref(false)
-    const newType = ref({
-      name: '',
-    })
-
-    const boardTypes = computed(() => store.boardTypes)
-
-    const createType = async () => {
-      if (newType.value.name.trim()) {
-        await store.addCategory('BOARD_TYPE', { ...newType.value })
-        showCreateModal.value = false
-        newType.value = { name: '' }
-      }
-    }
-
-    const editType = (index) => {
-      const type = store.boardTypes[index]
-      router.push({
-        path: '/admin/category/type/fix',
-        query: {
-          name: type.name,
-        },
-      })
-    }
-
-    const deleteType = async (index) => {
-      const type = store.boardTypes[index]
-      if (confirm(`${type.name} 타입을 삭제하시겠습니까?`)) {
-        await store.deleteCategory('BOARD_TYPE', type)
-      }
-    }
-
-    return {
-      boardTypes,
-      showCreateModal,
-      newType,
-      createType,
-      editType,
-      deleteType,
-    }
-  },
-}
-</script>
 <style scoped>
 .record-manager {
   display: flex;
@@ -108,29 +95,12 @@ export default {
   font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
 
-.sidebar {
-  width: 180px;
-  background-color: white;
-  border-right: 1px solid #eaeaea;
-  padding: 20px 0;
-}
-
-.menu-item {
-  padding: 12px 20px;
-  cursor: pointer;
-}
-
-.menu-item.active {
-  color: #e53935;
-  font-weight: 600;
-}
-
 .main-content {
   flex: 1;
   padding: 20px;
   background-color: #f9f9f9;
   max-width: 700px; 
-  margin-left: 100px;
+  margin-left: 35%;
 }
 
 .header {
@@ -171,43 +141,6 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.category-item {
-  display: flex;
-  align-items: center;
-  background-color: white;
-  border: 1px solid #eaeaea;
-  border-radius: 4px;
-  padding: 16px;
-}
-
-.category-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  margin-right: 12px;
-}
-
-.category-name {
-  flex: 1;
-}
-
-.category-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.action-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #757575;
-  padding: 4px;
-}
-
-.action-button:hover {
-  color: #212121;
 }
 
 /* 모달 스타일 */
@@ -254,28 +187,6 @@ input {
   border: 1px solid #eaeaea;
   border-radius: 4px;
   font-size: 14px;
-}
-
-.color-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.color-option {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.color-option:hover {
-  transform: scale(1.1);
-}
-
-.color-option.selected {
-  box-shadow: 0 0 0 2px white, 0 0 0 4px #212121;
 }
 
 .modal-actions {

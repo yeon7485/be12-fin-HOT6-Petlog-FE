@@ -7,7 +7,6 @@ const route = useRoute()
 const router = useRouter()
 const store = useCategoryStore()
 
-// 쿼리로 받은 값 초기화
 const category = ref({
   idx: Number(route.query.idx) || null,
   name: route.query.name || ''
@@ -22,16 +21,16 @@ const save = async () => {
   const payload = {
     idx: category.value.idx,
     name: category.value.name,
-    description: '' // 필요 시 수정
+    description: '' // 필요 시 확장 가능
   }
 
   try {
     await store.updateCategory('BOARD_CATEGORY', payload)
-    alert('수정이 완료되었습니다.')
-    router.push('/admin/category/boardtype')
-  } catch (err) {
-    alert('수정 중 오류 발생')
-    console.error(err)
+    alert('카테고리가 수정되었습니다.')
+    router.push('/admin/category/board')
+  } catch (error) {
+    alert('수정 중 오류가 발생했습니다.')
+    console.error(error)
   }
 }
 
@@ -73,7 +72,6 @@ const cancel = () => {
   background-color: #f9f9f9;
   font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
-
 .fix-container {
   background: white;
   border: 1px solid #eaeaea;
@@ -81,23 +79,19 @@ const cancel = () => {
   padding: 30px;
   width: 400px;
 }
-
 h1 {
   font-size: 20px;
   margin-bottom: 20px;
   font-weight: bold;
 }
-
 .form-group {
   margin-bottom: 20px;
 }
-
 label {
   display: block;
   margin-bottom: 8px;
   font-size: 14px;
 }
-
 input {
   width: 100%;
   padding: 10px;
@@ -105,13 +99,11 @@ input {
   border-radius: 4px;
   font-size: 14px;
 }
-
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
-
 .cancel-button {
   padding: 8px 16px;
   background-color: white;
@@ -119,7 +111,6 @@ input {
   border-radius: 4px;
   cursor: pointer;
 }
-
 .save-button {
   padding: 8px 16px;
   background-color: #2196f3;
@@ -128,7 +119,6 @@ input {
   border-radius: 4px;
   cursor: pointer;
 }
-
 .save-button:hover {
   background-color: #1976d2;
 }

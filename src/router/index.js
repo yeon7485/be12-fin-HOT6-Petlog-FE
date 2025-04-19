@@ -16,8 +16,6 @@ import MypageQuestion from "../pages/mypage/MypageQuestion.vue";
 import MypageAnswer from "../pages/mypage/MypageAnswer.vue";
 import MypagePost from "../pages/mypage/MypagePost.vue";
 import MypageComment from "../pages/mypage/MypageComment.vue";
-import CardDetail from "../pages/mypage/MypageCardDetail.vue";
-import MypageCardChange from "../pages/mypage/ModifyMypageCard.vue";
 
 import FreeBoard from "../pages/board/FreeBoard.vue";
 import InformationBoard from "../pages/board/InformationBoard.vue";
@@ -37,7 +35,8 @@ import UpdateScheduleCategory from "../pages/admin/ModifyScheduleCategory.vue";
 import Record from "../pages/admin/RecordCategory.vue";
 import RecordFix from "../pages/admin/ModifyRecordCategory.vue";
 import Board from "../pages/admin/BoardCategory.Vue";
-import BoardFix from "../pages/admin/ModifyBoardCategory.vue";
+import BoardFix from "../pages/admin/ModifyBoard.vue"
+import BoardTypeCategoryFix from "../pages/admin/ModifyBoardCategory.vue";
 import BoardTypeCategory from "../pages/admin/BoardTypeCategory.vue";
 
 import Login from "../pages/user/Login.vue";
@@ -183,8 +182,10 @@ const routes = [
       { path: "category/record", component: Record },
       { path: "category/record/fix", component: RecordFix },
       { path: "category/board", component: Board },
-      { path: "category/board/fix", component: BoardFix },
+      { path: "category/board/fix", component: BoardFix},
+      { path: "category/boardtype/fix", component: BoardTypeCategoryFix},
       { path: "category/boardtype", component: BoardTypeCategory },
+      
     ],
   },
 ];

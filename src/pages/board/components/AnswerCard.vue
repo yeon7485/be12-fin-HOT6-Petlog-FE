@@ -35,7 +35,6 @@ const confirmAndSelect = async () => {
   }
 }
 
-// ✅ 질문 상세 페이지로 이동
 const goToQuestionDetail = () => {
   router.push(`/board/qna/${props.questionIdx}`)
 }
@@ -43,11 +42,11 @@ const goToQuestionDetail = () => {
 </script>
 
 <template>
-  <!-- ✅ 클릭 이벤트 추가 -->
   <div class="answer_card" :class="{ selected: answer.selected }" @click="goToQuestionDetail">
     <div class="user_header">
       <div class="left_info">
-        <img class="profile_img" :src="answer.profileImage" alt="유저 이미지" />
+        <img class="profile_img" :src="answer.profileImageUrl || '/src/assets/images/default.png'" alt="유저 이미지" />
+
         <span class="nickname">{{ answer.writer }}</span>
         <span class="divider">ㅣ</span>
         <span class="date">{{ answer.createdAt }}</span>

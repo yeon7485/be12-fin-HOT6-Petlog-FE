@@ -6,7 +6,8 @@ defineProps({ question: Object })
   <div class="post_card">
     <div class="post_header">
       <div class="user_info">
-        <img class="avatar" src="/src/assets/images/dog1.png" alt="유저 아바타" />
+        <img class="avatar" :src="question.profileImageUrl || '/src/assets/images/default.png'" alt="유저 아바타" />
+
         <span class="author">{{ question.writer }}</span>
         <span class="divider">ㅣ</span>
         <span class="date">{{ question.createdAt }}</span>

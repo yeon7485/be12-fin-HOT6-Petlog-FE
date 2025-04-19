@@ -68,7 +68,8 @@ const addComment = async () => {
 
       <div class="user_info_line">
         <div class="user_info">
-          <img class="profile_img" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
+          <img class="profile_img" :src="post.profileImageUrl || '/src/assets/images/default.png'" alt="프로필 이미지" />
+
           <span class="nickname">{{ post.writer }}</span>
           <span class="divider">ㅣ</span>
           <span class="date">{{ post.createdAt }}</span>

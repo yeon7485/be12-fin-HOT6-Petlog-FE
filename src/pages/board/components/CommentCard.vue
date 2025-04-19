@@ -51,7 +51,8 @@ const deleteComment = async () => {
 <template>
   <div class="comment_card">
     <div class="comment_header">
-      <img class="avatar" src="/src/assets/images/dog1.png" alt="프로필 이미지" />
+      <img class="avatar" :src="comment.profileImageUrl || '/src/assets/images/default.png'" alt="프로필 이미지" />
+
       <span class="nickname">{{ comment.writer }}</span>
       <span class="divider">ㅣ</span>
       <span class="date">{{ comment.createdAt }}</span>

@@ -1,3 +1,56 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useCategoryStore } from '../../stores/useCategoryStore.js'
+
+const router = useRouter()
+const store = useCategoryStore()
+
+const showCreateModal = ref(false)
+const newCategory = ref({ name: '', color: '#00bcd4' })
+
+// ✅ 카테고리 목록 로드
+onMounted(() => {
+  store.fetchCategories("SCHEDULE")
+})
+
+const categories = computed(() => store.scheduleCategories)
+
+const colors = [
+  '#00bcd4', '#e91e63', '#4caf50', '#9e9e9e',
+  '#ff9800', '#673ab7', '#3f51b5', '#795548'
+]
+
+const saveCategory = async () => {
+  if (newCategory.value.name.trim()) {
+    await store.addCategory('SCHEDULE', { ...newCategory.value })
+    await store.fetchCategories('SCHEDULE') // 목록 갱신
+    showCreateModal.value = false
+    newCategory.value = { name: '', color: '#00bcd4' }
+  }
+}
+
+const editCategory = (index) => {
+  const category = categories.value[index]
+  router.push({
+    path: '/admin/category/schedule/fix',
+    query: {
+      idx: category.idx, 
+      name: category.name,
+      color: category.color
+    }
+  })
+}
+
+const confirmDelete = async (index) => {
+  const category = categories.value[index]
+  if (confirm(`${category.name} 카테고리를 삭제하시겠습니까?`)) {
+    await store.deleteCategory('SCHEDULE', category)
+    await store.fetchCategories('SCHEDULE')
+  }
+}
+</script>
+
 <template>
   <div class="schedule-manager">
     <div class="main-content">
@@ -20,16 +73,10 @@
           <div class="category-name">{{ category.name }}</div>
           <div class="category-actions">
             <button class="action-button" @click="editCategory(index)">
-              <svg xmlns="http://www.w3.org/2000/svg" class="edit-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-              </svg>
+              ✏️
             </button>
             <button class="action-button" @click="confirmDelete(index)">
-              <svg xmlns="http://www.w3.org/2000/svg" class="trash-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-              </svg>
+              🗑️
             </button>
           </div>
         </div>
@@ -71,51 +118,8 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useCategoryStore } from '../../stores/useCategoryStore.js'
-
-const router = useRouter()
-const store = useCategoryStore()
-
-const showCreateModal = ref(false)
-const newCategory = ref({ name: '', color: '#00bcd4' })
-
-const categories = computed(() => store.scheduleCategories)
-const colors = [
-  '#00bcd4', '#e91e63', '#4caf50', '#9e9e9e',
-  '#ff9800', '#673ab7', '#3f51b5', '#795548'
-]
-
-const saveCategory = async () => {
-  if (newCategory.value.name.trim()) {
-    await store.addCategory('SCHEDULE', { ...newCategory.value })
-    showCreateModal.value = false
-    newCategory.value = { name: '', color: '#00bcd4' }
-  }
-}
-
-const editCategory = (index) => {
-  const category = categories.value[index]
-  router.push({
-    path: '/admin/category/schedule/fix',
-    query: {
-      name: category.name,
-      color: category.color
-    }
-  })
-}
-
-const confirmDelete = async (index) => {
-  const category = categories.value[index]
-  if (confirm(`${category.name} 카테고리를 삭제하시겠습니까?`)) {
-    await store.deleteCategory('SCHEDULE', category)
-  }
-}
-</script>
-
 <style scoped>
+/* 스타일 동일 — 생략 없이 유지 */
 .schedule-manager {
   display: flex;
   min-height: 100vh;
@@ -126,7 +130,7 @@ const confirmDelete = async (index) => {
   padding: 20px;
   background-color: #f9f9f9;
   max-width: 700px;
-  margin-left: 100px;
+  margin-left: 35%;
 }
 .header {
   display: flex;
@@ -191,8 +195,6 @@ h1 {
 .action-button:hover {
   color: #212121;
 }
-
-/* 모달 */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -267,9 +269,5 @@ input {
 }
 .save-button:hover {
   background-color: #1976d2;
-}
-.edit-icon, .trash-icon {
-  stroke-width: 2;
-  stroke: currentColor;
 }
 </style>

@@ -93,6 +93,7 @@ const deleteAccount = () => {
   background-color: #fff;
   border-radius: 12px;
   position: relative;
+  margin-left: 35%;
 }
 .profile {
   margin-top: 40px;

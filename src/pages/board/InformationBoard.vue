@@ -110,20 +110,20 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
+/* ✅ 드롭다운 개선 */
 .category_dropdown {
-  padding: 10px 14px;
+  padding: 12px 18px;
   font-size: 14px;
-  border-radius: 20px;
+  border-radius: 999px;
   border: 1px solid #a1887f;
   background-color: #fdf6f1;
   color: #4E342E;
   appearance: none;
-  background-image: url('/src/assets/icons/arrow-down-brown.png');
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 14px;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(93, 64, 55, 0.1);
+  box-shadow: 0 2px 6px rgba(93, 64, 55, 0.1);
   transition: all 0.2s ease;
 }
 
@@ -137,30 +137,50 @@ onMounted(() => {
   box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.3);
 }
 
+/* ✅ 검색창 개선 */
 .search_input_wrap {
   position: relative;
   width: 320px;
+  transition: all 0.3s ease;
 }
 
 .search_input_wrap input {
   width: 100%;
-  padding: 10px 12px 10px 36px;
-  border: none;
+  height: 44px;
+  padding: 10px 16px 10px 44px;
+  border: 1px solid #ccc;
   border-radius: 999px;
   font-size: 14px;
-  background-color: #f1f1f1;
+  background-color: #f9f9f9;
   color: #333;
   outline: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search_input_wrap input::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+.search_input_wrap input:focus {
+  border-color: #a1887f;
+  box-shadow: 0 0 0 2px rgba(161, 136, 127, 0.3);
 }
 
 .search_icon_img {
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.search_icon_img:hover {
+  transform: translateY(-50%) scale(1.15);
 }
 
 .board_table {
@@ -209,4 +229,5 @@ onMounted(() => {
 .write_btn:hover {
   background: #5D4037;
 }
+
 </style>

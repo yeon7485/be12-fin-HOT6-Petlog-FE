@@ -60,20 +60,26 @@ const goToQuestionDetail = () => {
             <span class="selected_text">질문자가 채택한 답변</span>
           </div>
         </template>
-        <template v-else-if="userStore.nickname === answer.writer">
-          <img
-            src="/src/assets/icons/write.png"
-            class="icon_btn"
-            alt="수정 아이콘"
-            @click.stop="emit('modify', answer.idx)"
-          />
-          <img
-            src="/src/assets/icons/x-button.png"
-            class="icon_btn"
-            alt="삭제 아이콘"
-            @click.stop="emit('delete', answer.idx)"
-          />
-        </template>
+        <template
+  v-if="
+    answer.writer === userStore.nickname &&
+    !answer.selected &&
+    !answerStore.answers.some(a => a.selected && a.writer !== userStore.nickname)
+  "
+>
+  <img
+    src="/src/assets/icons/write.png"
+    class="icon_btn"
+    alt="수정 아이콘"
+    @click.stop="emit('modify', answer.idx)"
+  />
+  <img
+    src="/src/assets/icons/x-button.png"
+    class="icon_btn"
+    alt="삭제 아이콘"
+    @click.stop="emit('delete', answer.idx)"
+  />
+</template>
       </div>
     </div>
 
@@ -90,7 +96,6 @@ const goToQuestionDetail = () => {
   {{ answer.content }}
 </div>
 
-    <!-- 채택 버튼은 질문 상세에서만 보이게 하려면 조건 분기 가능 -->
     <div
       v-if="!answer.selected && !answerStore.answers.some(a => a.selected) && userStore.nickname !== answer.writer"
       class="select_btn_area"

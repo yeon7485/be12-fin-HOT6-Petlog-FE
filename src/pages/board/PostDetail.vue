@@ -83,9 +83,18 @@ const addComment = async () => {
       <hr class="divider_line" />
 
       <div class="content_area">
-        <img v-if="post.imageUrl" :src="post.imageUrl" alt="강아지 이미지" class="dog_img" />
-        <p class="description">{{ post.content || '게시글 내용이 없습니다.' }}</p>
-      </div>
+  <div v-if="post.imageUrls && post.imageUrls.length > 0">
+    <img
+      v-for="(img, i) in post.imageUrls"
+      :key="i"
+      :src="img"
+      class="dog_img"
+      alt="게시글 이미지"
+    />
+  </div>
+  <p class="description">{{ post.content || '게시글 내용이 없습니다.' }}</p>
+</div>
+
     </div>
   </div>
 
@@ -111,6 +120,7 @@ const addComment = async () => {
       :key="comment.idx"
       :comment="comment"
       :post-idx="postIdx"
+      :current-user-idx="userStore.idx"
     />
   </div>
 </template>

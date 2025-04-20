@@ -24,7 +24,7 @@ const calculateAge = (birthDate) => {
 
 onMounted(async () => {
   try {
-    const data = await store.fetchPetDetail(petId);
+    const data = await store.fetchPetById(petId);
 
     const imageUrl = data.profileImageUrl
       ? data.profileImageUrl.startsWith('http')

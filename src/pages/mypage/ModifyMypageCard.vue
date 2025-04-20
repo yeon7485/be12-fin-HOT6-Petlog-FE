@@ -24,9 +24,29 @@ const card = ref({
   birthDate: '',
   isNeutering: false,
   specificInformation: '',
-  status: '',
+  status: '정상',
   userId: ''
 })
+
+const selectedFile = ref(null)
+const profileImage = ref('')
+const fileInput = ref(null)
+
+const triggerFileInput = () => {
+  fileInput.value.click()
+}
+
+const uploadImage = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    selectedFile.value = file
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      profileImage.value = e.target.result
+    }
+    reader.readAsDataURL(file)
+  }
+}
 
 onMounted(async () => {
   const userId = getSessionUserIdx()
@@ -51,6 +71,8 @@ onMounted(async () => {
       status: petStore.petDetail.status,
       userId: userId
     }
+
+    profileImage.value = petStore.petDetail.profileImageUrl
   } catch (err) {
     console.error('불러오기 실패:', err)
   }
@@ -58,13 +80,40 @@ onMounted(async () => {
 
 const saveCard = async () => {
   try {
-    await petStore.updatePet(card.value)
-    alert("카드가 성공적으로 수정되었습니다!")
-    router.push("/mypage/cardlist")
+    const formData = new FormData();
+
+    // ✅ JSON 데이터를 Blob으로 감싸 'pet'이라는 키로 추가
+    formData.append(
+      'pet',
+      new Blob([JSON.stringify(card.value)], {
+        type: 'application/json'
+      })
+    );
+
+    // ✅ 이미지가 있다면 같이 추가
+    if (selectedFile.value) {
+      formData.append('profileImage', selectedFile.value);
+    }
+
+    // ✅ 확인용 로그
+    console.log('[🔍 FormData 확인]');
+    for (const pair of formData.entries()) {
+      if (pair[0] === 'pet') {
+        pair[1].text().then((text) => console.log(`${pair[0]}:`, text));
+      } else {
+        console.log(`${pair[0]}:`, pair[1]);
+      }
+    }
+
+    await petStore.updatePet(card.value.id, formData);
+    alert("카드가 성공적으로 수정되었습니다!");
+    router.push("/mypage/cardlist");
   } catch (err) {
-    alert("수정 중 오류가 발생했습니다.")
+    console.error("[❌ 수정 중 오류 발생]", err);
+    alert("수정 중 오류가 발생했습니다.");
   }
-}
+};
+
 
 const goToCardList = () => {
   router.push("/mypage/cardlist")
@@ -74,34 +123,28 @@ const goToCardList = () => {
 <template>
   <h1 class="title">반려동물 정보 수정</h1>
   <div class="form-container">
-
-    <!-- 프로필 사진 (나중에 처리) -->
     <div class="profile-section">
-      <img src="/src/assets/images/cat1.jpg" class="profile-img" />
+      <img :src="profileImage" class="profile-img" />
+      <input type="file" ref="fileInput" accept="image/*" @change="uploadImage" hidden />
+      <button class="upload-btn" @click="triggerFileInput">📷</button>
     </div>
 
-    <!-- 이름 -->
     <input v-model="card.name" placeholder="이름" class="input" />
 
-    <!-- 성별 -->
     <div class="gender-section">
-      <label><input type="radio" value="♂️" v-model="card.gender" /> ♂️</label>
-      <label><input type="radio" value="♀️" v-model="card.gender" /> ♀️</label>
+      <label><input type="radio" value="male" v-model="card.gender" /> ♂️</label>
+      <label><input type="radio" value="female" v-model="card.gender" /> ♀️</label>
       <label><input type="checkbox" v-model="card.isNeutering" /> 중성화 유무</label>
     </div>
 
-    <!-- 생일 -->
     <div class="birthdate-section">
       <input type="date" v-model="card.birthDate" />
     </div>
 
-    <!-- 품종 -->
-    <input v-model="card.breed" placeholder="품종" class="input" />
+    <input v-model="card.breed" placeholder="푸문" class="input" />
 
-    <!-- 특이사항 -->
     <textarea v-model="card.specificInformation" placeholder="특이사항" class="textarea" />
 
-    <!-- 상태 -->
     <div class="status-section">
       <label v-for="s in statuses" :key="s" class="status-option">
         <input type="radio" :value="s" v-model="card.status" />
@@ -109,10 +152,9 @@ const goToCardList = () => {
       </label>
     </div>
 
-    <!-- 버튼 그룹 -->
     <div class="button-group">
-      <button @click="goToCardList" class="cancel-btn">취소</button>  <!-- 취소 버튼 -->
-      <button @click="saveCard" class="save-btn">저장</button>  <!-- 저장 버튼 -->
+      <button @click="goToCardList" class="cancel-btn">취소</button>
+      <button @click="saveCard" class="save-btn">저장</button>
     </div>
   </div>
 </template>
@@ -140,8 +182,16 @@ const goToCardList = () => {
   object-fit: cover;
   border-radius: 50%;
   display: block;
-  margin: 0 auto 20px;
-  
+  margin: 0 auto 10px;
+}
+
+.upload-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  display: block;
+  margin: 0 auto 15px;
 }
 
 .input {
@@ -150,8 +200,8 @@ const goToCardList = () => {
   margin: 8px 0;
   border: 1px solid #ccc;
   border-radius: 8px;
-  background-color: white; /* ✅ 배경색 흰색으로 고정 */
-  color: #000; /* 텍스트 색은 검정색 */
+  background-color: white;
+  color: #000;
 }
 
 .textarea {
@@ -162,8 +212,8 @@ const goToCardList = () => {
   border-radius: 8px;
   margin: 8px 0;
   resize: none;
-  background-color: white; /* ✅ 배경색 흰색으로 고정 */
-  color: #000; /* 텍스트 색은 검정색 */
+  background-color: white;
+  color: #000;
 }
 
 .gender-section,
@@ -173,7 +223,6 @@ const goToCardList = () => {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  
 }
 
 .status-option {
@@ -206,14 +255,14 @@ const goToCardList = () => {
   background: #800000;
   color: #fff;
 }
-.birthdate-section{
+
+.birthdate-section {
   width: 100%;
   padding: 10px;
   margin: 8px 0;
   border: 1px solid #ccc;
   border-radius: 8px;
-  background-color: white; /* ✅ 배경색 흰색으로 고정 */
-  color: #000; /* 텍스트 색은 검정색 */
+  background-color: white;
+  color: #000;
 }
-
 </style>

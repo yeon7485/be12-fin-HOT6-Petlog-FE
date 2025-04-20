@@ -53,12 +53,14 @@ const planData = reactive({
 });
 
 const recordData = reactive({
+  categoryIdx: 0,
   title: "",
   date: "",
   memo: "",
-  image: null,
-  previewUrl: "",
+  imageUrl: "",
 });
+
+const recordPreviewUrl = ref("");
 
 const closeModal = () => {
   selectedPet.value = pets.value[0];
@@ -95,20 +97,23 @@ const selectType = (type) => {
   if (type === "SCHEDULE") {
     Object.assign(planData, {
       title: "",
-      startTime: "",
-      endTime: "",
+      placeId: "",
       memo: "",
-      isRepeat: false,
+      categoryIdx: 0,
+      startAt: "",
+      endAt: "",
+      recurring: false,
       repeatCycle: "일",
       repeatCount: 1,
+      repeatEndAt: "",
     });
   } else if (type === "DAILY_RECORD") {
     Object.assign(recordData, {
+      categoryIdx: 0,
       title: "",
       date: "",
       memo: "",
-      image: null,
-      previewUrl: "",
+      imageUrl: "",
     });
   }
 };
@@ -117,6 +122,8 @@ const selectCate = (category) => {
   selectedCate.value = category;
   if (scheduleStore.type === "SCHEDULE") {
     planData.categoryIdx = selectedCate.value.idx;
+  } else if (scheduleStore.type === "DAILY_RECORD") {
+    recordData.categoryIdx = selectedCate.value.idx;
   }
   isCateDropdownOpen.value = false;
 };
@@ -128,24 +135,58 @@ const handleFileChange = (event) => {
 
     // 👉 선택적으로 미리보기 URL 만들기
     const previewUrl = URL.createObjectURL(file);
-    recordData.previewUrl = previewUrl;
+    recordPreviewUrl.value = previewUrl;
   }
 };
 
-const handleCreateSchedule = async () => {
-  if (planData.categoryIdx === 0) {
-    alert("카테고리를 선택해주세요.");
-  } else if (planData.title === "") {
-    alert("제목을 입력해주세요.");
-  } else if (planData.startAt === "") {
-    alert("시작 날짜와 시간을 선택해주세요.");
+const checkForm = (type) => {
+  if (type === "SCHEDULE") {
+    if (planData.categoryIdx === 0) {
+      alert("카테고리를 선택해주세요.");
+    } else if (planData.title === "") {
+      alert("제목을 입력해주세요.");
+    } else if (planData.startAt === "") {
+      alert("시작 날짜와 시간을 선택해주세요.");
+    } else {
+      return true;
+    }
+    return false;
   } else {
+    if (recordData.categoryIdx === 0) {
+      alert("카테고리를 선택해주세요.");
+    } else if (recordData.title === "") {
+      alert("제목을 입력해주세요.");
+    } else if (recordData.date === "") {
+      alert("날짜와 시간을 선택해주세요.");
+    } else {
+      return true;
+    }
+    return false;
+  }
+};
+
+// 일정/기록 생성
+const handleCreateSchedule = async () => {
+  if (checkForm(scheduleStore.type)) {
+    // 일정 생성
     if (scheduleStore.type === "SCHEDULE") {
       const result = await scheduleStore.createSchedule(selectedPet.value.idx, planData);
       console.log(result.isSuccess);
+
       if (result.isSuccess) {
         alert("일정이 등록되었습니다.");
         emit("schedule-created");
+        closeModal();
+      }
+    }
+    // 기록 생성
+    else if (scheduleStore.type === "DAILY_RECORD") {
+      const result = await scheduleStore.createRecord(selectedPet.value.idx, recordData);
+      console.log(result.isSuccess);
+
+      if (result.isSuccess) {
+        alert("기록이 등록되었습니다.");
+        //emit("record-created");
         closeModal();
       }
     }
@@ -345,8 +386,8 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
               <div v-if="selectedCate.idx === 6">
                 <label>사진</label>
                 <div>
-                  <div v-if="recordData.previewUrl">
-                    <img :src="recordData.previewUrl" alt="preview" class="preview_img" />
+                  <div v-if="recordPreviewUrl">
+                    <img :src="recordPreviewUrl" alt="preview" class="preview_img" />
                   </div>
                   <label class="custom_file_btn">
                     이미지 선택

@@ -95,7 +95,6 @@ export const useScheduleStore = defineStore("schedule", {
     async createSchedule(petIdx, planData) {
       try {
         const response = await axios.post(`/api/schedule/pet/${petIdx}`, planData);
-        console.log(response.data);
 
         return response.data;
       } catch (err) {
@@ -111,7 +110,18 @@ export const useScheduleStore = defineStore("schedule", {
         this.plans = response.data.result;
         return response.data;
       } catch (err) {
-        console.log("err");
+        console.log(err);
+      }
+    },
+
+    async createRecord(petIdx, recordData) {
+      try {
+        const response = await axios.post(`/api/daily-record/pet/${petIdx}`, recordData);
+
+        console.log("기록 데이터", response);
+        return response.data;
+      } catch (err) {
+        alert("기록 등록에 실패했습니다.");
         console.log(err);
       }
     },

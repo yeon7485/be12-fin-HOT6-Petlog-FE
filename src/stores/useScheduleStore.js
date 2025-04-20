@@ -125,5 +125,18 @@ export const useScheduleStore = defineStore("schedule", {
         console.log(err);
       }
     },
+
+    async getRecordsByDate(petIdx, year, month, day) {
+      try {
+        const response = await axios.get(
+          `/api/daily-record/pet/${petIdx}/record/${year}/${month}/${day}`
+        );
+
+        console.log(response);
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
   },
 });

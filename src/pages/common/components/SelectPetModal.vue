@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import { usePetStore } from "../../../stores/usePetStore";
 
 const props = defineProps({
   onClose: Function,
@@ -7,19 +8,31 @@ const props = defineProps({
   fromSchedule: Boolean,
 });
 
-const emit = defineEmits(["update:selectedPet"]);
+const petStore = usePetStore();
+const pets = ref([]);
 
-const pets = ref([
-  { imageUrl: "/src/assets/images/dog1.png", name: "봄" },
-  { imageUrl: "/src/assets/images/dog2.jpeg", name: "구름" },
-  { imageUrl: "/src/assets/images/cat1.jpg", name: "솜" },
-  { imageUrl: "/src/assets/images/cat2.jpg", name: "빙봉" },
-]);
+const fetchPets = async () => {
+  try {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (!user?.idx) {
+      alert("로그인이 필요합니다");
+      return;
+    }
+    await petStore.fetchPetsByUser(user.idx);
+    pets.value = petStore.petList;
+  } catch (e) {
+    console.error("반려동물 목록 불러오기 실패", e);
+  }
+};
 
 const selectPet = (pet) => {
   props.onSelect(pet);
   props.onClose();
 };
+
+onMounted(() => {
+  fetchPets();
+});
 </script>
 
 <template>
@@ -38,9 +51,9 @@ const selectPet = (pet) => {
               <span>전체</span>
             </div>
           </li>
-          <li v-for="pet in pets" class="pet_box" :key="pet.name" @click="selectPet(pet)">
+          <li v-for="pet in pets" class="pet_box" :key="pet.idx" @click="selectPet(pet)">
             <div class="profile_box">
-              <img :src="pet.imageUrl" alt="option.name" class="profile_img" />
+              <img :src="pet.profileImageUrl || '/src/assets/images/default.png'" alt="pet.name" class="profile_img" />
               <span>{{ pet.name }}</span>
             </div>
           </li>
@@ -83,7 +96,7 @@ const selectPet = (pet) => {
   padding: 0 5px;
 }
 
-.modal_title > h2 {
+.modal_title>h2 {
   font-size: 23px;
   font-family: Cafe24Ssurround;
 }
@@ -139,7 +152,7 @@ const selectPet = (pet) => {
   margin-right: 10px;
 }
 
-.profile_box > span {
+.profile_box>span {
   font-size: 18px;
   font-family: Cafe24Ssurround;
   line-height: normal;

@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBoardStore } from '/src/stores/useBoardStore'
 import { useUserStore } from '/src/stores/useUserStore'
+import { useCategoryStore } from '/src/stores/useCategoryStore'
 import AnimalCardModal from '/src/pages/board/components/AnimalCardModal.vue'
 import axios from 'axios'
 
@@ -10,6 +11,7 @@ const route = useRoute()
 const router = useRouter()
 const boardStore = useBoardStore()
 const userStore = useUserStore()
+const categoryStore = useCategoryStore()
 
 const postIdx = route.params.idx ? Number(route.params.idx) : null
 const boardTypeFromRoute = route.params.boardType || ''
@@ -20,7 +22,7 @@ const boardTypes = [
   { value: 'information', label: '정보 공유' }
 ]
 
-const categories = ['강아지', '고양이', '물고기', '햄스터', '도마뱀']
+const categories = computed(() => categoryStore.boardCategories.map(c => c.name))
 
 const form = ref({
   boardType: boardTypeFromRoute || '',
@@ -41,6 +43,8 @@ onMounted(async () => {
   }
 
   form.value.writer = userStore.nickname
+
+  await categoryStore.fetchCategories('BOARD')
 
   if (isEdit) {
     await boardStore.fetchPosts(boardTypeFromRoute)
@@ -84,21 +88,21 @@ const handleSubmit = async () => {
   try {
     const formData = new FormData()
 
-    // 이미지 파일들 추가
     if (form.value.images.length > 0) {
       form.value.images.forEach(file => {
         formData.append('images', file)
       })
     }
 
-    // 나머지 게시글 정보 → JSON 문자열로 감싸서 RequestPart("post")로 전송
+    const selectedCategory = categoryStore.boardCategories.find(cat => cat.name === form.value.category)
+
     const postPayload = {
       writer: form.value.writer,
       title: form.value.title,
       content: form.value.content,
-      category: form.value.category,
+      categoryIdx: selectedCategory?.idx,
       boardType: form.value.boardType,
-      image: form.value.images[0]?.name || ''  // 대표 이미지가 있다면 파일명만
+      image: form.value.images[0]?.name || ''
     }
     formData.append('post', new Blob([JSON.stringify(postPayload)], { type: 'application/json' }))
 
@@ -120,7 +124,6 @@ const handleSubmit = async () => {
     alert('작업에 실패하였습니다')
   }
 }
-
 
 const isModalOpen = ref(false)
 const selectPetCard = () => {

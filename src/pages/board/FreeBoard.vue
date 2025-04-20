@@ -1,26 +1,38 @@
 <script setup>
-import { ref, onMounted } from "vue"
-import { useRouter } from "vue-router"
-import Card from "/src/pages/board/components/PostCard.vue"
-import { useBoardStore } from "/src/stores/useBoardStore.js"
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useBoardStore } from '/src/stores/useBoardStore.js'
+import { useCategoryStore } from '/src/stores/useCategoryStore.js'
+import Card from '/src/pages/board/components/PostCard.vue'
 
 const router = useRouter()
 const boardStore = useBoardStore()
+const categoryStore = useCategoryStore()
 
 const searchQuery = ref("")
 const selectedCategory = ref("")
 
-const categories = ['강아지', '고양이', '햄스터', '도마뱀', '물고기']
+// ✅ 게시판 카테고리 목록 불러오기
+onMounted(async () => {
+  await categoryStore.fetchCategories('BOARD')
+  boardStore.fetchPosts("free")
+})
+
+const categories = computed(() => categoryStore.boardCategories.map(c => ({
+  label: c.name,
+  value: c.idx
+})))
 
 const triggerSearch = async () => {
-  if (!selectedCategory.value) {
+  const selected = categoryStore.boardCategories.find(c => c.idx === selectedCategory.value)
+  if (!selected) {
     alert("카테고리를 선택해주세요.")
     return
   }
 
   await boardStore.searchPosts({
     boardName: 'free',
-    category: selectedCategory.value,
+    category: selected.name, 
     keyword: searchQuery.value || ''
   })
 }
@@ -28,11 +40,8 @@ const triggerSearch = async () => {
 const goToWritePage = () => {
   router.push("/board/free/create")
 }
-
-onMounted(() => {
-  boardStore.fetchPosts("free")
-})
 </script>
+
 
 <template>
   <div>
@@ -41,21 +50,14 @@ onMounted(() => {
       <div class="search_box">
         <select v-model="selectedCategory" class="category_dropdown" @change="triggerSearch">
           <option value="">카테고리를 선택하세요.</option>
-          <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+          <option v-for="cat in categories" :key="cat.value" :value="cat.value">
+            {{ cat.label }}
+          </option>
         </select>
 
         <div class="search_input_wrap">
-          <input
-            v-model="searchQuery"
-            placeholder="제목, 작성자 검색 ..."
-            @keyup.enter="triggerSearch"
-          />
-          <img
-            class="search_icon_img"
-            src="/src/assets/icons/search.png"
-            alt="검색 아이콘"
-            @click="triggerSearch"
-          />
+          <input v-model="searchQuery" placeholder="제목, 작성자 검색 ..." @keyup.enter="triggerSearch" />
+          <img class="search_icon_img" src="/src/assets/icons/search.png" alt="검색 아이콘" @click="triggerSearch" />
         </div>
       </div>
     </div>
@@ -71,13 +73,8 @@ onMounted(() => {
         </tr>
       </thead>
       <tbody>
-        <Card
-          v-for="(post, index) in boardStore.filteredPosts"
-          :key="post.idx"
-          :post="post"
-          :index="index + 1"
-          :boardType="'free'"
-        />
+        <Card v-for="(post, index) in boardStore.filteredPosts" :key="post.idx" :post="post" :index="index + 1"
+          :boardType="'free'" />
       </tbody>
     </table>
 
@@ -230,5 +227,4 @@ onMounted(() => {
 .write_btn:hover {
   background: #5D4037;
 }
-
 </style>

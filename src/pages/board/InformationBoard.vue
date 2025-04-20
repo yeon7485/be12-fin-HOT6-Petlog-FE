@@ -1,16 +1,24 @@
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import Card from "/src/pages/board/components/PostCard.vue"
 import { useBoardStore } from "/src/stores/useBoardStore.js"
+import { useCategoryStore } from "/src/stores/useCategoryStore.js"
 
 const router = useRouter()
 const boardStore = useBoardStore()
+const categoryStore = useCategoryStore()
 
 const searchQuery = ref("")
 const selectedCategory = ref("")
 
-const categories = ['강아지', '고양이', '햄스터', '도마뱀', '물고기']
+// 게시판 카테고리 목록 불러오기
+onMounted(async () => {
+  await categoryStore.fetchCategories('BOARD')
+  await boardStore.fetchPosts("information")
+})
+
+const categories = computed(() => categoryStore.boardCategories)
 
 const triggerSearch = async () => {
   if (!selectedCategory.value) {
@@ -18,9 +26,11 @@ const triggerSearch = async () => {
     return
   }
 
+  const category = categoryStore.boardCategories.find(c => c.idx === selectedCategory.value)
+
   await boardStore.searchPosts({
     boardName: 'information',
-    category: selectedCategory.value,
+    category: category.name,
     keyword: searchQuery.value || ''
   })
 }
@@ -28,10 +38,6 @@ const triggerSearch = async () => {
 const goToWritePage = () => {
   router.push("/board/information/create")
 }
-
-onMounted(() => {
-  boardStore.fetchPosts("information")
-})
 </script>
 
 <template>
@@ -41,7 +47,9 @@ onMounted(() => {
       <div class="search_box">
         <select v-model="selectedCategory" class="category_dropdown" @change="triggerSearch">
           <option value="">카테고리를 선택하세요.</option>
-          <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+          <option v-for="cat in categories" :key="cat.idx" :value="cat.idx">
+            {{ cat.name }}
+          </option>
         </select>
 
         <div class="search_input_wrap">
@@ -110,7 +118,6 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-/* ✅ 드롭다운 개선 */
 .category_dropdown {
   padding: 12px 18px;
   font-size: 14px;
@@ -119,9 +126,6 @@ onMounted(() => {
   background-color: #fdf6f1;
   color: #4E342E;
   appearance: none;
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 14px;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(93, 64, 55, 0.1);
   transition: all 0.2s ease;
@@ -137,7 +141,6 @@ onMounted(() => {
   box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.3);
 }
 
-/* ✅ 검색창 개선 */
 .search_input_wrap {
   position: relative;
   width: 320px;
@@ -229,5 +232,4 @@ onMounted(() => {
 .write_btn:hover {
   background: #5D4037;
 }
-
 </style>

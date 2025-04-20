@@ -38,16 +38,18 @@ const confirmAndSelect = async () => {
 const goToQuestionDetail = () => {
   router.push(`/board/qna/${props.questionIdx}`)
 }
-
 </script>
 
 <template>
   <div class="answer_card" :class="{ selected: answer.selected }" @click="goToQuestionDetail">
     <div class="user_header">
       <div class="left_info">
-        <img class="profile_img" :src="answer.profileImageUrl || '/src/assets/images/default.png'" alt="유저 이미지" />
-
-        <span class="nickname">{{ answer.writer }}</span>
+        <img
+          class="profile_img"
+          :src="answer.userType === 'AI' ? '/src/assets/icons/chatGPS.png' : (answer.profileImageUrl || '/src/assets/images/default.png')"
+          alt="유저 이미지"
+        />
+        <span class="nickname">{{ answer.userType === 'AI' ? 'ChatGPS' : answer.writer }}</span>
         <span class="divider">ㅣ</span>
         <span class="date">{{ answer.createdAt }}</span>
       </div>
@@ -59,51 +61,57 @@ const goToQuestionDetail = () => {
             <span class="selected_text">질문자가 채택한 답변</span>
           </div>
         </template>
+
         <template
-  v-if="
-    answer.writer === userStore.nickname &&
-    !answer.selected &&
-    !answerStore.answers.some(a => a.selected && a.writer !== userStore.nickname)
-  "
->
-  <img
-    src="/src/assets/icons/write.png"
-    class="icon_btn"
-    alt="수정 아이콘"
-    @click.stop="emit('modify', answer.idx)"
-  />
-  <img
-    src="/src/assets/icons/x-button.png"
-    class="icon_btn"
-    alt="삭제 아이콘"
-    @click.stop="emit('delete', answer.idx)"
-  />
-</template>
+          v-if="
+            answer.userType !== 'AI' &&
+            answer.writer === userStore.nickname &&
+            !answer.selected &&
+            !answerStore.answers.some(a => a.selected && a.writer !== userStore.nickname)
+          "
+        >
+          <img
+            src="/src/assets/icons/write.png"
+            class="icon_btn"
+            alt="수정 아이콘"
+            @click.stop="emit('modify', answer.idx)"
+          />
+          <img
+            src="/src/assets/icons/x-button.png"
+            class="icon_btn"
+            alt="삭제 아이콘"
+            @click.stop="emit('delete', answer.idx)"
+          />
+        </template>
       </div>
     </div>
 
     <div class="comment_body">
-  <div v-if="answer.imageUrls && answer.imageUrls.length">
-    <img
-      v-for="(url, index) in answer.imageUrls"
-      :key="index"
-      class="answer_img"
-      :src="url"
-      alt="답변 이미지"
-    />
-  </div>
-  {{ answer.content }}
-</div>
+      <div v-if="answer.imageUrls && answer.imageUrls.length">
+        <img
+          v-for="(url, index) in answer.imageUrls"
+          :key="index"
+          class="answer_img"
+          :src="url"
+          alt="답변 이미지"
+        />
+      </div>
+      {{ answer.content }}
+    </div>
 
     <div
-      v-if="!answer.selected && !answerStore.answers.some(a => a.selected) && userStore.nickname !== answer.writer"
+      v-if="
+        answer.userType !== 'AI' &&
+        !answer.selected &&
+        !answerStore.answers.some(a => a.selected) &&
+        userStore.nickname !== answer.writer
+      "
       class="select_btn_area"
     >
       <button class="select_btn" @click.stop="confirmAndSelect">채택하기</button>
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .answer_card {

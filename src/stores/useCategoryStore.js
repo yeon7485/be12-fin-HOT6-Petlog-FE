@@ -77,7 +77,7 @@ export const useCategoryStore = defineStore("category", {
     },
 
     // ✅ 카테고리 삭제
-    async deleteCategory(type, { idx }) {
+    async deleteCategory(type, { idx }) { 
       console.log(`🗑️ 카테고리 삭제 요청: ${idx}`);
       await axios.delete(`/api/category/${idx}`);
       await this.fetchCategories(type);

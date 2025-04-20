@@ -4,7 +4,8 @@ import axios from 'axios'
 export const usePetStore = defineStore('pet', {
     state: () => ({
       petDetail: null,
-      userAnswers: [], // ✅ 답변 목록 상태도 같이 관리
+      userAnswers: [],
+      petList: [] 
     }),
   
     actions: {
@@ -85,7 +86,23 @@ export const usePetStore = defineStore('pet', {
           console.error('반려동물 삭제 실패:', error);
           throw error;
         }
+      },
+      async fetchPetsByUser(userId) {
+        try {
+          const response = await axios.get(`/api/pet/user/${userId}`);
+          this.petList = response.data;
+        } catch (error) {
+          console.error("사용자 반려동물 목록 불러오기 실패:", error);
+          throw error;
+        }
+      },
+      async fetchPetList(userId) {
+        try {
+          const response = await axios.get(`/api/pet/user/${userId}`);
+          this.petList = response.data;
+        } catch (error) {
+          console.error("반려동물 목록 불러오기 실패:", error);
+        }
       }
-      
     }
   })

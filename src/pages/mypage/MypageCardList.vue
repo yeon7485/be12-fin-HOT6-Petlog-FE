@@ -30,7 +30,7 @@ onMounted(async () => {
   }
 
   try {
-    await fetchPets(userId); // ✅ store method 사용
+    await fetchPets(userId); 
   } catch (e) {
     alert("반려동물 목록을 불러오는 데 실패했습니다.");
   } finally {

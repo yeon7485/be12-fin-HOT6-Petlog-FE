@@ -1,30 +1,60 @@
 <script setup>
-import { reactive, ref, watch } from "vue";
+import { reactive, ref, watch, computed, onMounted } from "vue";
+import axios from "axios";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
+import { useCategoryStore } from '../../../stores/useCategoryStore';
 
 const props = defineProps({
   onClose: Function,
+  selectedPet: Object // 👉 추가: 부모에서 넘긴 selectedPet 받기
 });
-
 const emit = defineEmits(["schedule-created"]);
 
 const scheduleStore = useScheduleStore();
+const categoryStore = useCategoryStore();
+
+const pets = ref([]);
+const selectedPet = ref(null);
+const selectedCate = ref({});
+
+// ✅ 카테고리 연동
+const planCategories = computed(() => categoryStore.scheduleCategories);
+
+onMounted(async () => {
+  // 사용자 idx 불러오기
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  if (!user?.idx) {
+    alert("로그인이 필요합니다");
+    return;
+  }
+
+  // 내 반려동물 불러오기
+  try {
+    const response = await axios.get(`/api/pet/user/${user.idx}`);
+    pets.value = response.data;
+    if (pets.value.length > 0) {
+      selectedPet.value = props.selectedPet ?? pets.value[0];
+    }
+  } catch (e) {
+    console.error("반려동물 목록 불러오기 실패", e);
+  }
+
+  await categoryStore.fetchCategories("SCHEDULE");
+});
+
+// ✅ props.selectedPet이 나중에 들어오는 경우 반영
+watch(
+  () => props.selectedPet,
+  (newVal) => {
+    if (newVal && Object.keys(newVal).length > 0) {
+      selectedPet.value = newVal;
+    }
+  },
+  { immediate: true }
+);
 
 const isDropdownOpen = ref(false);
 const isCateDropdownOpen = ref(false);
-const pets = ref([
-  { idx: 1, imageUrl: "/src/assets/images/dog1.png", name: "봄" },
-  { idx: 2, imageUrl: "/src/assets/images/dog2.jpeg", name: "구름" },
-  { idx: 3, imageUrl: "/src/assets/images/cat1.jpg", name: "솜" },
-  { idx: 4, imageUrl: "/src/assets/images/cat2.jpg", name: "빙봉" },
-]);
-
-const planCategories = ref([
-  { idx: 1, color: "#00C9CD", name: "병원" },
-  { idx: 2, color: "#E6B0BD", name: "미용실" },
-  { idx: 3, color: "#65924D", name: "산책" },
-  { idx: 4, color: "#BDBDBD", name: "기타" },
-]);
 
 const recordCategories = ref([
   { idx: 1, color: "#00C9CD", name: "체중" },
@@ -35,9 +65,6 @@ const recordCategories = ref([
   { idx: 6, color: "#df32f3", name: "오늘의 사진" },
   { idx: 7, color: "#BDBDBD", name: "기타" },
 ]);
-
-const selectedPet = ref(pets.value[0]);
-const selectedCate = ref({});
 
 const planData = reactive({
   title: "",
@@ -67,7 +94,6 @@ const closeModal = () => {
   props.onClose();
 };
 
-// 드롭다운 토글 함수
 const togglePet = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
 };
@@ -80,25 +106,22 @@ const handleModalContentClick = () => {
   if (isDropdownOpen.value) isDropdownOpen.value = false;
 };
 
-// 옵션 선택 함수
 const selectPet = (option) => {
-  selectedPet.value = option; // 선택된 옵션 업데이트
-  isDropdownOpen.value = false; // 드롭다운 닫기
+  selectedPet.value = option;
+  isDropdownOpen.value = false;
 };
 
-// 타입 바꾸면서 데이터 초기화
 const selectType = (type) => {
   scheduleStore.type = type;
   isCateDropdownOpen.value = false;
   selectedCate.value = {};
-
   if (type === "SCHEDULE") {
     Object.assign(planData, {
       title: "",
-      startTime: "",
-      endTime: "",
+      startAt: "",
+      endAt: "",
       memo: "",
-      isRepeat: false,
+      recurring: false,
       repeatCycle: "일",
       repeatCount: 1,
     });
@@ -116,7 +139,7 @@ const selectType = (type) => {
 const selectCate = (category) => {
   selectedCate.value = category;
   if (scheduleStore.type === "SCHEDULE") {
-    planData.categoryIdx = selectedCate.value.idx;
+    planData.categoryIdx = category.idx;
   }
   isCateDropdownOpen.value = false;
 };
@@ -125,37 +148,29 @@ const handleFileChange = (event) => {
   const file = event.target.files[0];
   if (file) {
     recordData.image = file;
-
-    // 👉 선택적으로 미리보기 URL 만들기
-    const previewUrl = URL.createObjectURL(file);
-    recordData.previewUrl = previewUrl;
+    recordData.previewUrl = URL.createObjectURL(file);
   }
 };
 
 const handleCreateSchedule = async () => {
-  if (planData.categoryIdx === 0) {
-    alert("카테고리를 선택해주세요.");
-  } else if (planData.title === "") {
-    alert("제목을 입력해주세요.");
-  } else if (planData.startAt === "") {
-    alert("시작 날짜와 시간을 선택해주세요.");
-  } else {
-    if (scheduleStore.type === "SCHEDULE") {
-      const result = await scheduleStore.createSchedule(selectedPet.value.idx, planData);
-      console.log(result.isSuccess);
-      if (result.isSuccess) {
-        alert("일정이 등록되었습니다.");
-        emit("schedule-created");
-        closeModal();
-      }
+  if (!selectedPet.value) return alert("반려동물을 선택해주세요.");
+  if (planData.categoryIdx === 0) return alert("카테고리를 선택해주세요.");
+  if (planData.title === "") return alert("제목을 입력해주세요.");
+  if (planData.startAt === "") return alert("시작 시간을 선택해주세요.");
+
+  if (scheduleStore.type === "SCHEDULE") {
+    const result = await scheduleStore.createSchedule(selectedPet.value.idx, planData);
+    if (result.isSuccess) {
+      alert("일정이 등록되었습니다.");
+      emit("schedule-created");
+      closeModal();
     }
   }
 };
 
-// 종료 시간이 시작 시간보다 빠를 수 없도록 감시
 watch([planData.startAt, planData.endAt], ([start, end]) => {
   if (start && end && new Date(end) < new Date(start)) {
-    planData.endAt = start; // 종료 시간을 시작 시간에 맞춤
+    planData.endAt = start;
   }
 });
 </script>
@@ -177,8 +192,9 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
             <!-- 드롭다운 버튼 (선택된 옵션 표시) -->
             <div class="pet_dropdown_btn" @click.stop="togglePet">
               <div class="profile_box">
-                <img :src="selectedPet.imageUrl" alt="Profile" class="profile_img" />
-                <span>{{ selectedPet.name }}</span>
+                <img :src="selectedPet?.profileImageUrl || '/src/assets/images/default.png'" alt="Profile"
+                  class="profile_img" />
+                <span>{{ selectedPet?.name || '이름 없음' }}</span>
               </div>
               <img src="/src/assets/icons/arrow_down.png" alt="Arrow" class="arrow_icon" />
             </div>
@@ -188,7 +204,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
               <ul>
                 <li v-for="option in pets" :key="option.name" @click="selectPet(option)">
                   <div class="profile_box">
-                    <img :src="option.imageUrl" alt="option.name" class="profile_img" />
+                    <img :src="option.profileImageUrl" alt="option.name" class="profile_img" />
                     <span>{{ option.name }}</span>
                   </div>
                 </li>
@@ -199,18 +215,12 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
           <!-- 일정/기록, 카테고리 선택 -->
           <div class="content_header">
             <div class="type_box">
-              <div
-                class="type_btn"
-                :class="{ active: scheduleStore.type === 'SCHEDULE' }"
-                @click="selectType('SCHEDULE')"
-              >
+              <div class="type_btn" :class="{ active: scheduleStore.type === 'SCHEDULE' }"
+                @click="selectType('SCHEDULE')">
                 일정
               </div>
-              <div
-                class="type_btn"
-                :class="{ active: scheduleStore.type === 'DAILY_RECORD' }"
-                @click="selectType('DAILY_RECORD')"
-              >
+              <div class="type_btn" :class="{ active: scheduleStore.type === 'DAILY_RECORD' }"
+                @click="selectType('DAILY_RECORD')">
                 기록
               </div>
             </div>
@@ -230,13 +240,9 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
               <!-- 카테고리 드롭다운 메뉴 (옵션들) -->
               <div v-if="isCateDropdownOpen" class="cate_dropdown_menu" @click.stop>
                 <ul>
-                  <li
-                    v-for="option in scheduleStore.type === 'SCHEDULE'
-                      ? planCategories
-                      : recordCategories"
-                    :key="option.name"
-                    @click="selectCate(option)"
-                  >
+                  <li v-for="option in scheduleStore.type === 'SCHEDULE'
+                    ? planCategories
+                    : recordCategories" :key="option.idx" @click="selectCate(option)">
                     <div class="cate_item">
                       <div class="color_box" :style="{ backgroundColor: option.color }"></div>
                       <span>{{ option.name }}</span>
@@ -250,12 +256,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
           <div class="input_box">
             <template v-if="scheduleStore.type === 'SCHEDULE'">
               <!-- 제목 입력 -->
-              <input
-                v-model="planData.title"
-                type="text"
-                placeholder="제목을 입력해주세요."
-                class="input_title"
-              />
+              <input v-model="planData.title" type="text" placeholder="제목을 입력해주세요." class="input_title" />
 
               <!-- 시간 입력 -->
               <div class="time_box">
@@ -265,12 +266,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
                 </div>
                 <div>
                   <label>종료 시간</label>
-                  <input
-                    v-model="planData.endAt"
-                    :min="planData.startAt"
-                    type="datetime-local"
-                    class="input_time"
-                  />
+                  <input v-model="planData.endAt" :min="planData.startAt" type="datetime-local" class="input_time" />
                 </div>
               </div>
 
@@ -283,11 +279,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
               <!-- 메모 입력 -->
               <div>
                 <label>메모</label>
-                <textarea
-                  v-model="planData.memo"
-                  placeholder="메모를 입력해주세요."
-                  class="textarea_memo"
-                />
+                <textarea v-model="planData.memo" placeholder="메모를 입력해주세요." class="textarea_memo" />
               </div>
 
               <!-- 반복 설정 -->
@@ -301,24 +293,13 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
                     <input v-model="planData.repeatEndAt" type="date" class="input_time" />
                   </div>
 
-                  <v-radio-group
-                    hide-details
-                    inline
-                    v-model="planData.repeatCycle"
-                    class="radio_btn"
-                  >
+                  <v-radio-group hide-details inline v-model="planData.repeatCycle" class="radio_btn">
                     <v-radio label="일" value="일" color="#757575" class="radio_item"></v-radio>
                     <v-radio label="주" value="주" color="#757575" class="radio_item"></v-radio>
                     <v-radio label="월" value="월" color="#757575" class="radio_item"></v-radio>
                   </v-radio-group>
 
-                  <input
-                    type="number"
-                    v-model="planData.repeatCount"
-                    class="input_repeat_num"
-                    min="0"
-                    max="31"
-                  />
+                  <input type="number" v-model="planData.repeatCount" class="input_repeat_num" min="0" max="31" />
                   <span>{{ planData.repeatCycle }}</span>
                 </div>
               </div>
@@ -327,13 +308,8 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
             <!-- 기록 입력박스 -->
             <template v-else>
               <!-- 제목 입력 -->
-              <input
-                v-model="recordData.title"
-                type="text"
-                placeholder="제목을 입력해주세요."
-                maxlength="30"
-                class="input_title"
-              />
+              <input v-model="recordData.title" type="text" placeholder="제목을 입력해주세요." maxlength="30"
+                class="input_title" />
 
               <!-- 시간 입력 -->
               <div class="time_box">
@@ -350,12 +326,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
                   </div>
                   <label class="custom_file_btn">
                     이미지 선택
-                    <input
-                      type="file"
-                      accept="image/*"
-                      @change="handleFileChange"
-                      class="hidden_file_input"
-                    />
+                    <input type="file" accept="image/*" @change="handleFileChange" class="hidden_file_input" />
                   </label>
                 </div>
               </div>
@@ -363,11 +334,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
               <!-- 메모 입력 -->
               <div>
                 <label>메모</label>
-                <textarea
-                  v-model="recordData.memo"
-                  placeholder="메모를 입력해주세요."
-                  class="textarea_memo"
-                />
+                <textarea v-model="recordData.memo" placeholder="메모를 입력해주세요." class="textarea_memo" />
               </div>
             </template>
           </div>
@@ -415,7 +382,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
   padding: 0 5px;
 }
 
-.modal_title > h2 {
+.modal_title>h2 {
   font-size: 23px;
   font-family: Cafe24Ssurround;
 }
@@ -469,7 +436,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
   margin-right: 10px;
 }
 
-.profile_box > span {
+.profile_box>span {
   font-size: 18px;
   font-family: Cafe24Ssurround;
   line-height: normal;
@@ -552,7 +519,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
   box-sizing: border-box;
 }
 
-.cate_dropdown_btn > span {
+.cate_dropdown_btn>span {
   flex-shrink: 0;
 }
 
@@ -598,6 +565,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
   cursor: pointer;
   border-radius: 4px;
 }
+
 .cate_dropdown_menu li:hover {
   background-color: var(--gray200);
 }
@@ -705,6 +673,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
   width: 300px;
   margin-bottom: 10px;
 }
+
 .custom_file_btn {
   padding: 10px 16px;
   border-radius: 4px;
@@ -732,7 +701,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
   padding: 15px 0;
 }
 
-.btn_box > button {
+.btn_box>button {
   border-radius: 8px;
   padding: 10px 15px;
   text-align: center;

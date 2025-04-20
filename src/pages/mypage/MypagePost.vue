@@ -62,35 +62,41 @@ onMounted(async () => {
 <template>
   <div class="mypage-posts">
     <h2 class="title">내가 쓴 글</h2>
-    <table class="post-table">
-      <thead>
-        <tr>
-          <th>게시판</th>
-          <th>제목</th>
-          <th>작성자</th>
-          <th>작성일</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="post in pagedPosts" :key="post.idx">
-          <td>{{ post.boardType }}</td>
-          <td>
-            <a href="#" class="post-title" @click.prevent="goToPostDetail(post)">
-              {{ post.title.length > 25 ? post.title.substring(0, 25) + "..." : post.title }}
-            </a>
-          </td>
-          <td>{{ post.writer }}</td>
-          <td>{{ formatDate(post.createdAt) }}</td>
-        </tr>
-      </tbody>
-    </table>
 
-    <!-- 페이지네이션 -->
-    <div class="pagination">
-      <button @click="prevPage" :disabled="currentPage === 1">‹</button>
-      <span>{{ currentPage }}</span>
-      <button @click="nextPage" :disabled="currentPage >= totalPages">›</button>
+    <div v-if="userPosts.length === 0" class="empty-message">
+      내가 작성한 글이 없습니다.
     </div>
+
+    <template v-else>
+      <table class="post-table">
+        <thead>
+          <tr>
+            <th>게시판</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="post in pagedPosts" :key="post.idx">
+            <td>{{ post.boardType }}</td>
+            <td>
+              <a href="#" class="post-title" @click.prevent="goToPostDetail(post)">
+                {{ post.title.length > 25 ? post.title.substring(0, 25) + "..." : post.title }}
+              </a>
+            </td>
+            <td>{{ post.writer }}</td>
+            <td>{{ formatDate(post.createdAt) }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <button @click="prevPage" :disabled="currentPage === 1">‹</button>
+        <span>{{ currentPage }}</span>
+        <button @click="nextPage" :disabled="currentPage >= totalPages">›</button>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -152,5 +158,12 @@ onMounted(async () => {
 .pagination button:disabled {
   color: #ccc;
   cursor: default;
+}
+.empty-message {
+  font-size: 18px;
+  color: #999;
+  margin: 40px auto;
+  text-align: center;
+  width: 100%;
 }
 </style>

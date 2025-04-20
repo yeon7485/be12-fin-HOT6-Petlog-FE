@@ -27,8 +27,9 @@ onMounted(fetchAnswers);
 <template>
   <div class="container">
     <h2 class="title">내가 작성한 답변</h2>
-    <div v-if="answers.length === 0">작성한 답변이 없습니다.</div>
+    <div v-if="answers.length === 0" class="empty-message">작성한 답변이 없습니다.</div>
     <AnswerCard
+      v-else
       v-for="answer in answers"
       :key="answer.idx"
       :answer="answer"
@@ -36,6 +37,7 @@ onMounted(fetchAnswers);
     />
   </div>
 </template>
+
 
 <style scoped>
 .container {
@@ -47,5 +49,12 @@ onMounted(fetchAnswers);
   font-size: 32px;
   font-weight: bold;
   margin-bottom: 20px;
+}
+.empty-message {
+  font-size: 18px;
+  color: #999;
+  margin: 30px auto;
+  text-align: center;
+  width: 100%;
 }
 </style>

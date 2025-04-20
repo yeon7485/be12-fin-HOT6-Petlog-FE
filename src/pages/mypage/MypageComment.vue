@@ -34,11 +34,12 @@ onMounted(fetchComments)
   <div class="mypage-comments">
     <h2 class="title">내가 쓴 댓글</h2>
 
-    <div v-if="userComments.length === 0">
+    <div v-if="userComments.length === 0" class="empty-message">
       작성한 댓글이 없습니다.
     </div>
 
     <CommentCard
+      v-else
       v-for="comment in userComments"
       :key="comment.idx"
       :comment="comment"
@@ -58,5 +59,12 @@ onMounted(fetchComments)
   font-size: 32px;
   font-weight: bold;
   margin-bottom: 24px;
+}
+.empty-message {
+  font-size: 18px;
+  color: #999;
+  margin: 30px auto;
+  text-align: center;
+  width: 100%;
 }
 </style>

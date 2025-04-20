@@ -32,7 +32,17 @@ onMounted(fetchQuestions);
 <template>
   <div class="container">
     <h2 class="title">나의 질문</h2>
-    <QuestionCard v-for="q in userQuestions" :key="q.idx" :question="q" />
+
+    <div v-if="userQuestions.length === 0" class="empty-message">
+      등록된 질문이 없습니다.
+    </div>
+
+    <QuestionCard
+      v-else
+      v-for="q in userQuestions"
+      :key="q.idx"
+      :question="q"
+    />
   </div>
 </template>
 
@@ -133,5 +143,13 @@ onMounted(fetchQuestions);
   font-weight: bold;
   display: flex;
   align-items: center;
+}
+
+.empty-message {
+  font-size: 18px;
+  color: #999;
+  margin: 30px auto;
+  text-align: center;
+  width: 100%;
 }
 </style>

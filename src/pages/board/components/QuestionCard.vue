@@ -48,85 +48,72 @@ defineProps({ question: Object })
   border: 1px solid #e0e0e0;
   border-radius: 16px;
   background-color: #fff;
-  padding: 20px 30px;
+  padding: 24px 28px;
   margin-bottom: 20px;
   width: 100%;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  animation: fadeIn 0.6s ease-out;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.post_card:hover {
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.post_card:hover .post_title {
+  color: #6a0104;
+  transform: scale(1.01);
+}
+
+.post_card:hover .image_icon {
+  transform: scale(1.1);
 }
 
 .user_info {
   display: flex;
   align-items: center;
   font-size: 14px;
-  color: #777;
-  margin-bottom: 10px;
-  gap: 5px;
+  color: #666;
+  margin-bottom: 12px;
+  gap: 6px;
 }
 
 .divider {
-  margin: 0 2px;
   color: #aaa;
+  margin: 0 4px;
 }
 
 .avatar {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .post_body {
   position: relative;
 }
 
-.post_title {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 6px;
-  display: inline-block;
-  color: #000;
-  text-decoration: none;
-}
-
-.post_title:hover {
-  text-decoration: underline;
-}
-
-.post_content {
-  font-size: 17px;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.post_tags {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #999;
-}
-
-.tag {
-  margin-right: 8px;
-}
-
-.comment_icon {
-  width: 13px;
-  height: 13px;
-  vertical-align: middle;
-  margin-right: 2px;
-}
-
-.comment_count {
-  font-size: 12px;
-  color: #000000;
-  margin-top: 6px;
-}
-
 .status_badge {
   display: inline-block;
   font-size: 13px;
-  margin-right: 5px;
-  font-weight: 700;
-  padding: 4px 8px;
-  border-radius: 10px;
-  margin-bottom: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  margin-right: 8px;
 }
 
 .status_badge.resolved {
@@ -135,13 +122,66 @@ defineProps({ question: Object })
 }
 
 .status_badge.unresolved {
-  background-color: #f2f2f2;
-  color: #555;
+  background-color: #f6e3df;  
+  color: #914141;
 }
+
+.post_title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #111;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 10px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
 .image_icon {
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  vertical-align: middle;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.15));
+  transition: transform 0.3s ease;
+}
+
+.post_content {
+  font-size: 16px;
+  color: #444;
+  margin: 6px 0 12px;
+  line-height: 1.5;
+}
+
+.post_tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tag {
+  font-size: 13px;
+  color: #666;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 2px 8px;
+}
+
+.comment_count {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+}
+
+.comment_icon {
   width: 14px;
   height: 14px;
-  margin-left: 6px;
-  vertical-align: middle;
+  margin-right: 4px;
 }
 </style>
+
+
+

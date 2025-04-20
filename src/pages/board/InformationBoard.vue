@@ -110,6 +110,10 @@ const goToWritePage = () => {
   padding-bottom: 40px;
 }
 
+.board_header h1 {
+  animation: fadeIn 0.8s ease-in-out;
+}
+
 .search_box {
   display: flex;
   justify-content: flex-start;
@@ -124,7 +128,7 @@ const goToWritePage = () => {
   border-radius: 999px;
   border: 1px solid #a1887f;
   background-color: #fdf6f1;
-  color: #4E342E;
+  color: #4e342e;
   appearance: none;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(93, 64, 55, 0.1);
@@ -190,6 +194,7 @@ const goToWritePage = () => {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  animation: fadeSlideUp 0.6s ease-out;
 }
 
 .board_table th {
@@ -199,7 +204,7 @@ const goToWritePage = () => {
   border-bottom: 2px solid #a1887f;
   font-size: 15px;
   font-weight: 600;
-  color: #4E342E;
+  color: #4e342e;
 }
 
 .pagination {
@@ -215,12 +220,12 @@ const goToWritePage = () => {
   border: none;
   background: none;
   cursor: pointer;
-  color: #5D4037;
+  color: #5d4037;
 }
 
 .write_btn {
   float: right;
-  background: #6D4C41;
+  background: #6d4c41;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -230,6 +235,26 @@ const goToWritePage = () => {
 }
 
 .write_btn:hover {
-  background: #5D4037;
+  background: #5d4037;
+}
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 </style>

@@ -9,8 +9,8 @@ const router = useRouter()
 const boardStore = useBoardStore()
 const categoryStore = useCategoryStore()
 
-const searchQuery = ref("")
-const selectedCategory = ref("")
+const searchQuery = ref("");
+const selectedCategory = ref("");
 
 // ✅ 게시판 카테고리 목록 불러오기
 onMounted(async () => {
@@ -48,7 +48,11 @@ const goToWritePage = () => {
     <div class="board_header">
       <h1>자유 게시판</h1>
       <div class="search_box">
-        <select v-model="selectedCategory" class="category_dropdown" @change="triggerSearch">
+        <select
+          v-model="selectedCategory"
+          class="category_dropdown"
+          @change="triggerSearch"
+        >
           <option value="">카테고리를 선택하세요.</option>
           <option v-for="cat in categories" :key="cat.value" :value="cat.value">
             {{ cat.label }}
@@ -90,7 +94,6 @@ const goToWritePage = () => {
   </div>
 </template>
 
-
 <style scoped>
 .board_header {
   font-size: 20px;
@@ -98,6 +101,10 @@ const goToWritePage = () => {
   justify-content: space-between;
   align-items: center;
   padding-bottom: 40px;
+}
+
+.board_header h1 {
+  animation: fadeIn 0.8s ease-in-out;
 }
 
 .search_box {
@@ -108,14 +115,13 @@ const goToWritePage = () => {
   margin-bottom: 20px;
 }
 
-/* ✅ 드롭다운 개선 */
 .category_dropdown {
   padding: 12px 18px;
   font-size: 14px;
   border-radius: 999px;
   border: 1px solid #a1887f;
   background-color: #fdf6f1;
-  color: #4E342E;
+  color: #4e342e;
   appearance: none;
   background-repeat: no-repeat;
   background-position: right 12px center;
@@ -135,7 +141,6 @@ const goToWritePage = () => {
   box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.3);
 }
 
-/* ✅ 검색창 개선 */
 .search_input_wrap {
   position: relative;
   width: 320px;
@@ -185,6 +190,7 @@ const goToWritePage = () => {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  animation: fadeSlideUp 0.6s ease-out;
 }
 
 .board_table th {
@@ -194,7 +200,7 @@ const goToWritePage = () => {
   border-bottom: 2px solid #a1887f;
   font-size: 15px;
   font-weight: 600;
-  color: #4E342E;
+  color: #4e342e;
 }
 
 .pagination {
@@ -210,12 +216,12 @@ const goToWritePage = () => {
   border: none;
   background: none;
   cursor: pointer;
-  color: #5D4037;
+  color: #5d4037;
 }
 
 .write_btn {
   float: right;
-  background: #6D4C41;
+  background: #6d4c41;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -225,6 +231,26 @@ const goToWritePage = () => {
 }
 
 .write_btn:hover {
-  background: #5D4037;
+  background: #5d4037;
+}
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 </style>

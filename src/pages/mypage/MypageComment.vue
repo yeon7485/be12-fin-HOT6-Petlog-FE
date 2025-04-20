@@ -1,9 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { onMounted } from 'vue'
+import { useMypageCard } from '../../stores/useMypageCard'
+import { storeToRefs } from 'pinia'
 import CommentCard from '../board/components/CommentCard.vue'
 
-const comments = ref([])
+// store 사용
+const store = useMypageCard()
+const { userComments } = storeToRefs(store) // 반응형 연결
 
 const getSessionUserIdx = () => {
   const user = JSON.parse(sessionStorage.getItem('user'))
@@ -18,8 +21,7 @@ const fetchComments = async () => {
   }
 
   try {
-    const res = await axios.get(`/api/comment/list/user/${userId}`)
-    comments.value = res.data
+    await store.fetchCommentsByUser(userId) // ✅ store 메서드 사용
   } catch (e) {
     console.error('❌ 댓글 불러오기 실패', e)
   }
@@ -32,12 +34,12 @@ onMounted(fetchComments)
   <div class="mypage-comments">
     <h2 class="title">내가 쓴 댓글</h2>
 
-    <div v-if="comments.length === 0">
+    <div v-if="userComments.length === 0">
       작성한 댓글이 없습니다.
     </div>
 
     <CommentCard
-      v-for="comment in comments"
+      v-for="comment in userComments"
       :key="comment.idx"
       :comment="comment"
       :post-idx="comment.postIdx"

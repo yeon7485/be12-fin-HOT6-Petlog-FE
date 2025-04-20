@@ -1,9 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { onMounted } from 'vue';
+import { useMypageCard } from '../../stores/useMypageCard'
+import { storeToRefs } from 'pinia';
 import QuestionCard from '../board/components/QuestionCard.vue';
 
-const questions = ref([]);
+const store = useMypageCard();
+const { userQuestions } = storeToRefs(store); // ✅ store 상태 사용
 
 const getSessionUserIdx = () => {
   const user = JSON.parse(sessionStorage.getItem('user'));
@@ -11,12 +13,16 @@ const getSessionUserIdx = () => {
 };
 
 const fetchQuestions = async () => {
+  const userId = getSessionUserIdx();
+  if (!userId) {
+    alert('세션 정보가 없습니다.');
+    return;
+  }
+
   try {
-    const userId = getSessionUserIdx();
-    const res = await axios.get(`/api/question/list/user/${userId}`);
-    questions.value = res.data;
+    await store.fetchQuestionsByUser(userId); // ✅ store에서 API 호출
   } catch (err) {
-    console.error("❌ 질문 목록 불러오기 실패", err);
+    console.error('❌ 질문 목록 불러오기 실패', err);
   }
 };
 
@@ -26,7 +32,7 @@ onMounted(fetchQuestions);
 <template>
   <div class="container">
     <h2 class="title">나의 질문</h2>
-    <QuestionCard v-for="q in questions" :key="q.idx" :question="q" />
+    <QuestionCard v-for="q in userQuestions" :key="q.idx" :question="q" />
   </div>
 </template>
 
@@ -48,6 +54,7 @@ onMounted(fetchQuestions);
   font-weight: bold;
   margin-bottom: 20px;
   align-self: flex-start; 
+  margin-left: 25%;
 }
 
 

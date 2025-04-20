@@ -1,83 +1,74 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
-import MypageDelete from '../mypage/components/MypageDelete.vue'
-import MypagePassword from '../mypage/MypagePasswordModal.vue'
+import { useMypageCard } from '../../stores/useMypageCard';
+import { storeToRefs } from "pinia";
+import MypageDelete from "../mypage/components/MypageDelete.vue";
+import MypagePassword from "../mypage/MypagePasswordModal.vue";
 
-// 세션에서 user 객체를 가져오고, 그 안에서 idx 값을 추출하는 함수
-function getSessionUserIdx() {
-  const user = sessionStorage.getItem("user"); // 세션 스토리지에서 user 값을 가져옴
-  console.log("세션에 저장된 user:", user); // user 값 출력
-  if (user) {
-    const parsedUser = JSON.parse(user);
-    console.log("Parsed User:", parsedUser); // user 객체 출력
-    return parsedUser.idx; // user가 존재하면 그 안에서 idx 값을 반환
-  }
-  return null; // user가 없다면 null 반환
-}
+const store = useMypageCard();
+const { userProfile } = storeToRefs(store);
+
+// ⬇️ 추가: 템플릿에서 직접 사용하기 위해 computed로 매핑
+const nickname = computed(() => userProfile.value.nickname);
+const email = computed(() => userProfile.value.email);
+const profileImageUrl = computed(() => userProfile.value.profileImageUrl);
 
 const router = useRouter();
-const nickname = ref("");  // 닉네임을 빈 문자열로 초기화
-const email = ref("이메일 로딩 중");
-const profileImageUrl = ref("/src/assets/images/default.png");
-const petCards = ref([]);
-const isLoading = ref(true); // 로딩 상태 변수
-const editingNickname = ref(false); // 닉네임 편집 여부
-
-// 프로필 이미지 업로드 상태
+const isLoading = ref(true);
+const editingNickname = ref(false);
 const selectedImage = ref(null);
 
-// 모달 상태 관리
-const isPasswordModalOpen = ref(false); // 비밀번호 변경 모달 상태
-const isDeleteModalOpen = ref(false); // 회원 탈퇴 모달 상태
+const isPasswordModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
 
-// 세션 스토리지에서 닉네임을 가져오기
-onMounted(() => {
+function getSessionUserIdx() {
   const user = sessionStorage.getItem("user");
-  if (user) {
-    const parsedUser = JSON.parse(user);
-    nickname.value = parsedUser.nickname || "닉네임 로딩 중";  // 세션에서 닉네임을 가져옴
-  } else {
-    console.error("세션에 유저 정보가 없습니다.");
-    alert("세션에 유저 정보가 없습니다.");
-    router.push("/user/login");
-  }
+  if (user) return JSON.parse(user).idx;
+  return null;
+}
 
+onMounted(async () => {
   const userId = getSessionUserIdx();
   if (!userId) {
-    alert("세션에서 유저 정보가 없습니다.");
+    alert("세션 정보가 없습니다.");
     router.push("/user/login");
     return;
   }
 
-  // 백엔드 호출로 이메일, 프로필 이미지 등 추가 데이터 가져오기
-  axios.get(`/api/user/${userId}/profile`).then((response) => {
-    console.log("API 응답 데이터:", response.data); // API 응답 데이터 확인
-    const userData = response.data;
-    email.value = userData.email || "이메일 없음"; // DB에서 가져온 이메일을 사용
-    profileImageUrl.value = userData.profileImageUrl || "/src/assets/images/default.png"; // 프로필 이미지 URL
-    petCards.value = userData.petCards || []; // 펫 카드 목록
-  }).catch((error) => {
-    console.error("유저 정보 불러오기 실패:", error);
-    alert("로그인 정보가 없거나 세션이 만료되었습니다.");
+  try {
+    await store.fetchUserProfile(userId);
+  } catch (e) {
+    alert("프로필 정보를 불러오는 데 실패했습니다.");
     router.push("/user/login");
-  }).finally(() => {
-    isLoading.value = false; // 로딩 완료
-  });
+  } finally {
+    isLoading.value = false;
+  }
 });
 
-// 파일 변경 처리
 const onFileChange = (event) => {
-  selectedImage.value = event.target.files[0]; // 선택된 파일을 저장
+  selectedImage.value = event.target.files[0];
   const reader = new FileReader();
   reader.onload = (e) => {
-    profileImageUrl.value = e.target.result; // 파일 미리보기
+    userProfile.value.profileImageUrl = e.target.result;
   };
-  reader.readAsDataURL(selectedImage.value); // 파일 읽기
+  reader.readAsDataURL(selectedImage.value);
 };
 
-// 닉네임 편집 처리
+const saveProfileImage = async () => {
+  if (!selectedImage.value) {
+    alert("변경할 이미지가 없습니다.");
+    return;
+  }
+  const userId = getSessionUserIdx();
+  try {
+    await store.uploadProfileImage(userId, selectedImage.value);
+    alert("프로필 이미지가 저장되었습니다.");
+  } catch (e) {
+    alert("이미지 저장 실패");
+  }
+};
+
 const toggleEditNickname = () => {
   editingNickname.value = !editingNickname.value;
 };
@@ -86,52 +77,20 @@ const saveNickname = () => {
   editingNickname.value = false;
 };
 
-// 비밀번호 변경 모달 열기/닫기
 const togglePasswordModal = () => {
   isPasswordModalOpen.value = !isPasswordModalOpen.value;
 };
 
-// 회원 탈퇴 모달 열기
 const openDeleteModal = () => {
   isDeleteModalOpen.value = true;
 };
 
-// 회원 탈퇴 모달 닫기
 const closeDeleteModal = () => {
   isDeleteModalOpen.value = false;
 };
 
-// 회원 탈퇴 확인
 const handleDeleteConfirm = (enteredPassword) => {
-  alert(`회원 탈퇴가 처리되었습니다. 비밀번호: ${enteredPassword}`);
-};
-
-// 프로필 이미지 저장
-const saveProfileImage = async () => {
-  if (!selectedImage.value) {
-    alert("변경할 이미지가 없습니다.");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("profileImage", selectedImage.value); // 선택된 파일을 FormData에 추가
-
-  const userId = getSessionUserIdx();
-  try {
-    const response = await axios.post(`/api/user/${userId}/profileImage`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data"
-      }
-    });
-
-    if (response.status === 200) {
-      alert("프로필 이미지가 저장되었습니다.");
-      profileImageUrl.value = response.data.profileImageUrl; // 업로드된 이미지 URL을 업데이트
-    }
-  } catch (error) {
-    console.error("프로필 이미지 저장 실패:", error);
-    alert("프로필 이미지 저장에 실패했습니다.");
-  }
+  alert(`회원 탈퇴 완료. 비밀번호: ${enteredPassword}`);
 };
 </script>
 
@@ -170,14 +129,6 @@ const saveProfileImage = async () => {
     <div class="input-group">
       <label>이메일</label>
       <input v-model="email" readonly class="email-input" />
-    </div>
-
-    <!-- 펫 카드 목록 -->
-    <div v-if="petCards.length" class="pet-cards">
-      <h3>내 펫 카드</h3>
-      <ul>
-        <li v-for="pet in petCards" :key="pet.idx">{{ pet.name }}</li>
-      </ul>
     </div>
 
     <!-- 로딩 중 -->

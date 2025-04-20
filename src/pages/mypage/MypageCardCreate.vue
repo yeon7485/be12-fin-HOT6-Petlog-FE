@@ -1,50 +1,39 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { usePetStore } from '../../stores/usePetStore'
 
-// 라우터 인스턴스
+const store = usePetStore();
 const router = useRouter();
 
-// 프로필 이미지 미리보기
 const profileImage = ref('');
-
-// 선택된 파일
 const selectedFile = ref(null);
+const isUploading = ref(false);
+const fileInput = ref(null);
 
-// 반려동물 카드 데이터
 const card = ref({
   name: '',
   gender: '',
-  isNeutering: false,  // 중성화 여부
+  isNeutering: false,
   birthDate: '',
   breed: '',
   specificInformation: '',
-  userId: null,  // 나중에 세션에서 추출한 userId 값을 넣을 예정
+  userId: null,
 });
 
-// 파일 입력 요소 참조
-const fileInput = ref(null);
-
-// 이미지 업로드 상태
-const isUploading = ref(false);
-
-// 세션에서 user 객체를 가져오고, 그 안에서 idx 값을 추출하는 함수
 function getSessionUserIdx() {
-  const user = sessionStorage.getItem('user'); // 세션 스토리지에서 user 값을 가져옴
+  const user = sessionStorage.getItem('user');
   if (user) {
     const parsedUser = JSON.parse(user);
-    return parsedUser.idx; // user가 존재하면 그 안에서 idx 값을 반환
+    return parsedUser.idx;
   }
-  return null; // user가 없다면 null 반환
+  return null;
 }
 
-// 파일 선택 창 열기
 const triggerFileInput = () => {
   fileInput.value.click();
 };
 
-// 파일 업로드 함수
 const uploadImage = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -57,63 +46,38 @@ const uploadImage = (event) => {
   }
 };
 
-// 카드 저장 함수
 const saveCard = async () => {
+  const userId = getSessionUserIdx();
+  if (!userId) {
+    alert('로그인 정보가 없습니다.');
+    router.push('/user/login');
+    return;
+  }
+
+  const petData = {
+    name: card.value.name,
+    gender: card.value.gender,
+    isNeutering: card.value.isNeutering,
+    birthDate: card.value.birthDate,
+    breed: card.value.breed,
+    specificInformation: card.value.specificInformation,
+    userId: userId,
+  };
+
+  isUploading.value = true;
   try {
-    const formData = new FormData();
-
-    // 세션에서 가져온 userId 설정
-    const userId = getSessionUserIdx();
-    if (!userId) {
-      alert('로그인 정보가 없습니다.');
-      router.push('/user/login');
-      return;
-    }
-
-    // 반려동물 카드 데이터
-    const petData = {
-      name: card.value.name,
-      gender: card.value.gender,
-      isNeutering: card.value.isNeutering,  // 중성화 여부
-      birthDate: card.value.birthDate,
-      breed: card.value.breed,
-      specificInformation: card.value.specificInformation,  // 특이사항
-      userId: userId,  // 세션에서 가져온 userId 추가
-    };
-
-    // JSON 데이터를 FormData로 추가
-    formData.append(
-      'pet',
-      new Blob([JSON.stringify(petData)], { type: 'application/json' })
-    );
-
-    // 이미지 파일이 있을 경우 FormData에 추가
-    if (selectedFile.value) {
-      formData.append('profileImage', selectedFile.value);
-    }
-
-    isUploading.value = true; // 업로드 시작
-
-    // 최종적으로 반려동물 카드 생성 API 요청
-    const response = await axios.post('/api/pet/create', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
+    await store.createPet(petData, selectedFile.value); // ✅ store에서 처리
     alert('카드가 성공적으로 생성되었습니다!');
-    router.push('/mypage/cardlist'); // 저장 후 이동
+    router.push('/mypage/cardlist');
   } catch (err) {
-    console.error('카드 등록 실패:', err);
     alert('등록 중 오류가 발생했습니다.');
   } finally {
     isUploading.value = false;
   }
 };
 
-// 취소 버튼 클릭 시 실행될 함수
 const cancel = () => {
-  router.push('/mypage/cardlist'); // 취소 시 이동
+  router.push('/mypage/cardlist');
 };
 </script>
 

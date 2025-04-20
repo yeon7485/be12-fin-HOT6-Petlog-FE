@@ -1,73 +1,72 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import axios from 'axios';
+import { usePetStore } from '../../stores/usePetStore'
 
+const store = usePetStore();
 const router = useRouter();
 const route = useRoute();
 
-const petId = route.params.petId; // 📌 URL에서 petId 추출
-let card = ref(null);  // 'let'으로 변경하여 재할당 가능하게 만듦
+const petId = route.params.petId;
+let card = ref(null);
 const profileImage = ref('');
 
 const calculateAge = (birthDate) => {
-  const birth = new Date(birthDate);  // birth는 변경되지 않으므로 const로 유지
+  const birth = new Date(birthDate);
   const today = new Date();
-  let age = today.getFullYear() - birth.getFullYear();  // age는 let으로 선언하여 변경 가능하게 만듦
-  let month = today.getMonth() - birth.getMonth();  // month도 let으로 선언하여 변경 가능하게 만듦
+  let age = today.getFullYear() - birth.getFullYear();
+  let month = today.getMonth() - birth.getMonth();
   if (month < 0 || (month === 0 && today.getDate() < birth.getDate())) {
-    age--;  // 이제 age를 변경할 수 있음
+    age--;
   }
-  return age;  // 정상적으로 age 반환
+  return age;
 };
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/pet/${petId}`);
-    console.log('🐾 상세 정보:', response.data);  // 받은 데이터 출력
-    
-    // profileImageUrl과 나이 계산 등의 값도 확인하기
-    const imageUrl = response.data.profileImageUrl ? `http://localhost:8080${response.data.profileImageUrl}` : "/default-profile.png";
+    const data = await store.fetchPetDetail(petId);
+
+    const imageUrl = data.profileImageUrl
+      ? data.profileImageUrl.startsWith('http')
+        ? data.profileImageUrl
+        : `http://localhost:8080${data.profileImageUrl}`
+      : '/default-profile.png';
 
     card.value = {
-      name: response.data.name,
-      age: calculateAge(response.data.birthDate), 
-      breed: response.data.breed,
-      gender: response.data.gender,
-      birthDate: response.data.birthDate,
-      specificInformation: response.data.specificInformation,
+      name: data.name,
+      age: calculateAge(data.birthDate),
+      breed: data.breed,
+      gender: data.gender,
+      birthDate: data.birthDate,
+      specificInformation: data.specificInformation,
       profileImageUrl: imageUrl,
-      isNeutering: response.data.isNeutering,
-      status: response.data.status
+      isNeutering: data.isNeutering,
+      status: data.status
     };
 
-    profileImage.value = response.data.profileImageUrl;
+    profileImage.value = imageUrl;
   } catch (e) {
     console.error('🐾 상세 불러오기 실패:', e);
   }
 });
 
-// ✅ 수정 이동
+
 const goToEdit = () => {
   router.push(`/mypage/card/change/${petId}`);
 };
 
-// ✅ 목록 이동
 const goToList = () => {
   router.push('/mypage/cardlist');
 };
 
-// ✅ 삭제 요청
 const deleteCard = async () => {
   const confirmDelete = window.confirm('정말 삭제하시겠습니까?');
   if (confirmDelete) {
     try {
-      // petId를 포함한 DELETE 요청
-      await axios.delete(`/api/pet/${petId}`);
+      await store.deletePet(petId); // ✅ store 사용
       alert('삭제되었습니다.');
-      router.push('/mypage/cardlist');  // 삭제 후 이동
+      router.push('/mypage/cardlist');
     } catch (error) {
-      console.error('삭제 실패:', error);
       alert('삭제 중 오류가 발생했습니다.');
     }
   }

@@ -1,18 +1,17 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
+import { useMypageCard } from '../../stores/useMypageCard' // ✅ 스토어 import
+import { storeToRefs } from "pinia";
 
-// 📌 Vue Router 사용
 const router = useRouter();
+const store = useMypageCard();
+const { userPosts } = storeToRefs(store); // ✅ 상태 반응형으로 꺼냄
 
-// 📌 게시글 목록 상태
-const posts = ref([]);
 const currentPage = ref(1);
 const itemsPerPage = 10;
-const totalPages = computed(() => Math.ceil(posts.value.length / itemsPerPage));
+const totalPages = computed(() => Math.ceil(userPosts.value.length / itemsPerPage));
 
-// 📌 세션에서 user.idx 추출
 function getSessionUserIdx() {
   const user = sessionStorage.getItem("user");
   if (user) {
@@ -22,7 +21,6 @@ function getSessionUserIdx() {
   return null;
 }
 
-// 📌 날짜 포맷 함수
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   return date.toLocaleDateString("ko-KR", {
@@ -34,34 +32,9 @@ function formatDate(dateStr) {
   });
 }
 
-// 📌 사용자 게시글 불러오기
-const fetchUserPosts = async () => {
-  const userId = getSessionUserIdx();
-  if (!userId) {
-    alert("세션에 유저 정보가 없습니다.");
-    return;
-  }
-
-  try {
-    const response = await axios.get(`/api/post/list/user/${userId}`);
-    console.log("✅ 응답 결과:", response.data);
-
-    if (Array.isArray(response.data)) {
-      posts.value = response.data;
-    } else {
-      console.warn("❗ 응답이 배열이 아닙니다. 기본값 사용.");
-      posts.value = [];
-    }
-  } catch (error) {
-    console.error("❌ 게시글 불러오기 실패:", error);
-    posts.value = [];
-  }
-};
-
-// 📌 페이지네이션 계산
 const pagedPosts = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
-  return posts.value.slice(start, start + itemsPerPage);
+  return userPosts.value.slice(start, start + itemsPerPage);
 });
 
 const prevPage = () => {
@@ -72,13 +45,17 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++;
 };
 
-// 📌 게시글 상세로 이동
 const goToPostDetail = (post) => {
   router.push(`/board/${post.boardType}/post/${post.idx}`);
 };
 
-onMounted(() => {
-  fetchUserPosts();
+onMounted(async () => {
+  const userId = getSessionUserIdx();
+  if (!userId) {
+    alert("세션에 유저 정보가 없습니다.");
+    return;
+  }
+  await store.fetchPostsByUser(userId); // ✅ store 메서드 사용
 });
 </script>
 

@@ -19,19 +19,17 @@ export const usePetStore = defineStore('pet', {
         throw error
       }
     },
-    async updatePet(petId, petData, profileImageFile = null) {
+    async updatePet(petId, petData) {
       try {
-        const formData = new FormData();
-    
-        formData.append(
-          'pet',
-          new Blob([JSON.stringify(petData)], {
-            type: 'application/json'
-          })
-        );
-    
-        if (profileImageFile) {
-          formData.append('profileImage', profileImageFile);
+        const formData = petData;
+
+        console.log('[🔍 FormData 확인]');
+        for (const pair of formData.entries()) {
+          if (pair[0] === 'pet') {
+            pair[1].text().then((text) => console.log(`${pair[0]}:`, text));
+          } else {
+            console.log(`${pair[0]}:`, pair[1]);
+          }
         }
     
         await axios.post(`/api/pet/${petId}/update`, formData, {

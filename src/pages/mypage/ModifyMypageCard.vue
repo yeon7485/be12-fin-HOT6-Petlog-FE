@@ -95,16 +95,6 @@ const saveCard = async () => {
       formData.append('profileImage', selectedFile.value);
     }
 
-    // ✅ 확인용 로그
-    console.log('[🔍 FormData 확인]');
-    for (const pair of formData.entries()) {
-      if (pair[0] === 'pet') {
-        pair[1].text().then((text) => console.log(`${pair[0]}:`, text));
-      } else {
-        console.log(`${pair[0]}:`, pair[1]);
-      }
-    }
-
     await petStore.updatePet(card.value.id, formData);
     alert("카드가 성공적으로 수정되었습니다!");
     router.push("/mypage/cardlist");
@@ -141,7 +131,7 @@ const goToCardList = () => {
       <input type="date" v-model="card.birthDate" />
     </div>
 
-    <input v-model="card.breed" placeholder="푸문" class="input" />
+    <input v-model="card.breed" placeholder="품종" class="input" />
 
     <textarea v-model="card.specificInformation" placeholder="특이사항" class="textarea" />
 

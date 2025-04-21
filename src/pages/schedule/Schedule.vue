@@ -12,7 +12,7 @@ const isPetModalOpen = ref(false);
 const isDetailMode = ref(false);
 const isLoading = ref(true);
 
-const selectedPet = ref({});
+const selectedPet = ref(null); // 변경: {} → null
 
 const scheduleStore = useScheduleStore();
 const router = useRouter();
@@ -33,7 +33,7 @@ watch(
 
 const fetchSchedule = async () => {
   const result = await scheduleStore.getAllSchedule();
-  if (result.isSuccess) {
+  if (result?.isSuccess) {
     isLoading.value = false;
   }
 };
@@ -84,41 +84,25 @@ onMounted(async () => {
   <div class="container" :class="{ detail_container: isDetailMode }">
     <div class="calendar_section" :class="{ detail_calendar: isDetailMode }">
       <div class="title_box">
-        <div
-          class="profile_img"
-          :style="{
-            backgroundImage: selectedPet?.imageUrl
-              ? `url(${selectedPet.imageUrl})`
-              : `url('/src/assets/images/profile_1.jpg')`,
-          }"
-        ></div>
+        <div class="profile_img" :style="{
+          backgroundImage: selectedPet?.profileImageUrl
+            ? `url(${selectedPet.profileImageUrl})`
+            : `url('/src/assets/images/profile_1.jpg')`,
+        }"></div>
 
         <p class="title">
-          {{ selectedPet?.name ? `${selectedPet.name}이의 일정` : "내 일정" }}
+          {{ selectedPet?.name ? `${selectedPet.name}의 일정` : "내 일정" }}
         </p>
-        <img
-          class="arrow_down"
-          src="/src/assets/icons/arrow_down.png"
-          alt="아래쪽"
-          @click="openPetModal"
-        />
+        <img class="arrow_down" src="/src/assets/icons/arrow_down.png" alt="아래쪽" @click="openPetModal" />
       </div>
       <div class="calendar">
         <Calendar v-if="!isLoading" :onOpenModal="openNewScheduleModal" :onDetail="openDetail" />
       </div>
 
       <!-- 모달 -->
-      <NewScheduleModal
-        v-if="isNewScheduleModalOpen"
-        :onClose="closeNewScheduleModal"
-        @schedule-created="handleScheduleCreated"
-      />
-      <SelectPetModal
-        v-if="isPetModalOpen"
-        :onClose="closePetModal"
-        :onSelect="handlePetSelect"
-        :fromSchedule="true"
-      />
+      <NewScheduleModal v-if="isNewScheduleModalOpen" :onClose="closeNewScheduleModal" :selectedPet="selectedPet"
+        @schedule-created="handleScheduleCreated" />
+      <SelectPetModal v-if="isPetModalOpen" :onClose="closePetModal" :onSelect="handlePetSelect" :fromSchedule="true" />
     </div>
     <div v-if="isDetailMode" class="detail_section">
       <DetailSchedule :onClose="closeDetail" />
@@ -127,6 +111,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+/* 스타일 동일 유지 */
 .container {
   margin: 50px 20%;
 }

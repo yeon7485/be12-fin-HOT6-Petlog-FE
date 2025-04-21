@@ -5,6 +5,7 @@ export const useScheduleStore = defineStore("schedule", {
   state: () => ({
     currentDate: "",
     type: "SCHEDULE",
+    currentPet: {},
     plans: [
       {
         idx: 1,
@@ -80,6 +81,11 @@ export const useScheduleStore = defineStore("schedule", {
     },
   }),
 
+  persist: {
+    storage: sessionStorage,
+    paths: ["currentDate", "currentPet"],
+  },
+
   actions: {
     setCurrentDate(date) {
       this.currentDate = date;
@@ -126,11 +132,9 @@ export const useScheduleStore = defineStore("schedule", {
       }
     },
 
-    async getRecordsByDate(petIdx, year, month, day) {
+    async getRecordsByDate(year, month, day) {
       try {
-        const response = await axios.get(
-          `/api/daily-record/pet/${petIdx}/record/${year}/${month}/${day}`
-        );
+        const response = await axios.get(`/api/daily-record/date/${year}/${month}/${day}`);
 
         console.log(response);
         return response.data;

@@ -2,10 +2,13 @@
 import { useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 import ScheduleCard from "./ScheduleCard.vue";
+import { onMounted, ref } from "vue";
+import { watch } from "vue";
 
 const scheduleStore = useScheduleStore();
 
 const router = useRouter();
+const recordList = ref([]);
 
 const selectType = (type) => {
   scheduleStore.type = type;
@@ -14,6 +17,26 @@ const selectType = (type) => {
 const handleItemClick = (itemIdx) => {
   router.push(`detail/${itemIdx}`);
 };
+
+const fetchSchedule = async () => {
+  const year = scheduleStore.currentDate.getFullYear();
+  const month = scheduleStore.currentDate.getMonth() + 1;
+  const day = scheduleStore.currentDate.getDate();
+
+  const result = await scheduleStore.getRecordsByDate(year, month, day);
+  if (result.isSuccess) {
+    recordList.value = result.result;
+  }
+};
+
+onMounted(fetchSchedule);
+
+watch(
+  () => scheduleStore.currentDate,
+  () => {
+    fetchSchedule();
+  }
+);
 </script>
 
 <template>
@@ -36,9 +59,7 @@ const handleItemClick = (itemIdx) => {
 
   <div class="schedule_list">
     <ScheduleCard
-      v-for="(event, index) in scheduleStore.type === 'SCHEDULE'
-        ? scheduleStore.plans
-        : scheduleStore.records"
+      v-for="(event, index) in scheduleStore.type === 'SCHEDULE' ? scheduleStore.plans : recordList"
       :key="index"
       :item="event"
       @click="handleItemClick(event.idx)"

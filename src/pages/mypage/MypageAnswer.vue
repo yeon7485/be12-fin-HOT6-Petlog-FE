@@ -43,12 +43,12 @@ onMounted(fetchAnswers);
 .container {
   max-width: 800px;
   margin: 30px auto;
-  padding: 0 16px;
+
 }
 .title {
   font-size: 32px;
   font-weight: bold;
-  margin-bottom: 20px;
+  align-self: flex-start; 
 }
 .empty-message {
   font-size: 18px;

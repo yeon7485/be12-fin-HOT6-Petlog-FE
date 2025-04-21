@@ -64,7 +64,6 @@ onMounted(fetchQuestions);
   font-weight: bold;
   margin-bottom: 20px;
   align-self: flex-start; 
-  margin-left: 25%;
 }
 
 

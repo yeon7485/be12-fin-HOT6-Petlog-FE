@@ -149,6 +149,8 @@ const deleteComment = async () => {
 
 .edit_save,
 .edit_cancel {
+  height: 12px;
+  width: 12px;
   font-size: 14px;
   font-weight: bold;
   color: #6c7dc6;

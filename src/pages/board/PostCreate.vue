@@ -4,7 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useBoardStore } from '/src/stores/useBoardStore'
 import { useUserStore } from '/src/stores/useUserStore'
 import { useCategoryStore } from '/src/stores/useCategoryStore'
-import AnimalCardModal from '/src/pages/board/components/AnimalCardModal.vue'
+import PetCardModal from '/src/pages/board/components/PetCardModal.vue'
+import PetCardListModal from '/src/pages/board/components/PetCardListModal.vue'
 import axios from 'axios'
 
 const route = useRoute()
@@ -24,6 +25,10 @@ const boardTypes = [
 
 const categories = computed(() => categoryStore.boardCategories.map(c => c.name))
 
+const removePet = (idx) => {
+  selectedPets.value = selectedPets.value.filter(p => p.idx !== idx)
+}
+
 const form = ref({
   boardType: boardTypeFromRoute || '',
   category: '',
@@ -34,6 +39,8 @@ const form = ref({
 })
 
 const previewImages = ref([])
+const selectedPets = ref([])
+const isModalOpen = ref(false)
 
 onMounted(async () => {
   if (!userStore.isLogin) {
@@ -43,7 +50,6 @@ onMounted(async () => {
   }
 
   form.value.writer = userStore.nickname
-
   await categoryStore.fetchCategories('BOARD')
 
   if (isEdit) {
@@ -102,8 +108,10 @@ const handleSubmit = async () => {
       content: form.value.content,
       categoryIdx: selectedCategory?.idx,
       boardType: form.value.boardType,
-      image: form.value.images[0]?.name || ''
+      image: form.value.images[0]?.name || '',
+      petIdxList: selectedPets.value.map(p => p.idx)
     }
+
     formData.append('post', new Blob([JSON.stringify(postPayload)], { type: 'application/json' }))
 
     if (isEdit) {
@@ -125,9 +133,16 @@ const handleSubmit = async () => {
   }
 }
 
-const isModalOpen = ref(false)
-const selectPetCard = () => {
+const openPetCardModal = () => {
   isModalOpen.value = true
+}
+
+const selectPetCard = (pet) => {
+  const alreadySelected = selectedPets.value.find(p => p.idx === pet.idx)
+  if (!alreadySelected) {
+    selectedPets.value.push(pet)
+  }
+  isModalOpen.value = false
 }
 </script>
 
@@ -179,10 +194,26 @@ const selectPetCard = () => {
 
     <div class="form_group">
       <label>반려동물 카드 등록</label>
-      <button @click="selectPetCard" class="petcard_btn">카드 선택</button>
+      <button @click="openPetCardModal" class="petcard_btn">카드 선택</button>
     </div>
 
-    <AnimalCardModal v-if="isModalOpen" @close="isModalOpen = false" />
+    <div v-if="selectedPets.length > 0" class="selected-pet-preview">
+      <label>선택된 반려동물</label>
+      <div class="pet-preview-list">
+  <div v-for="pet in selectedPets" :key="pet.idx" class="pet-preview-item">
+    <PetCardModal
+      :pet="{ ...pet, image: pet.profileImageUrl || '/default-profile.png' }"
+    />
+    <button class="remove-btn" @click="removePet(pet.idx)">❌</button>
+  </div>
+</div>
+    </div>
+
+    <PetCardListModal
+      v-if="isModalOpen"
+      @close="isModalOpen = false"
+      @select="selectPetCard"
+    />
 
     <div class="actions">
       <button @click="handleCancel" class="cancel">취소</button>
@@ -271,6 +302,12 @@ input[type="file"] {
   border: 1px solid #ddd;
 }
 
+.pet-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .actions {
   display: flex;
   justify-content: center;
@@ -321,4 +358,38 @@ button {
 .petcard_btn:hover {
   background-color: #f5f5f5;
 }
+
+.selected-pet-preview {
+  margin-top: 20px;
+}
+
+.selected-pet-preview label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #4e342e;
+}
+
+.pet-preview-item {
+  position: relative;
+  display: inline-block;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: transparent;
+  color: #6727a3;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.remove-btn:hover {
+  color: #1c0e0e;
+}
+
+
 </style>

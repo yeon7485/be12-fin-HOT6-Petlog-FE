@@ -1,106 +1,131 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useBoardStore } from '/src/stores/useBoardStore'
-import { useUserStore } from '/src/stores/useUserStore'
-import { useCategoryStore } from '/src/stores/useCategoryStore'
-import PetCardModal from '/src/pages/board/components/PetCardModal.vue'
-import PetCardListModal from '/src/pages/board/components/PetCardListModal.vue'
-import axios from 'axios'
+import { ref, computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useBoardStore } from "/src/stores/useBoardStore";
+import { useUserStore } from "/src/stores/useUserStore";
+import { useCategoryStore } from "/src/stores/useCategoryStore";
+import PetCardModal from "/src/pages/board/components/PetCardModal.vue";
+import PetCardListModal from "/src/pages/board/components/PetCardListModal.vue";
+import axios from "axios";
 
-const route = useRoute()
-const router = useRouter()
-const boardStore = useBoardStore()
-const userStore = useUserStore()
-const categoryStore = useCategoryStore()
+const route = useRoute();
+const router = useRouter();
+const boardStore = useBoardStore();
+const userStore = useUserStore();
+const categoryStore = useCategoryStore();
 
-const postIdx = route.params.idx ? Number(route.params.idx) : null
-const boardTypeFromRoute = route.params.boardType || ''
-const isEdit = !!postIdx
+const postIdx = route.params.idx ? Number(route.params.idx) : null;
+const boardTypeFromRoute = route.params.boardType || "";
+const isEdit = !!postIdx;
 
 const boardTypes = [
-  { value: 'free', label: '자유 게시판' },
-  { value: 'information', label: '정보 공유' }
-]
+  { value: "free", label: "자유 게시판" },
+  { value: "information", label: "정보 공유" },
+];
 
-const categories = computed(() => categoryStore.boardCategories.map(c => c.name))
+const categories = computed(() =>
+  categoryStore.boardCategories.map((c) => c.name)
+);
 
 const removePet = (idx) => {
-  selectedPets.value = selectedPets.value.filter(p => p.idx !== idx)
-}
+  selectedPets.value = selectedPets.value.filter((p) => p.idx !== idx);
+};
 
 const form = ref({
-  boardType: boardTypeFromRoute || '',
-  category: '',
-  title: '',
-  content: '',
+  boardType: boardTypeFromRoute || "",
+  category: "",
+  title: "",
+  content: "",
   images: [],
-  writer: ''
-})
+  writer: "",
+  removedImageUrls: [],
+});
 
-const previewImages = ref([])
-const selectedPets = ref([])
-const isModalOpen = ref(false)
+const removeImage = (index) => {
+  const removed = previewImages.value.splice(index, 1)[0];
+
+  if (typeof removed === "string" && removed.startsWith("http")) {
+    form.value.removedImageUrls.push(removed);
+  }
+
+  form.value.images.splice(index, 1);
+};
+
+const previewImages = ref([]);
+const selectedPets = ref([]);
+const isModalOpen = ref(false);
 
 onMounted(async () => {
   if (!userStore.isLogin) {
-    alert('로그인 후 이용해주세요.')
-    router.push('/user/login')
-    return
+    alert("로그인 후 이용해주세요.");
+    router.push("/user/login");
+    return;
   }
 
-  form.value.writer = userStore.nickname
-  await categoryStore.fetchCategories('BOARD')
+  form.value.writer = userStore.nickname;
+  await categoryStore.fetchCategories("BOARD");
 
   if (isEdit) {
-    await boardStore.fetchPosts(boardTypeFromRoute)
-    const target = boardStore.posts.find(p => p.idx === postIdx)
+    await boardStore.fetchPosts(boardTypeFromRoute);
+    const target = boardStore.posts.find((p) => p.idx === postIdx);
     if (target) {
-      form.value.boardType = target.boardType || boardTypeFromRoute
-      form.value.category = target.category || ''
-      form.value.title = target.title || ''
-      form.value.content = target.content || ''
+      form.value.boardType = target.boardType || boardTypeFromRoute;
+      form.value.category = target.category || "";
+      form.value.title = target.title || "";
+      form.value.content = target.content || "";
+
+      if (target.imageUrls?.length) {
+        previewImages.value = [...target.imageUrls];
+      }
+
+      if (target.petList?.length) {
+        selectedPets.value = [...target.petList];
+      }
     }
   }
-})
+});
 
 const handleFileChange = (event) => {
-  const files = Array.from(event.target.files)
-  form.value.images = files
-  previewImages.value = []
-  files.forEach(file => {
-    const reader = new FileReader()
+  const files = Array.from(event.target.files);
+  form.value.images = files;
+  previewImages.value = [];
+  files.forEach((file) => {
+    const reader = new FileReader();
     reader.onload = (e) => {
-      previewImages.value.push(e.target.result)
-    }
-    reader.readAsDataURL(file)
-  })
-}
+      previewImages.value.push(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+};
 
 const handleCancel = () => {
-  const confirmed = window.confirm('작성을 취소하시겠습니까?')
+  const confirmed = window.confirm("작성을 취소하시겠습니까?");
   if (confirmed) {
     const path = isEdit
       ? `/board/${form.value.boardType}/post/${postIdx}`
-      : `/board/${form.value.boardType}`
-    router.push(path)
+      : `/board/${form.value.boardType}`;
+    router.push(path);
   }
-}
+};
 
 const handleSubmit = async () => {
-  const confirmed = window.confirm(isEdit ? '수정하시겠습니까?' : '등록하시겠습니까?')
-  if (!confirmed) return
+  const confirmed = window.confirm(
+    isEdit ? "수정하시겠습니까?" : "등록하시겠습니까?"
+  );
+  if (!confirmed) return;
 
   try {
-    const formData = new FormData()
+    const formData = new FormData();
 
     if (form.value.images.length > 0) {
-      form.value.images.forEach(file => {
-        formData.append('images', file)
-      })
+      form.value.images.forEach((file) => {
+        formData.append("images", file);
+      });
     }
 
-    const selectedCategory = categoryStore.boardCategories.find(cat => cat.name === form.value.category)
+    const selectedCategory = categoryStore.boardCategories.find(
+      (cat) => cat.name === form.value.category
+    );
 
     const postPayload = {
       writer: form.value.writer,
@@ -108,42 +133,53 @@ const handleSubmit = async () => {
       content: form.value.content,
       categoryIdx: selectedCategory?.idx,
       boardType: form.value.boardType,
-      image: form.value.images[0]?.name || '',
-      petIdxList: selectedPets.value.map(p => p.idx)
-    }
+      image: form.value.images[0]?.name || "",
+      petIdxList: selectedPets.value.map((p) => p.idx),
+    };
 
-    formData.append('post', new Blob([JSON.stringify(postPayload)], { type: 'application/json' }))
+    formData.append(
+      "post",
+      new Blob(
+        [
+          JSON.stringify({
+            ...postPayload,
+            removedImageUrls: form.value.removedImageUrls, // ✅ 여기 추가
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
 
     if (isEdit) {
       await axios.put(`/api/post/update/${postIdx}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
-      alert('수정이 완료되었습니다')
-      router.push(`/board/${form.value.boardType}/post/${postIdx}`)
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("수정이 완료되었습니다");
+      router.push(`/board/${form.value.boardType}/post/${postIdx}`);
     } else {
-      await axios.post('/api/post/create', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
-      alert('등록이 완료되었습니다')
-      router.push(`/board/${form.value.boardType}`)
+      await axios.post("/api/post/create", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("등록이 완료되었습니다");
+      router.push(`/board/${form.value.boardType}`);
     }
   } catch (err) {
-    console.error(err)
-    alert('작업에 실패하였습니다')
+    console.error(err);
+    alert("작업에 실패하였습니다");
   }
-}
+};
 
 const openPetCardModal = () => {
-  isModalOpen.value = true
-}
+  isModalOpen.value = true;
+};
 
 const selectPetCard = (pet) => {
-  const alreadySelected = selectedPets.value.find(p => p.idx === pet.idx)
+  const alreadySelected = selectedPets.value.find((p) => p.idx === pet.idx);
   if (!alreadySelected) {
-    selectedPets.value.push(pet)
+    selectedPets.value.push(pet);
   }
-  isModalOpen.value = false
-}
+  isModalOpen.value = false;
+};
 </script>
 
 <template>
@@ -151,7 +187,11 @@ const selectPetCard = (pet) => {
     <div class="board_select">
       <label class="section_title">게시판 선택</label>
       <div class="radio_group">
-        <label v-for="item in boardTypes" :key="item.value" class="radio_option">
+        <label
+          v-for="item in boardTypes"
+          :key="item.value"
+          class="radio_option"
+        >
           <input
             type="radio"
             :value="item.value"
@@ -168,26 +208,46 @@ const selectPetCard = (pet) => {
       <label>카테고리</label>
       <select v-model="form.category">
         <option disabled value="">카테고리를 선택하세요.</option>
-        <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+        <option v-for="cat in categories" :key="cat" :value="cat">
+          {{ cat }}
+        </option>
       </select>
     </div>
 
     <div class="form_group">
       <label>제목</label>
-      <input type="text" v-model="form.title" placeholder="제목을 입력해주세요." />
+      <input
+        type="text"
+        v-model="form.title"
+        placeholder="제목을 입력해주세요."
+      />
     </div>
 
     <div class="form_group">
       <label>내용</label>
-      <textarea v-model="form.content" placeholder="내용을 입력해주세요." rows="8" />
+      <textarea
+        v-model="form.content"
+        placeholder="내용을 입력해주세요."
+        rows="8"
+      />
     </div>
 
     <div class="form_group">
       <label>사진 등록</label>
       <input type="file" multiple @change="handleFileChange" />
       <div v-if="previewImages.length > 0" class="image_preview">
-        <div v-for="(img, index) in previewImages" :key="index">
+        <div
+          v-for="(img, index) in previewImages"
+          :key="index"
+          class="image-container"
+        >
           <img :src="img" class="preview" />
+          <img
+            src="/src/assets/icons/delete.png"
+            alt="삭제"
+            class="remove-icon"
+            @click="removeImage(index)"
+          />
         </div>
       </div>
     </div>
@@ -200,13 +260,25 @@ const selectPetCard = (pet) => {
     <div v-if="selectedPets.length > 0" class="selected-pet-preview">
       <label>선택된 반려동물</label>
       <div class="pet-preview-list">
-  <div v-for="pet in selectedPets" :key="pet.idx" class="pet-preview-item">
-    <PetCardModal
-      :pet="{ ...pet, image: pet.profileImageUrl || '/default-profile.png' }"
-    />
-    <button class="remove-btn" @click="removePet(pet.idx)">❌</button>
-  </div>
-</div>
+        <div
+          v-for="pet in selectedPets"
+          :key="pet.idx"
+          class="pet-preview-item"
+        >
+          <PetCardModal
+            :pet="{
+              ...pet,
+              image: pet.profileImageUrl || '/default-profile.png',
+            }"
+          />
+          <img
+            src="/src/assets/icons/delete.png"
+            alt="삭제"
+            class="remove-icon"
+            @click="removePet(pet.idx)"
+          />
+        </div>
+      </div>
     </div>
 
     <PetCardListModal
@@ -217,7 +289,9 @@ const selectPetCard = (pet) => {
 
     <div class="actions">
       <button @click="handleCancel" class="cancel">취소</button>
-      <button @click="handleSubmit" class="submit">{{ isEdit ? '수정' : '등록' }}</button>
+      <button @click="handleSubmit" class="submit">
+        {{ isEdit ? "수정" : "등록" }}
+      </button>
     </div>
   </div>
 </template>
@@ -266,21 +340,16 @@ const selectPetCard = (pet) => {
   flex-direction: column;
 }
 
-select {
-  width: 40%;
-}
-
-label {
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
+select,
 input[type="text"],
-textarea,
-select {
+textarea {
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 4px;
+}
+
+select {
+  width: 40%;
 }
 
 input[type="file"] {
@@ -294,6 +363,11 @@ input[type="file"] {
   margin-top: 10px;
 }
 
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
 .preview {
   width: 100px;
   height: 100px;
@@ -302,10 +376,36 @@ input[type="file"] {
   border: 1px solid #ddd;
 }
 
+.remove-icon {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
 .pet-preview-list {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+.selected-pet-preview {
+  margin-top: 20px;
+}
+
+.selected-pet-preview label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #4e342e;
+}
+
+.pet-preview-item {
+  position: relative;
+  display: inline-block;
 }
 
 .actions {
@@ -334,7 +434,7 @@ button {
 }
 
 .submit {
-  background-color: #6A0104;
+  background-color: #6a0104;
   color: white;
   border: none;
 }
@@ -358,38 +458,4 @@ button {
 .petcard_btn:hover {
   background-color: #f5f5f5;
 }
-
-.selected-pet-preview {
-  margin-top: 20px;
-}
-
-.selected-pet-preview label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 12px;
-  font-size: 16px;
-  color: #4e342e;
-}
-
-.pet-preview-item {
-  position: relative;
-  display: inline-block;
-}
-
-.remove-btn {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: transparent;
-  color: #6727a3;
-  border: none;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.remove-btn:hover {
-  color: #1c0e0e;
-}
-
-
 </style>

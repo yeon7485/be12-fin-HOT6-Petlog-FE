@@ -8,6 +8,7 @@ import { watch } from "vue";
 const scheduleStore = useScheduleStore();
 
 const router = useRouter();
+const scheduleList = ref([]);
 const recordList = ref([]);
 
 const selectType = (type) => {
@@ -23,16 +24,21 @@ const fetchSchedule = async () => {
   const month = scheduleStore.currentDate.getMonth() + 1;
   const day = scheduleStore.currentDate.getDate();
 
-  const result = await scheduleStore.getRecordsByDate(year, month, day);
-  if (result.isSuccess) {
-    recordList.value = result.result;
+  const scheduleResult = await scheduleStore.getSchedulesByDate(year, month, day);
+  const recordResult = await scheduleStore.getRecordsByDate(year, month, day);
+  if (scheduleResult.isSuccess) {
+    scheduleList.value = scheduleResult.result;
+  }
+
+  if (recordResult.isSuccess) {
+    recordList.value = recordResult.result;
   }
 };
 
 onMounted(fetchSchedule);
 
 watch(
-  () => scheduleStore.currentDate,
+  () => [scheduleStore.currentDate, scheduleStore.records, scheduleStore.plans],
   () => {
     fetchSchedule();
   }
@@ -59,7 +65,7 @@ watch(
 
   <div class="schedule_list">
     <ScheduleCard
-      v-for="(event, index) in scheduleStore.type === 'SCHEDULE' ? scheduleStore.plans : recordList"
+      v-for="(event, index) in scheduleStore.type === 'SCHEDULE' ? scheduleList : recordList"
       :key="index"
       :item="event"
       @click="handleItemClick(event.idx)"

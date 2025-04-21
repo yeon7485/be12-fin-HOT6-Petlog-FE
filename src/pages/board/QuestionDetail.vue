@@ -1,273 +1,247 @@
-  <script setup>
-  import { ref, onMounted, computed } from "vue";
-  import { useRouter, useRoute } from "vue-router";
-  import { useAnswerStore } from "/src/stores/useAnswerStore";
-  import { useQuestionStore } from "/src/stores/useQuestionStore";
-  import { useUserStore } from "/src/stores/useUserStore";
-  import AnswerCard from "/src/pages/board/components/AnswerCard.vue";
-  import PetCard from "/src/pages/board/components/PetCardModal.vue";
-  import PetCardDetail from "/src/pages/board/components/PetCardDetailModal.vue";
+<script setup>
+import { ref, onMounted, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useAnswerStore } from "/src/stores/useAnswerStore";
+import { useQuestionStore } from "/src/stores/useQuestionStore";
+import { useUserStore } from "/src/stores/useUserStore";
+import AnswerCard from "/src/pages/board/components/AnswerCard.vue";
+import PetCard from "/src/pages/board/components/PetCardModal.vue";
+import PetCardDetail from "/src/pages/board/components/PetCardDetailModal.vue";
 
-  const router = useRouter();
-  const route = useRoute();
-  const questionStore = useQuestionStore();
-  const answerStore = useAnswerStore();
-  const userStore = useUserStore();
+const router = useRouter();
+const route = useRoute();
+const questionStore = useQuestionStore();
+const answerStore = useAnswerStore();
+const userStore = useUserStore();
 
-  const question = ref(null);
-  const selectedPetId = ref(null);
-  const isPetModalOpen = ref(false);
-  const questionIdx = Number(route.params.idx);
+const question = ref(null);
+const selectedPetId = ref(null);
+const isPetModalOpen = ref(false);
+const questionIdx = Number(route.params.idx);
 
-  const openPetModal = (id) => {
-    selectedPetId.value = id;
-    isPetModalOpen.value = true;
-  };
+const openPetModal = (id) => {
+  selectedPetId.value = id;
+  isPetModalOpen.value = true;
+};
 
-  const hasSelectedAnswer = computed(() =>
-    answerStore.answers.some((a) => a.selected)
-  );
+const hasSelectedAnswer = computed(() =>
+  answerStore.answers.some((a) => a.selected)
+);
 
-  const isOwner = computed(() =>
-    userStore.isLogin && userStore.nickname && question.value?.writer === userStore.nickname
-  );
+const isOwner = computed(() =>
+  userStore.isLogin && userStore.nickname && question.value?.writer === userStore.nickname
+);
 
-  const aiAnswer = computed(() =>
-    answerStore.answers.find((a) => a.userType === "AI")
-  );
+const aiAnswer = computed(() =>
+  answerStore.answers.find((a) => a.userType === "AI")
+);
 
-  const userAnswers = computed(() =>
-    answerStore.answers.filter((a) => a.userType !== "AI")
-  );
+const userAnswers = computed(() =>
+  answerStore.answers.filter((a) => a.userType !== "AI")
+);
 
-  const answerCount = computed(() => userAnswers.value.length);
+const answerCount = computed(() => userAnswers.value.length);
 
-  onMounted(async () => {
-    try {
-      question.value = await questionStore.readQuestion(questionIdx);
-      await answerStore.fetchAnswersByQuestionId(questionIdx);
-    } catch (err) {
-      console.error("데이터 불러오기 실패:", err);
-    }
-  });
+onMounted(async () => {
+  try {
+    question.value = await questionStore.readQuestion(questionIdx);
+    await answerStore.fetchAnswersByQuestionId(questionIdx);
+  } catch (err) {
+    console.error("데이터 불러오기 실패:", err);
+  }
+});
 
-  const handleDelete = async () => {
-    if (!window.confirm("게시글을 삭제하시겠습니까?")) return;
-    try {
-      await questionStore.deleteQuestion(questionIdx);
-      alert("게시글이 삭제되었습니다.");
-      router.push("/board/qna");
-    } catch (err) {
-      alert("삭제 중 오류 발생");
-      console.error(err);
-    }
-  };
+const handleDelete = async () => {
+  if (!window.confirm("게시글을 삭제하시겠습니까?")) return;
+  try {
+    await questionStore.deleteQuestion(questionIdx);
+    alert("게시글이 삭제되었습니다.");
+    router.push("/board/qna");
+  } catch (err) {
+    alert("삭제 중 오류 발생");
+    console.error(err);
+  }
+};
 
-  const handleSelectAnswer = async (answerId) => {
-    if (!window.confirm("채택하시겠습니까?")) return;
-    try {
-      await answerStore.selectAnswer(answerId);
-      await answerStore.fetchAnswersByQuestionId(questionIdx);
-      await questionStore.refreshQuestionStatus(questionIdx);
-      alert("채택 완료");
-    } catch (err) {
-      alert("채택 실패");
-      console.error(err);
-    }
-  };
+const handleSelectAnswer = async (answerId) => {
+  if (!window.confirm("채택하시겠습니까?")) return;
+  try {
+    await answerStore.selectAnswer(answerId);
+    await answerStore.fetchAnswersByQuestionId(questionIdx);
+    await questionStore.refreshQuestionStatus(questionIdx);
+    alert("채택 완료");
+  } catch (err) {
+    alert("채택 실패");
+    console.error(err);
+  }
+};
 
-  const confirmDeleteAnswer = async (answerId) => {
-    if (!window.confirm("정말 답변을 삭제하시겠습니까?")) return;
-    try {
-      await answerStore.deleteAnswer(answerId);
-      await answerStore.fetchAnswersByQuestionId(questionIdx);
-      alert("답변 삭제 완료");
-    } catch (err) {
-      alert("답변 삭제 실패");
-      console.error(err);
-    }
-  };
+const confirmDeleteAnswer = async (answerId) => {
+  if (!window.confirm("정말 답변을 삭제하시겠습니까?")) return;
+  try {
+    await answerStore.deleteAnswer(answerId);
+    await answerStore.fetchAnswersByQuestionId(questionIdx);
+    alert("답변 삭제 완료");
+  } catch (err) {
+    alert("답변 삭제 실패");
+    console.error(err);
+  }
+};
 
-  const goToModifyAnswer = (answerId) => {
-    router.push(`/board/qna/${questionIdx}/answer/${answerId}/modify`);
-  };
+const goToModifyAnswer = (answerId) => {
+  router.push(`/board/qna/${questionIdx}/answer/${answerId}/modify`);
+};
 
-  const goToModify = () => {
-    router.push(`/board/qna/${questionIdx}/modify`);
-  };
+const goToModify = () => {
+  questionStore.setSelectedQuestion(question.value); // ✅ 기존 질문 저장
+  router.push(`/board/qna/${questionIdx}/modify`);
+};
 
-  const goToRegister = () => {
-    questionStore.setSelectedQuestion(question.value);
-    router.push(`/board/qna/${question.value.idx}/answer/create`);
-  };
-  </script>
+const goToRegister = () => {
+  questionStore.setSelectedQuestion(question.value); // ✅ 답변 생성 시도 시에도 저장
+  router.push(`/board/qna/${question.value.idx}/answer/create`);
+};
+</script>
 
+<template>
+  <div class="wrapper" v-if="question">
+    <div class="post_box">
+      <router-link to="/board/qna" class="list_button">목록으로</router-link>
 
-  <template>
-    <div class="wrapper" v-if="question">
-      <div class="post_box">
-        <router-link to="/board/qna" class="list_button">목록으로</router-link>
+      <div class="post_title">
+        <img class="icon_img" src="/src/assets/icons/question.png" alt="질문 아이콘" />
+        <span class="text">{{ question.qTitle }}</span>
+      </div>
 
-        <div class="post_title">
+      <div class="user_info_line">
+        <div class="user_info">
           <img
-            class="icon_img"
-            src="/src/assets/icons/question.png"
-            alt="질문 아이콘"
+            class="profile_img"
+            :src="question.profileImageUrl || '/src/assets/images/default.png'"
+            alt="작성자 프로필"
           />
-          <span class="text">{{ question.qTitle }}</span>
+          <span class="nickname">{{ question.writer }}</span>
+          <span class="divider">ㅣ</span>
+          <span class="date">{{ question.createdAt }}</span>
         </div>
 
-        <div class="user_info_line">
-          <div class="user_info">
-            <img
-              class="profile_img"
-              :src="question.profileImageUrl || '/src/assets/images/default.png'"
-              alt="작성자 프로필"
-            />
-            <span class="nickname">{{ question.writer }}</span>
-            <span class="divider">ㅣ</span>
-            <span class="date">{{ question.createdAt }}</span>
-          </div>
-
-          <div class="icons" v-if="isOwner">
-            <img
-              v-if="!hasSelectedAnswer"
-              src="/src/assets/icons/write.png"
-              class="icon_btn"
-              alt="수정 아이콘"
-              @click="goToModify"
-            />
-            <img
-              src="/src/assets/icons/x-button.png"
-              class="icon_btn"
-              alt="삭제 아이콘"
-              @click="handleDelete"
-            />
-          </div>
+        <div class="icons" v-if="isOwner">
+          <img
+            v-if="!hasSelectedAnswer"
+            src="/src/assets/icons/write.png"
+            class="icon_btn"
+            alt="수정 아이콘"
+            @click="goToModify"
+          />
+          <img
+            src="/src/assets/icons/x-button.png"
+            class="icon_btn"
+            alt="삭제 아이콘"
+            @click="handleDelete"
+          />
         </div>
+      </div>
 
-        <hr class="divider_line" />
+      <hr class="divider_line" />
 
-        <div class="content_area">
-          <div v-if="question.imageUrls && question.imageUrls.length">
-            <img
-              v-for="(url, index) in question.imageUrls"
-              :key="index"
-              class="dog_img"
-              :src="url"
-              alt="질문 첨부 이미지"
-            />
+      <div class="content_area">
+        <div v-if="question.imageUrls && question.imageUrls.length">
+          <img
+            v-for="(url, index) in question.imageUrls"
+            :key="index"
+            class="dog_img"
+            :src="url"
+            alt="질문 첨부 이미지"
+          />
           <p class="description">{{ question.content }}</p>  
-          
           <hr class="pet_section_divider" />
+        </div>
 
-          </div>
+        <h2 class="card">&lt;반려동물 카드&gt;</h2>
 
-          <h2 class="card">&lt;반려동물 카드&gt;</h2>
-
-          <div v-if="question.petList?.length" class="pet_card_section">
-            <div class="pet_card_list">
-              <PetCard
-                v-for="pet in question.petList"
-                :key="pet.idx"
-                :pet="{
-                  ...pet,
-                  image: pet.profileImageUrl || '/default-profile.png',
-                }"
-                @click="() => openPetModal(pet.idx)"
-              />
-            </div>
-          </div>
-
-          <PetCardDetail
-            v-if="isPetModalOpen"
-            :pet-id="selectedPetId"
-            @close="isPetModalOpen = false"
-          />
-        
-          <div class="hashtags">
-            <span v-for="tag in question.tags" :key="tag" class="tag"
-              ># {{ tag }}</span
-            >
+        <div v-if="question.petList?.length" class="pet_card_section">
+          <div class="pet_card_list">
+            <PetCard
+              v-for="pet in question.petList"
+              :key="pet.idx"
+              :pet="{
+                ...pet,
+                image: pet.profileImageUrl || '/default-profile.png',
+              }"
+              @click="() => openPetModal(pet.idx)"
+            />
           </div>
         </div>
 
-        <div
-          class="action_area"
-          v-if="
-            !hasSelectedAnswer &&
-            userStore.isLogin &&
-            userStore.nickname !== question.writer
-          "
-        >
-          <button class="reply_btn" @click="goToRegister">답변하기</button>
-        </div>
-      </div>
-
-      <div class="ai_link_bridge">
-        <img
-          src="/src/assets/icons/connect.png"
-          alt="AI 연결 아이콘"
-          class="bridge_icon"
+        <PetCardDetail
+          v-if="isPetModalOpen"
+          :pet-id="selectedPetId"
+          @close="isPetModalOpen = false"
         />
-      </div>
 
-      <!-- AI 답변 영역 -->
-      <div v-if="aiAnswer" class="ai_answer_v2">
-        <div class="ai_header_v2">
-          <img
-            class="ai_icon_img"
-            src="/src/assets/icons/Ai.png"
-            alt="전구 아이콘"
-          />
-          <div class="ai_title_v2">AI 우선 답변 - 제가 먼저 도와드릴게요!</div>
-        </div>
-
-        <div class="ai_card">
-          <div class="ai_card_header">
-            <div class="ai_card_left">
-              <img
-                class="ai_profile_img"
-                src="/src/assets/icons/petbot.png"
-                alt="ChatGPS 프로필"
-              />
-              <span class="ai_card_name">petbot</span>
-              <span class="divider">ㅣ</span>
-              <span class="ai_card_date">{{ aiAnswer.createdAt }}</span>
-            </div>
-          </div>
-
-          <div class="ai_card_body">
-            <pre style="white-space: pre-wrap; font-family: inherit">{{
-              aiAnswer.content
-            }}</pre>
-          </div>
+        <div class="hashtags">
+          <span v-for="tag in question.tags" :key="tag" class="tag"># {{ tag }}</span>
         </div>
       </div>
 
-      <div class="answer_wrapper">
-        <div class="answer_count" v-if="answerStore.answers.length > 0">
-          <img
-            src="/src/assets/icons/answer.png"
-            class="answer_icon"
-            alt="답변 아이콘"
-          />
-          {{ answerCount }}개 답변
-        </div>
-
-        <AnswerCard
-          v-for="answer in userAnswers"
-          :key="answer.idx"
-          :answer="answer"
-          :question-idx="questionIdx"
-          @select="handleSelectAnswer"
-          @modify="goToModifyAnswer"
-          @delete="(id) => confirmDeleteAnswer(id)"
-          @selected="handleSelectedAnswer"
-        />
+      <div
+        class="action_area"
+        v-if="!hasSelectedAnswer && userStore.isLogin && userStore.nickname !== question.writer"
+      >
+        <button class="reply_btn" @click="goToRegister">답변하기</button>
       </div>
     </div>
-  </template>
+
+    <div class="ai_link_bridge">
+      <img src="/src/assets/icons/connect.png" alt="AI 연결 아이콘" class="bridge_icon" />
+    </div>
+
+    <!-- AI 답변 영역 -->
+    <div v-if="aiAnswer" class="ai_answer_v2">
+      <div class="ai_header_v2">
+        <img class="ai_icon_img" src="/src/assets/icons/Ai.png" alt="전구 아이콘" />
+        <div class="ai_title_v2">AI 우선 답변 - 제가 먼저 도와드릴게요!</div>
+      </div>
+
+      <div class="ai_card">
+        <div class="ai_card_header">
+          <div class="ai_card_left">
+            <img
+              class="ai_profile_img"
+              src="/src/assets/icons/petbot.png"
+              alt="ChatGPS 프로필"
+            />
+            <span class="ai_card_name">petbot</span>
+            <span class="divider">ㅣ</span>
+            <span class="ai_card_date">{{ aiAnswer.createdAt }}</span>
+          </div>
+        </div>
+
+        <div class="ai_card_body">
+          <pre style="white-space: pre-wrap; font-family: inherit">{{ aiAnswer.content }}</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="answer_wrapper">
+      <div class="answer_count" v-if="answerStore.answers.length > 0">
+        <img src="/src/assets/icons/answer.png" class="answer_icon" alt="답변 아이콘" />
+        {{ answerCount }}개 답변
+      </div>
+
+      <AnswerCard
+        v-for="answer in userAnswers"
+        :key="answer.idx"
+        :answer="answer"
+        :question-idx="questionIdx"
+        @select="handleSelectAnswer"
+        @modify="goToModifyAnswer"
+        @delete="(id) => confirmDeleteAnswer(id)"
+        @selected="handleSelectedAnswer"
+      />
+    </div>
+  </div>
+</template>
 
   <style scoped>
   .wrapper {

@@ -26,3 +26,10 @@ export function formatToMonthDay(dateString) {
   const date = parseISO(dateString);
   return format(date, "M월 d일");
 }
+
+export function formatTimeFromDate(dateString) {
+  const date = new Date(dateString);
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}

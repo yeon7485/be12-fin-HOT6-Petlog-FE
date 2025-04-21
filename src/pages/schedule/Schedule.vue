@@ -67,6 +67,7 @@ const closePetModal = () => {
 // 펫 변경 함수
 const handlePetSelect = (pet) => {
   selectedPet.value = pet;
+  scheduleStore.currentPet = pet;
   closePetModal();
 };
 

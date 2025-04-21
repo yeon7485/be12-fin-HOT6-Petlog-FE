@@ -1,5 +1,6 @@
 <script setup>
 import { useScheduleStore } from "../../../stores/useScheduleStore";
+import { formatTimeFromDate } from "../../../utils/dateFormat";
 
 const props = defineProps({
   item: Object,
@@ -12,11 +13,17 @@ const scheduleStore = useScheduleStore();
   <div class="schedule_card">
     <div class="category_box">
       <div class="color_circle" :style="{ backgroundColor: item.color }"></div>
-      {{ item.category }}
+      {{ item.categoryName }}
     </div>
     <div class="schedule_item">
       <div class="schedule_time">
-        <p>10:00</p>
+        <p>
+          {{
+            scheduleStore.type === "SCHEDULE"
+              ? formatTimeFromDate(item.startAt)
+              : formatTimeFromDate(item.date)
+          }}
+        </p>
         <img v-if="item.fromChat" src="/src/assets/icons/chat.png" alt="chat" class="chat_icon" />
       </div>
       <p>{{ item.title }}</p>

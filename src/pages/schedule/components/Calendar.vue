@@ -184,6 +184,9 @@ const handleEventClick = (event) => {
             :title="event.title"
             @click="handleEventClick(event)"
           >
+            <span>{{
+              Object.keys(scheduleStore.currentPet).length === 0 ? `[${event.petName}]` : ""
+            }}</span>
             {{ event.title }}
           </div>
         </div>

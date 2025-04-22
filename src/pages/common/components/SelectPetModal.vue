@@ -15,12 +15,7 @@ const pets = ref([]);
 
 const fetchPets = async () => {
   try {
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (!user?.idx) {
-      alert("로그인이 필요합니다");
-      return;
-    }
-    await petStore.fetchPetList(user.idx);
+    await petStore.fetchPetList();
     pets.value = petStore.petList;
   } catch (e) {
     console.error("반려동물 목록 불러오기 실패", e);

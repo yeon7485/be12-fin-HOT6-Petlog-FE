@@ -3,6 +3,7 @@ import { reactive, ref, watch, computed, onMounted } from "vue";
 import axios from "axios";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 import { useCategoryStore } from "../../../stores/useCategoryStore";
+import { usePetStore } from "../../../stores/usePetStore";
 
 const props = defineProps({
   onClose: Function,
@@ -12,6 +13,7 @@ const emit = defineEmits(["schedule-created"]);
 
 const scheduleStore = useScheduleStore();
 const categoryStore = useCategoryStore();
+const petStore = usePetStore();
 
 const pets = ref([]);
 const selectedPet = ref(null);
@@ -22,17 +24,11 @@ const planCategories = computed(() => categoryStore.scheduleCategories);
 const recordCategories = computed(() => categoryStore.recordCategories);
 
 onMounted(async () => {
-  // 사용자 idx 불러오기
-  const user = JSON.parse(sessionStorage.getItem("user"));
-  if (!user?.idx) {
-    alert("로그인이 필요합니다");
-    return;
-  }
-
   // 내 반려동물 불러오기
   try {
-    const response = await axios.get(`/api/pet/user/${user.idx}`);
-    pets.value = response.data;
+    const result = await petStore.fetchPetList();
+    console.log(result);
+    pets.value = result;
     if (pets.value.length > 0) {
       selectedPet.value = props.selectedPet ?? pets.value[0];
     }
@@ -162,6 +158,8 @@ const checkForm = (type) => {
       alert("제목을 입력해주세요.");
     } else if (planData.startAt === "") {
       alert("시작 날짜와 시간을 선택해주세요.");
+    } else if (planData.endAt && new Date(planData.startAt) > new Date(planData.endAt)) {
+      alert("시작 시간은 종료 시간보다 앞서야 합니다.");
     } else {
       return true;
     }

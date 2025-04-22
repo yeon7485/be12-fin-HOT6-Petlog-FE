@@ -71,10 +71,11 @@ export const usePetStore = defineStore("pet", {
       }
     },
 
-    async fetchPetList(userId) {
+    async fetchPetList() {
       try {
-        const response = await axios.get(`/api/pet/user/${userId}`);
+        const response = await axios.get(`/api/pet/user`);
         this.petList = response.data;
+        return response.data;
       } catch (error) {
         console.error("반려동물 목록 불러오기 실패:", error);
         throw error;

@@ -1,36 +1,44 @@
 <script setup>
-import { ref, computed, onMounted } from "vue"
-import { useRouter } from "vue-router"
-import Card from "/src/pages/board/components/PostCard.vue"
-import { useBoardStore } from "/src/stores/useBoardStore.js"
-import { useCategoryStore } from "/src/stores/useCategoryStore.js"
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useBoardStore } from '/src/stores/useBoardStore.js'
+import { useCategoryStore } from '/src/stores/useCategoryStore.js'
+import Card from '/src/pages/board/components/PostCard.vue'
 
 const router = useRouter()
 const boardStore = useBoardStore()
 const categoryStore = useCategoryStore()
 
-const searchQuery = ref("")
-const selectedCategory = ref("")
+const searchQuery = ref("");
+const selectedCategory = ref("");
+const currentPage = ref(1);
+const pageSize = 7;
 
-// 게시판 카테고리 목록 불러오기
+const categories = computed(() => categoryStore.boardCategories.map(c => ({
+  label: c.name,
+  value: c.idx
+})))
+
+const loadPage = async (page) => {
+  currentPage.value = page;
+  await boardStore.fetchPosts("information", page - 1, pageSize);
+}
+
 onMounted(async () => {
   await categoryStore.fetchCategories('BOARD')
-  await boardStore.fetchPosts("information")
+  await loadPage(1)
 })
 
-const categories = computed(() => categoryStore.boardCategories)
-
 const triggerSearch = async () => {
-  if (!selectedCategory.value) {
+  const selected = categoryStore.boardCategories.find(c => c.idx === selectedCategory.value)
+  if (!selected) {
     alert("카테고리를 선택해주세요.")
     return
   }
 
-  const category = categoryStore.boardCategories.find(c => c.idx === selectedCategory.value)
-
   await boardStore.searchPosts({
     boardName: 'information',
-    category: category.name,
+    category: selected.name,
     keyword: searchQuery.value || ''
   })
 }
@@ -43,27 +51,22 @@ const goToWritePage = () => {
 <template>
   <div>
     <div class="board_header">
-      <h1>정보 공유</h1>
+      <h1>자유 게시판</h1>
       <div class="search_box">
-        <select v-model="selectedCategory" class="category_dropdown" @change="triggerSearch">
+        <select
+          v-model="selectedCategory"
+          class="category_dropdown"
+          @change="triggerSearch"
+        >
           <option value="">카테고리를 선택하세요.</option>
-          <option v-for="cat in categories" :key="cat.idx" :value="cat.idx">
-            {{ cat.name }}
+          <option v-for="cat in categories" :key="cat.value" :value="cat.value">
+            {{ cat.label }}
           </option>
         </select>
 
         <div class="search_input_wrap">
-          <input
-            v-model="searchQuery"
-            placeholder="제목, 작성자 검색 ..."
-            @keyup.enter="triggerSearch"
-          />
-          <img
-            class="search_icon_img"
-            src="/src/assets/icons/search.png"
-            alt="검색 아이콘"
-            @click="triggerSearch"
-          />
+          <input v-model="searchQuery" placeholder="제목, 작성자 검색 ..." @keyup.enter="triggerSearch" />
+          <img class="search_icon_img" src="/src/assets/icons/search.png" alt="검색 아이콘" @click="triggerSearch" />
         </div>
       </div>
     </div>
@@ -79,22 +82,21 @@ const goToWritePage = () => {
         </tr>
       </thead>
       <tbody>
-        <Card
-          v-for="(post, index) in boardStore.filteredPosts"
-          :key="post.idx"
-          :post="post"
-          :index="index + 1"
-          :boardType="'information'"
-        />
+        <Card v-for="(post, index) in boardStore.posts" :key="post.idx" :post="post" :index="(currentPage - 1) * pageSize + index + 1" :boardType="'information'" />
       </tbody>
     </table>
 
-    <div class="pagination">
-      <button class="page_btn">◀</button>
-      <span class="page_number">1</span>
-      <span class="page_number">2</span>
-      <span class="page_number">3</span>
-      <button class="page_btn">▶</button>
+    <div v-if="boardStore.totalPages > 1" class="pagination">
+      <button @click="loadPage(currentPage - 1)" :disabled="currentPage === 1">◀</button>
+      <button
+        v-for="page in boardStore.totalPages"
+        :key="page"
+        :class="{ active: page === currentPage }"
+        @click="loadPage(page)"
+      >
+        {{ page }}
+      </button>
+      <button @click="loadPage(currentPage + 1)" :disabled="currentPage === boardStore.totalPages">▶</button>
     </div>
 
     <button class="write_btn" @click="goToWritePage">글쓰기</button>
@@ -130,6 +132,9 @@ const goToWritePage = () => {
   background-color: #fdf6f1;
   color: #4e342e;
   appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(93, 64, 55, 0.1);
   transition: all 0.2s ease;
@@ -207,12 +212,6 @@ const goToWritePage = () => {
   color: #4e342e;
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 15px;
-}
-
 .page_btn,
 .page_number {
   margin: 0 5px;
@@ -236,6 +235,31 @@ const goToWritePage = () => {
 
 .write_btn:hover {
   background: #5d4037;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 6px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #eee;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.pagination button.active {
+  font-weight: bold;
+  background-color: #c9baba;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
 }
 
 @keyframes fadeSlideUp {

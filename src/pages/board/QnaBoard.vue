@@ -13,23 +13,30 @@ const search = ref("");
 const keyword = ref("");
 const searchResults = ref([]);
 
+const currentPage = ref(1);
+const pageSize = 5;
+
 const isSearching = computed(() => keyword.value.trim().length > 0);
 
 const safeQuestions = computed(() => {
   const list = isSearching.value ? searchResults.value : questionStore.questions;
-  return Array.isArray(list) ? list.filter(q => typeof q === "object" && q !== null) : [];
+  return Array.isArray(list) ? list.filter((q) => typeof q === "object" && q !== null) : [];
 });
 
-onMounted(async () => {
-  await questionStore.fetchQuestions();
+const loadPage = async (page) => {
+  currentPage.value = page;
+  await questionStore.fetchQuestions(page - 1, pageSize);
   await Promise.all(
     questionStore.questions.map(async (q) => {
       await answerStore.fetchAnswersByQuestionId(q.idx);
     })
   );
-});
+};
+
+onMounted(() => loadPage(1));
 
 async function triggerSearch() {
+  currentPage.value = 1;
   keyword.value = search.value;
   if (!keyword.value.trim()) {
     searchResults.value = [];
@@ -73,7 +80,7 @@ function goToRegister() {
     </div>
 
     <QuestionCard
-      v-for="question in safeQuestions"
+      v-for="question in questionStore.questions"
       :key="question.idx"
       :question="{
         ...question,
@@ -83,10 +90,17 @@ function goToRegister() {
       }"
     />
 
-    <div class="pagination">
-      <span class="page">1</span>
-      <span class="page">2</span>
-      <span class="page">3</span>
+    <div v-if="questionStore.totalPages > 1" class="pagination">
+      <button @click="loadPage(currentPage - 1)" :disabled="currentPage === 1">◀</button>
+      <button
+        v-for="page in questionStore.totalPages"
+        :key="page"
+        :class="{ active: page === currentPage }"
+        @click="loadPage(page)"
+      >
+        {{ page }}
+      </button>
+      <button @click="loadPage(currentPage + 1)" :disabled="currentPage === questionStore.totalPages">▶</button>
     </div>
   </div>
 </template>
@@ -169,13 +183,6 @@ function goToRegister() {
   height: 22px;
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 30px;
-}
-
 .page {
   font-weight: 600;
   cursor: pointer;
@@ -190,8 +197,34 @@ function goToRegister() {
   transform: scale(1.05);
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 6px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #eee;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.pagination button.active {
+  font-weight: bold;
+  background-color: #c9baba;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

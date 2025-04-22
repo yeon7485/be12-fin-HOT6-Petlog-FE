@@ -4,7 +4,9 @@ import { useRoute, useRouter } from "vue-router";
 import { useQuestionStore } from "/src/stores/useQuestionStore";
 import PetCardModal from "/src/pages/board/components/PetCardModal.vue";
 import PetCardListModal from "/src/pages/board/components/PetCardListModal.vue";
+import { useUserStore } from "/src/stores/useUserStore";
 
+const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
 const store = useQuestionStore();
@@ -25,6 +27,12 @@ const form = ref({
 const selectedPets = ref([]);
 
 onMounted(async () => {
+  if (!userStore.isLogin) {
+    alert("로그인 후 이용해주세요.");
+    router.push("/user/login");
+    return;
+  }
+
   if (isEdit.value) {
     const data = await store.readQuestion(questionIdx);
     form.value.qTitle = data.qTitle;

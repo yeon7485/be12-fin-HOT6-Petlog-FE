@@ -14,13 +14,6 @@ const scheduleStore = useScheduleStore();
     <img src="/src/assets/icons/cancel.png" alt="x" @click="onClose" class="close_btn" />
 
     <div class="detail_body">
-      <div class="date_box">
-        <div class="date_top_line"></div>
-        <div class="date_content">
-          <span class="date">{{ formatToKoreanDate(scheduleStore.currentDate) }}</span>
-          <img src="/src/assets/images/mdi_pets.svg" alt="paw" class="paw_icon" />
-        </div>
-      </div>
       <router-view></router-view>
     </div>
   </div>

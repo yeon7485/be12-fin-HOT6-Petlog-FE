@@ -139,7 +139,7 @@ const handleDateClick = (date) => {
 };
 
 const handleEventClick = (event) => {
-  scheduleStore.setCurrentDate(event.date);
+  scheduleStore.setCurrentDate(event.startAt);
   selectedDate.value = event.date;
   //props.onDetail();
   router.push(`/schedule/detail/${event.idx}`);

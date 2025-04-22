@@ -99,7 +99,6 @@ export const useScheduleStore = defineStore("schedule", {
             : await axios.get(
                 `/api/daily-record/pet/${this.currentPet.idx}/date/${year}/${month}/${day}`
               );
-        console.log("record", response.data);
         return response.data;
       } catch (err) {
         console.log(err);
@@ -111,6 +110,16 @@ export const useScheduleStore = defineStore("schedule", {
         const response = await axios.get(`/api/schedule/pet/${petIdx}`);
         this.plans = response.data.result;
 
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async getScheduleDetail(scheduleIdx) {
+      try {
+        const response = await axios.get(`/api/schedule/${scheduleIdx}`);
+        console.log("detail", response.data);
         return response.data;
       } catch (err) {
         console.log(err);

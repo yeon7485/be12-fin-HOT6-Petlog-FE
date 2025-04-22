@@ -20,9 +20,11 @@ const handleItemClick = (itemIdx) => {
 };
 
 const fetchSchedule = async () => {
-  const year = scheduleStore.currentDate.getFullYear();
-  const month = scheduleStore.currentDate.getMonth() + 1;
-  const day = scheduleStore.currentDate.getDate();
+  const date = new Date(scheduleStore.currentDate);
+
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
 
   const scheduleResult = await scheduleStore.getSchedulesByDate(year, month, day);
   const recordResult = await scheduleStore.getRecordsByDate(year, month, day);

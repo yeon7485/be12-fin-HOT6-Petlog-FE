@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 
 export const useScheduleStore = defineStore("schedule", {
   state: () => ({
-    currentDate: "",
+    currentDate: new Date(),
     type: "SCHEDULE",
     currentPet: {},
     plans: [],
@@ -33,7 +33,7 @@ export const useScheduleStore = defineStore("schedule", {
 
   actions: {
     setCurrentDate(date) {
-      this.currentDate = date;
+      this.currentDate = new Date(date);
     },
     setItemDetail(data) {
       this.planDetail = data;

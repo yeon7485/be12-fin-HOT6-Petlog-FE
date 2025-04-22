@@ -2,11 +2,11 @@
 import { reactive, ref, watch, computed, onMounted } from "vue";
 import axios from "axios";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
-import { useCategoryStore } from '../../../stores/useCategoryStore';
+import { useCategoryStore } from "../../../stores/useCategoryStore";
 
 const props = defineProps({
   onClose: Function,
-  selectedPet: Object // 👉 추가: 부모에서 넘긴 selectedPet 받기
+  selectedPet: Object, // 👉 추가: 부모에서 넘긴 selectedPet 받기
 });
 const emit = defineEmits(["schedule-created"]);
 
@@ -19,6 +19,7 @@ const selectedCate = ref({});
 
 // ✅ 카테고리 연동
 const planCategories = computed(() => categoryStore.scheduleCategories);
+const recordCategories = computed(() => categoryStore.recordCategories);
 
 onMounted(async () => {
   // 사용자 idx 불러오기
@@ -40,6 +41,7 @@ onMounted(async () => {
   }
 
   await categoryStore.fetchCategories("SCHEDULE");
+  await categoryStore.fetchCategories("DAILY_RECORD");
 });
 
 // ✅ props.selectedPet이 나중에 들어오는 경우 반영
@@ -55,16 +57,6 @@ watch(
 
 const isDropdownOpen = ref(false);
 const isCateDropdownOpen = ref(false);
-
-const recordCategories = ref([
-  { idx: 1, color: "#00C9CD", name: "체중" },
-  { idx: 2, color: "#E6B0BD", name: "이상현상" },
-  { idx: 3, color: "#65924D", name: "배변상태" },
-  { idx: 4, color: "#b29d90", name: "수면시간" },
-  { idx: 5, color: "#f30F12", name: "체온" },
-  { idx: 6, color: "#df32f3", name: "오늘의 사진" },
-  { idx: 7, color: "#BDBDBD", name: "기타" },
-]);
 
 const planData = reactive({
   title: "",
@@ -240,9 +232,12 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
             <!-- 드롭다운 버튼 (선택된 옵션 표시) -->
             <div class="pet_dropdown_btn" @click.stop="togglePet">
               <div class="profile_box">
-                <img :src="selectedPet?.profileImageUrl || '/src/assets/images/default.png'" alt="Profile"
-                  class="profile_img" />
-                <span>{{ selectedPet?.name || '이름 없음' }}</span>
+                <img
+                  :src="selectedPet?.profileImageUrl || '/src/assets/images/default.png'"
+                  alt="Profile"
+                  class="profile_img"
+                />
+                <span>{{ selectedPet?.name || "이름 없음" }}</span>
               </div>
               <img src="/src/assets/icons/arrow_down.png" alt="Arrow" class="arrow_icon" />
             </div>
@@ -263,12 +258,18 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
           <!-- 일정/기록, 카테고리 선택 -->
           <div class="content_header">
             <div class="type_box">
-              <div class="type_btn" :class="{ active: scheduleStore.type === 'SCHEDULE' }"
-                @click="selectType('SCHEDULE')">
+              <div
+                class="type_btn"
+                :class="{ active: scheduleStore.type === 'SCHEDULE' }"
+                @click="selectType('SCHEDULE')"
+              >
                 일정
               </div>
-              <div class="type_btn" :class="{ active: scheduleStore.type === 'DAILY_RECORD' }"
-                @click="selectType('DAILY_RECORD')">
+              <div
+                class="type_btn"
+                :class="{ active: scheduleStore.type === 'DAILY_RECORD' }"
+                @click="selectType('DAILY_RECORD')"
+              >
                 기록
               </div>
             </div>
@@ -288,9 +289,13 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
               <!-- 카테고리 드롭다운 메뉴 (옵션들) -->
               <div v-if="isCateDropdownOpen" class="cate_dropdown_menu" @click.stop>
                 <ul>
-                  <li v-for="option in scheduleStore.type === 'SCHEDULE'
-                    ? planCategories
-                    : recordCategories" :key="option.idx" @click="selectCate(option)">
+                  <li
+                    v-for="option in scheduleStore.type === 'SCHEDULE'
+                      ? planCategories
+                      : recordCategories"
+                    :key="option.idx"
+                    @click="selectCate(option)"
+                  >
                     <div class="cate_item">
                       <div class="color_box" :style="{ backgroundColor: option.color }"></div>
                       <span>{{ option.name }}</span>
@@ -304,7 +309,12 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
           <div class="input_box">
             <template v-if="scheduleStore.type === 'SCHEDULE'">
               <!-- 제목 입력 -->
-              <input v-model="planData.title" type="text" placeholder="제목을 입력해주세요." class="input_title" />
+              <input
+                v-model="planData.title"
+                type="text"
+                placeholder="제목을 입력해주세요."
+                class="input_title"
+              />
 
               <!-- 시간 입력 -->
               <div class="time_box">
@@ -314,7 +324,12 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
                 </div>
                 <div>
                   <label>종료 시간</label>
-                  <input v-model="planData.endAt" :min="planData.startAt" type="datetime-local" class="input_time" />
+                  <input
+                    v-model="planData.endAt"
+                    :min="planData.startAt"
+                    type="datetime-local"
+                    class="input_time"
+                  />
                 </div>
               </div>
 
@@ -327,7 +342,11 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
               <!-- 메모 입력 -->
               <div>
                 <label>메모</label>
-                <textarea v-model="planData.memo" placeholder="메모를 입력해주세요." class="textarea_memo" />
+                <textarea
+                  v-model="planData.memo"
+                  placeholder="메모를 입력해주세요."
+                  class="textarea_memo"
+                />
               </div>
 
               <!-- 반복 설정 -->
@@ -341,13 +360,24 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
                     <input v-model="planData.repeatEndAt" type="date" class="input_time" />
                   </div>
 
-                  <v-radio-group hide-details inline v-model="planData.repeatCycle" class="radio_btn">
+                  <v-radio-group
+                    hide-details
+                    inline
+                    v-model="planData.repeatCycle"
+                    class="radio_btn"
+                  >
                     <v-radio label="일" value="일" color="#757575" class="radio_item"></v-radio>
                     <v-radio label="주" value="주" color="#757575" class="radio_item"></v-radio>
                     <v-radio label="월" value="월" color="#757575" class="radio_item"></v-radio>
                   </v-radio-group>
 
-                  <input type="number" v-model="planData.repeatCount" class="input_repeat_num" min="0" max="31" />
+                  <input
+                    type="number"
+                    v-model="planData.repeatCount"
+                    class="input_repeat_num"
+                    min="0"
+                    max="31"
+                  />
                   <span>{{ planData.repeatCycle }}</span>
                 </div>
               </div>
@@ -356,8 +386,13 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
             <!-- 기록 입력박스 -->
             <template v-else>
               <!-- 제목 입력 -->
-              <input v-model="recordData.title" type="text" placeholder="제목을 입력해주세요." maxlength="30"
-                class="input_title" />
+              <input
+                v-model="recordData.title"
+                type="text"
+                placeholder="제목을 입력해주세요."
+                maxlength="30"
+                class="input_title"
+              />
 
               <!-- 시간 입력 -->
               <div class="time_box">
@@ -374,7 +409,12 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
                   </div>
                   <label class="custom_file_btn">
                     이미지 선택
-                    <input type="file" accept="image/*" @change="handleFileChange" class="hidden_file_input" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      @change="handleFileChange"
+                      class="hidden_file_input"
+                    />
                   </label>
                 </div>
               </div>
@@ -382,7 +422,11 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
               <!-- 메모 입력 -->
               <div>
                 <label>메모</label>
-                <textarea v-model="recordData.memo" placeholder="메모를 입력해주세요." class="textarea_memo" />
+                <textarea
+                  v-model="recordData.memo"
+                  placeholder="메모를 입력해주세요."
+                  class="textarea_memo"
+                />
               </div>
             </template>
           </div>
@@ -430,7 +474,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
   padding: 0 5px;
 }
 
-.modal_title>h2 {
+.modal_title > h2 {
   font-size: 23px;
   font-family: Cafe24Ssurround;
 }
@@ -484,7 +528,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
   margin-right: 10px;
 }
 
-.profile_box>span {
+.profile_box > span {
   font-size: 18px;
   font-family: Cafe24Ssurround;
   line-height: normal;
@@ -567,7 +611,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
   box-sizing: border-box;
 }
 
-.cate_dropdown_btn>span {
+.cate_dropdown_btn > span {
   flex-shrink: 0;
 }
 
@@ -749,7 +793,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
   padding: 15px 0;
 }
 
-.btn_box>button {
+.btn_box > button {
   border-radius: 8px;
   padding: 10px 15px;
   text-align: center;

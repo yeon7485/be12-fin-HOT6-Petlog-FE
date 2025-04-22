@@ -114,6 +114,7 @@ defineProps({ question: Object })
   border-radius: 12px;
   margin-bottom: 12px;
   margin-right: 8px;
+  margin-top: 10px;
 }
 
 .status_badge.resolved {
@@ -174,6 +175,7 @@ defineProps({ question: Object })
   font-size: 13px;
   font-weight: 500;
   color: #333;
+  margin-top: 14px;
 }
 
 .comment_icon {

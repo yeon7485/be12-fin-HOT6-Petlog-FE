@@ -1,64 +1,65 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useBoardStore } from '/src/stores/useBoardStore'
-import { useCommentStore } from '/src/stores/useCommentStore'
-import { useUserStore } from '/src/stores/useUserStore'
-import CommentCard from '/src/pages/board/components/CommentCard.vue'
-import PetCard from '/src/pages/board/components/PetCardModal.vue'
-import PetCardDetail from '/src/pages/board/components/PetCardDetailModal.vue'
+import { ref, onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useBoardStore } from "/src/stores/useBoardStore";
+import { useCommentStore } from "/src/stores/useCommentStore";
+import { useUserStore } from "/src/stores/useUserStore";
+import CommentCard from "/src/pages/board/components/CommentCard.vue";
+import PetCard from "/src/pages/board/components/PetCardModal.vue";
+import PetCardDetail from "/src/pages/board/components/PetCardDetailModal.vue";
 
-const route = useRoute()
-const router = useRouter()
-const boardStore = useBoardStore()
-const commentStore = useCommentStore()
-const userStore = useUserStore()
+const route = useRoute();
+const router = useRouter();
+const boardStore = useBoardStore();
+const commentStore = useCommentStore();
+const userStore = useUserStore();
 
-const postIdx = Number(route.params.idx)
-const boardType = route.params.boardType
-const post = ref(null)
+const postIdx = Number(route.params.idx);
+const boardType = route.params.boardType;
+const post = ref(null);
 
-const selectedPetId = ref(null)
-const isPetModalOpen = ref(false)
+const selectedPetId = ref(null);
+const isPetModalOpen = ref(false);
 
-const isOwner = computed(() =>
-  userStore.nickname &&
-  post.value?.writer &&
-  userStore.nickname === post.value.writer
-)
+const isOwner = computed(
+  () =>
+    userStore.nickname &&
+    post.value?.writer &&
+    userStore.nickname === post.value.writer
+);
 
 const openPetModal = (id) => {
-  selectedPetId.value = id
-  isPetModalOpen.value = true
-}
+  selectedPetId.value = id;
+  isPetModalOpen.value = true;
+};
 
 onMounted(async () => {
-  post.value = await boardStore.getPostDetail(postIdx)
-  await commentStore.fetchComments(postIdx)
-})
+  post.value = await boardStore.getPostDetail(postIdx);
+  await commentStore.fetchComments(postIdx);
+});
 
 const goToModify = () => {
-  router.push(`/board/${boardType}/post/${postIdx}/modify`)
-}
+  router.push(`/board/${boardType}/post/${postIdx}/modify`);
+};
 
 const handleDelete = async () => {
-  if (!confirm('정말로 삭제하시겠습니까?')) return
-  await boardStore.deletePost(postIdx)
-  alert('삭제되었습니다')
-  router.push(`/board/${boardType}`)
-}
+  if (!confirm("현재 게시글을 삭제하시겠습니까?")) return;
+  await boardStore.deletePost(postIdx);
+  alert("게시글이 삭제되었습니다");
+  router.push(`/board/${boardType}`);
+};
 
-const newComment = ref('')
+const newComment = ref("");
 const addComment = async () => {
-  if (!newComment.value.trim()) return
+  if (!newComment.value.trim()) return;
   await commentStore.addComment({
     postIdx,
     userIdx: userStore.userIdx,
     writer: userStore.nickname,
-    text: newComment.value
-  })
-  newComment.value = ''
-}
+    text: newComment.value,
+  });
+  newComment.value = "";
+};
 </script>
 
 <template>
@@ -70,14 +71,26 @@ const addComment = async () => {
 
       <div class="user_info_line">
         <div class="user_info">
-          <img class="profile_img" :src="post.profileImageUrl || '/src/assets/images/default.png'" alt="프로필 이미지" />
+          <img
+            class="profile_img"
+            :src="post.profileImageUrl || '/src/assets/images/default.png'"
+            alt="프로필 이미지"
+          />
           <span class="nickname">{{ post.writer }}</span>
           <span class="divider">ㅣ</span>
           <span class="date">{{ post.createdAt }}</span>
         </div>
         <div class="icons" v-if="isOwner">
-          <img src="/src/assets/icons/write.png" class="icon_btn" @click="goToModify" />
-          <img src="/src/assets/icons/x-button.png" class="icon_btn" @click="handleDelete" />
+          <img
+            src="/src/assets/icons/write.png"
+            class="icon_btn"
+            @click="goToModify"
+          />
+          <img
+            src="/src/assets/icons/x-button.png"
+            class="icon_btn"
+            @click="handleDelete"
+          />
         </div>
       </div>
 
@@ -85,24 +98,36 @@ const addComment = async () => {
 
       <div class="content_area">
         <div v-if="post.imageUrls?.length" class="image_gallery">
-          <img v-for="(img, i) in post.imageUrls" :key="i" :src="img" class="content_image" />
+          <img
+            v-for="(img, i) in post.imageUrls"
+            :key="i"
+            :src="img"
+            class="content_image"
+          />
         </div>
 
-        <p class="description">{{ post.content || '게시글 내용이 없습니다.' }}</p>
-        
+        <p class="description">
+          {{ post.content || "게시글 내용이 없습니다." }}
+        </p>
+
         <hr class="pet_section_divider" />
 
-        <h2 class="card">&lt;반려동물 카드&gt;</h2>
+        <div v-if="post.petList?.length">
+          <h2 class="card">&lt;반려동물 카드&gt;</h2>
 
-        <div v-if="post.petList?.length" class="pet_card_section">
-          <h3 class="pet_card_title"></h3>
-          <div class="pet_card_list">
-            <PetCard
-              v-for="pet in post.petList"
-              :key="pet.idx"
-              :pet="{ ...pet, image: pet.profileImageUrl || '/default-profile.png' }"
-              @click="() => openPetModal(pet.idx)"
-            />
+          <div class="pet_card_section">
+            <h3 class="pet_card_title"></h3>
+            <div class="pet_card_list">
+              <PetCard
+                v-for="pet in post.petList"
+                :key="pet.idx"
+                :pet="{
+                  ...pet,
+                  image: pet.profileImageUrl || '/default-profile.png',
+                }"
+                @click="() => openPetModal(pet.idx)"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -123,7 +148,13 @@ const addComment = async () => {
         v-model="newComment"
         :disabled="!userStore.isLogin"
       />
-      <button class="submit_btn" @click="addComment" :disabled="!userStore.isLogin">등록</button>
+      <button
+        class="submit_btn"
+        @click="addComment"
+        :disabled="!userStore.isLogin"
+      >
+        등록
+      </button>
     </div>
 
     <CommentCard
@@ -252,7 +283,7 @@ const addComment = async () => {
 }
 .submit_btn {
   margin-left: 10px;
-  background: #6A0104;
+  background: #6a0104;
   color: white;
   border: none;
   padding: 10px 16px;
@@ -276,11 +307,29 @@ const addComment = async () => {
   opacity: 0.6;
 }
 
- .card {
+.card {
   font-size: 30px;
   font-weight: bold;
   margin-bottom: 20px;
   color: #333;
   margin-top: 40px;
- }
+}
+
+.image_gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.content_image {
+  width: 200px;
+  height: auto;
+  object-fit: contain;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
 </style>

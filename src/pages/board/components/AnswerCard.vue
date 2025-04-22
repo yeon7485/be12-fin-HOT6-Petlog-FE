@@ -166,6 +166,12 @@ const goToQuestionDetail = () => {
   line-height: 1.6;
   color: #444;
 }
+
+.comment_body > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
 .answer_img {
   width: 100%;
   max-width: 120px;

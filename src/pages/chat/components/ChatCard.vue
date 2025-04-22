@@ -1,5 +1,20 @@
 <script setup>
-import { defineProps } from "vue";
+import { defineProps, ref } from "vue";
+import { useRouter } from "vue-router";
+import ChatRoomInfoModal from "./ChatRoomInfoModal.vue";
+
+const router = useRouter();
+const selectedRoom = ref(null);
+const showRoomModal = ref(false);
+
+const handleChatRoomClick = (room) => {
+  if (room.isParticipating) {
+    router.push(`/chatroom/${room.idx}`);
+  } else {
+    selectedRoom.value = room;
+    showRoomModal.value = true;
+  }
+};
 
 const props = defineProps({
   room: Object,
@@ -7,11 +22,10 @@ const props = defineProps({
 </script>
 
 <template>
-  <router-link :to="`/chatroom/${room.idx}`">
+  <div class="chat-card-wrapper" @click="handleChatRoomClick(room)">
     <div class="chat-card">
       <div class="chat-title">
         {{ room.title }}
-
         <span v-if="room.isParticipating" class="participating-badge"
           >참여중</span
         >
@@ -24,7 +38,13 @@ const props = defineProps({
         {{ room.participants }}명 참여 중
       </div>
     </div>
-  </router-link>
+  </div>
+
+  <ChatRoomInfoModal
+    v-if="showRoomModal"
+    :room="selectedRoom"
+    @close="showRoomModal = false"
+  />
 </template>
 
 <style scoped>

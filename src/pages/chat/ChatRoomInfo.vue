@@ -4,7 +4,7 @@
     <ChatHeader title="서울숲에서 같이 멍멍이 산책시킬 사람 !!" />
 
     <div class="schedule-wrapper">
-      <router-link to="/chatroom/1/chatroom-schedule">
+      <router-link :to="`/chatroom/${chatroomIdx}/chatroom-schedule`">
         <button class="schedule-button">
           <img src="../../assets/images/calendar-icon.svg" />
           채팅방 일정 조회

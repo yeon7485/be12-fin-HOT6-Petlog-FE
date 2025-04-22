@@ -7,7 +7,7 @@
       <div class="schedule-time">
         <strong>{{ schedule.time }}</strong>
       </div>
-      <div class="schedule-desc">{{ schedule.place }}</div>
+      <div class="schedule-desc">{{ schedule.title }}</div>
     </div>
   </router-link>
 </template>

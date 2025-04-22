@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { usePetStore } from "../../../stores/usePetStore";
+import { useScheduleStore } from "../../../stores/useScheduleStore";
 
 const props = defineProps({
   onClose: Function,
@@ -9,6 +10,7 @@ const props = defineProps({
 });
 
 const petStore = usePetStore();
+const scheduleStore = useScheduleStore();
 const pets = ref([]);
 
 const fetchPets = async () => {
@@ -20,7 +22,6 @@ const fetchPets = async () => {
     }
     await petStore.fetchPetList(user.idx);
     pets.value = petStore.petList;
-    console.log(pets.value);
   } catch (e) {
     console.error("반려동물 목록 불러오기 실패", e);
   }
@@ -51,7 +52,7 @@ onMounted(fetchPets);
       <v-divider class="line"></v-divider>
       <div class="modal_body">
         <ul class="pet_list">
-          <li class="pet_box" v-if="props.fromSchedule" @click="selectPet({})">
+          <li class="pet_box" v-if="props.fromSchedule" @click="selectPet(null)">
             <div class="profile_box">
               <span>전체</span>
             </div>

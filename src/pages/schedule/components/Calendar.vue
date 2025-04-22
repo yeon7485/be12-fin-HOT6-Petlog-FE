@@ -26,6 +26,7 @@ const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const currentDate = new Date();
 const currentYear = ref(currentDate.getFullYear());
 const currentMonth = ref(currentDate.getMonth());
+const selectedDate = ref(new Date());
 
 const calendarDates = computed(() => {
   const year = currentYear.value;
@@ -72,14 +73,25 @@ const calendarDates = computed(() => {
   return calendar;
 });
 
-const getEventsForDate = (date) => {
-  const dateStr = format(date, "yyyy-MM-dd");
+// const getEventsForSelectedDate = computed(() => {
+//   const dateStr = format(selectedDate.value, "yyyy-MM-dd");
 
-  return scheduleStore.plans.filter((event) => {
-    const eventDateStr = format(parseISO(event.startAt), "yyyy-MM-dd");
-    return eventDateStr === dateStr;
+//   return scheduleStore.plans.filter((event) => {
+//     const eventDateStr = format(parseISO(event.startAt), "yyyy-MM-dd");
+//     console.log(eventDateStr, dateStr);
+//     return eventDateStr === dateStr;
+//   });
+// });
+const eventsByDate = computed(() => {
+  const result = new Map();
+  scheduleStore.plans.forEach((event) => {
+    const dateStr = format(parseISO(event.startAt), "yyyy-MM-dd");
+    if (!result.has(dateStr)) result.set(dateStr, []);
+    result.get(dateStr).push(event);
   });
-};
+  return result;
+});
+
 const isSunday = (index) => index % 7 === 0;
 const isSaturday = (index) => index % 7 === 6;
 
@@ -120,6 +132,7 @@ const handleDateClick = (date) => {
 
 const handleEventClick = (event) => {
   scheduleStore.setCurrentDate(event.date);
+  selectedDate.value = event.date;
   //props.onDetail();
   router.push(`/schedule/detail/${event.idx}`);
 };
@@ -178,15 +191,13 @@ const handleEventClick = (event) => {
         <div class="event_wrapper">
           <div
             class="event"
-            v-for="event in getEventsForDate(item.date)"
+            v-for="event in eventsByDate.get(format(item.date, 'yyyy-MM-dd')) || []"
             :key="event.idx"
             :style="{ backgroundColor: hexToRgba(event.color, 0.25) }"
             :title="event.title"
             @click="handleEventClick(event)"
           >
-            <span>{{
-              Object.keys(scheduleStore.currentPet).length === 0 ? `[${event.petName}]` : ""
-            }}</span>
+            <span>{{ scheduleStore.currentPet?.idx == null ? `[${event.petName}]` : "" }}</span>
             {{ event.title }}
           </div>
         </div>

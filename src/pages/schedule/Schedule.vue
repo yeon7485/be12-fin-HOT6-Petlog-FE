@@ -12,7 +12,7 @@ const isPetModalOpen = ref(false);
 const isDetailMode = ref(false);
 const isLoading = ref(true);
 
-const selectedPet = ref(null); // 변경: {} → null
+const selectedPet = ref(null);
 
 const scheduleStore = useScheduleStore();
 const router = useRouter();
@@ -32,7 +32,12 @@ watch(
 );
 
 const fetchSchedule = async () => {
-  const result = await scheduleStore.getAllSchedule();
+  const isPetSelected = scheduleStore.currentPet?.idx != null;
+  console.log(isPetSelected);
+  const result = isPetSelected
+    ? await scheduleStore.getSchedulesByPet(scheduleStore.currentPet.idx)
+    : await scheduleStore.getAllSchedule();
+
   if (result?.isSuccess) {
     isLoading.value = false;
   }
@@ -75,34 +80,61 @@ const handleScheduleCreated = () => {
   fetchSchedule();
 };
 
-onMounted(async () => {
-  await fetchSchedule();
-});
+onMounted(fetchSchedule);
+
+watch(
+  () => scheduleStore.currentPet?.idx, // currentPet의 idx만 추적
+  () => {
+    fetchSchedule(); // 바뀔 때마다 실행됨!
+  },
+  { immediate: true } // 초기 실행도 포함하고 싶다면 이 옵션!
+);
 </script>
 
 <template>
   <div class="container" :class="{ detail_container: isDetailMode }">
     <div class="calendar_section" :class="{ detail_calendar: isDetailMode }">
       <div class="title_box">
-        <div class="profile_img" :style="{
-          backgroundImage: selectedPet?.profileImageUrl
-            ? `url(${selectedPet.profileImageUrl})`
-            : `url('/src/assets/images/profile_1.jpg')`,
-        }"></div>
+        <div
+          class="profile_img"
+          :style="{
+            backgroundImage: selectedPet?.profileImageUrl
+              ? `url(${selectedPet.profileImageUrl})`
+              : `url('/src/assets/images/profile_1.jpg')`,
+          }"
+        ></div>
 
         <p class="title">
-          {{ selectedPet?.name ? `${selectedPet.name}의 일정` : "내 일정" }}
+          {{
+            scheduleStore.currentPet?.idx == null
+              ? "내 일정"
+              : `${scheduleStore.currentPet.name}의 일정`
+          }}
         </p>
-        <img class="arrow_down" src="/src/assets/icons/arrow_down.png" alt="아래쪽" @click="openPetModal" />
+        <img
+          class="arrow_down"
+          src="/src/assets/icons/arrow_down.png"
+          alt="아래쪽"
+          @click="openPetModal"
+        />
       </div>
       <div class="calendar">
         <Calendar v-if="!isLoading" :onOpenModal="openNewScheduleModal" :onDetail="openDetail" />
       </div>
 
       <!-- 모달 -->
-      <NewScheduleModal v-if="isNewScheduleModalOpen" :onClose="closeNewScheduleModal" :selectedPet="selectedPet"
-        @schedule-created="handleScheduleCreated" />
-      <SelectPetModal v-if="isPetModalOpen" :onClose="closePetModal" :onSelect="handlePetSelect" :fromSchedule="true" />
+      <NewScheduleModal
+        v-if="isNewScheduleModalOpen"
+        :onClose="closeNewScheduleModal"
+        :selectedPet="selectedPet"
+        @schedule-created="handleScheduleCreated"
+      />
+      <SelectPetModal
+        v-if="isPetModalOpen"
+        :onClose="closePetModal"
+        :onSelect="handlePetSelect"
+        :fromSchedule="true"
+      />
     </div>
     <div v-if="isDetailMode" class="detail_section">
       <DetailSchedule :onClose="closeDetail" />

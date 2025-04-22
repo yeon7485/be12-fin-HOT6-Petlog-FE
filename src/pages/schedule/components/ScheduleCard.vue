@@ -16,7 +16,7 @@ const scheduleStore = useScheduleStore();
         <div class="color_circle" :style="{ backgroundColor: item.color }"></div>
         {{ item.categoryName }}
       </div>
-      {{ Object.keys(scheduleStore.currentPet).length === 0 ? item.petName : "" }}
+      {{ scheduleStore.currentPet?.idx == null ? item.petName : "" }}
     </div>
     <div class="schedule_item">
       <div class="schedule_time">

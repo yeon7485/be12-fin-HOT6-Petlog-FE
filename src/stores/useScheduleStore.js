@@ -78,7 +78,12 @@ export const useScheduleStore = defineStore("schedule", {
 
     async getSchedulesByDate(year, month, day) {
       try {
-        const response = await axios.get(`/api/schedule/date/${year}/${month}/${day}`);
+        const response =
+          this.currentPet?.idx == null
+            ? await axios.get(`/api/schedule/date/${year}/${month}/${day}`)
+            : await axios.get(
+                `/api/schedule/pet/${this.currentPet.idx}/date/${year}/${month}/${day}`
+              );
 
         return response.data;
       } catch (err) {
@@ -88,8 +93,13 @@ export const useScheduleStore = defineStore("schedule", {
 
     async getRecordsByDate(year, month, day) {
       try {
-        const response = await axios.get(`/api/daily-record/date/${year}/${month}/${day}`);
-
+        const response =
+          this.currentPet?.idx == null
+            ? await axios.get(`/api/daily-record/date/${year}/${month}/${day}`)
+            : await axios.get(
+                `/api/daily-record/pet/${this.currentPet.idx}/date/${year}/${month}/${day}`
+              );
+        console.log("record", response.data);
         return response.data;
       } catch (err) {
         console.log(err);

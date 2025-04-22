@@ -80,7 +80,10 @@ const handleScheduleCreated = () => {
   fetchSchedule();
 };
 
-onMounted(fetchSchedule);
+onMounted(() => {
+  fetchSchedule;
+  scheduleStore.type = "SCHEDULE";
+});
 
 watch(
   () => scheduleStore.currentPet?.idx, // currentPet의 idx만 추적

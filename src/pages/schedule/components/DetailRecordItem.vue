@@ -1,8 +1,8 @@
 <script setup>
-import { computed, ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
-import { formatTimeRange, formatToMonthDay } from "../../../utils/dateFormat";
+import { formatDateTime } from "../../../utils/dateFormat";
 import DeleteModal from "../../common/components/DeleteModal.vue";
 import EditItem from "./EditItem.vue";
 
@@ -10,9 +10,7 @@ const route = useRoute();
 const router = useRouter();
 const scheduleStore = useScheduleStore();
 
-const itemIdx = Number(route.params.id);
-const item = scheduleStore.getItemDetail(itemIdx);
-const timeText = computed(() => formatTimeRange(item.startAt, item.endAt));
+const item = ref(null);
 
 const isEditMode = ref(false);
 const isDeleteModalOpen = ref(false);
@@ -35,6 +33,25 @@ const onCloseEditMode = () => {
 const onCloseModal = () => {
   isDeleteModalOpen.value = false;
 };
+
+const fetchRecordDetail = async () => {
+  const result = await scheduleStore.getRecordDetail(route.params?.id);
+
+  if (result.isSuccess) {
+    item.value = result.result;
+  }
+  f;
+  isLoading.value = false;
+};
+
+onMounted(fetchRecordDetail);
+
+watch(
+  () => route.params.id,
+  () => {
+    fetchScheduleDetail();
+  }
+);
 </script>
 
 <template>
@@ -45,14 +62,13 @@ const onCloseModal = () => {
       <span>목록으로</span>
     </button>
 
-    <div class="detail_box">
+    <div v-if="item" class="detail_box">
       <div class="detail_header">
         <div class="category_box">
           <div class="color_circle" :style="{ backgroundColor: item.color }"></div>
-          {{ item.category }}
+          {{ item.categoryName }}
         </div>
         <div>
-          <img src="/src/assets/icons/share.svg" alt="share" class="header_icon" />
           <img
             @click="handleEditClick"
             src="/src/assets/icons/edit.svg"
@@ -70,24 +86,11 @@ const onCloseModal = () => {
       <h2 class="title">{{ item.title }}</h2>
       <div class="content_box">
         <p>시간</p>
-        <div>{{ timeText }}</div>
-      </div>
-      <div class="content_box">
-        <p>장소</p>
-        <div class="place_box">
-          <img src="/src/assets/icons/green_place.svg" alt="place" />
-          {{ item.placeName }}
-        </div>
+        <div>{{ formatDateTime(item.date) }}</div>
       </div>
       <div class="content_box">
         <p>메모</p>
         <div class="memo_box">{{ item.memo }}</div>
-      </div>
-      <div v-if="item.recurring" class="content_box">
-        <p>반복</p>
-        <span>{{ item.repeatCount + item.repeatCycle }}마다 반복</span>
-        <p class="repeat_end">반복 종료</p>
-        <span>{{ formatToMonthDay(item.repeatEndAt) }}</span>
       </div>
     </div>
   </div>

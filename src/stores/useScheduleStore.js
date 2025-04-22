@@ -119,7 +119,17 @@ export const useScheduleStore = defineStore("schedule", {
     async getScheduleDetail(scheduleIdx) {
       try {
         const response = await axios.get(`/api/schedule/${scheduleIdx}`);
-        console.log("detail", response.data);
+
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async getRecordDetail(recordIdx) {
+      try {
+        const response = await axios.get(`/api/daily-record/${recordIdx}`);
+
         return response.data;
       } catch (err) {
         console.log(err);

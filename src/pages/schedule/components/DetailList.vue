@@ -16,7 +16,11 @@ const selectType = (type) => {
 };
 
 const handleItemClick = (itemIdx) => {
-  router.push(`detail/${itemIdx}`);
+  if (scheduleStore.type === "SCHEDULE") {
+    router.push(`detail/${itemIdx}`);
+  } else {
+    router.push(`detail/record/${itemIdx}`);
+  }
 };
 
 const fetchSchedule = async () => {

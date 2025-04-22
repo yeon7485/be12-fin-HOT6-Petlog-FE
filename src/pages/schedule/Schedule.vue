@@ -33,7 +33,7 @@ watch(
 
 const fetchSchedule = async () => {
   const isPetSelected = scheduleStore.currentPet?.idx != null;
-  console.log(isPetSelected);
+
   const result = isPetSelected
     ? await scheduleStore.getSchedulesByPet(scheduleStore.currentPet.idx)
     : await scheduleStore.getAllSchedule();

@@ -5,14 +5,29 @@
       :key="idx"
       :message="msg"
       :isMine="msg.senderIdx === currentUserId"
-      @show-pet="(pet) => $emit('show-pet', pet)"
+      @show-pet="openPetModal"
+    />
+
+    <!-- 반려동물 모달 -->
+    <ChatPetCardModal
+      v-if="showPetModal"
+      :pet="selectedPet"
+      @close="showPetModal = false"
     />
   </div>
 </template>
 
 <script setup>
+import { ref } from "vue";
 import ChatMessage from "./ChatMessage.vue";
+import ChatPetCardModal from "./ChatPetCardModal.vue";
 
+const selectedPet = ref(null); // 🐾 클릭된 반려동물 저장
+const showPetModal = ref(false); // 모달 on/off
+const openPetModal = (pet) => {
+  selectedPet.value = pet;
+  showPetModal.value = true;
+};
 defineProps({
   messages: {
     type: Array,

@@ -19,27 +19,27 @@
 
     <!-- 텍스트 메시지 -->
     <template v-if="message.type === 'text'">
-      <div class="chat-bubble">{{ message.message }}</div>
+      <div class="chat-bubble">{{ message.content }}</div>
       <span class="chat-time">{{ formatTime(message.createdAt) }}</span>
     </template>
 
     <!-- 반려동물 카드 메시지 -->
     <template v-else-if="message.type === 'pet'">
-      <div class="pet-chat-card" @click="$emit('show-pet', message.pet)">
-        <img :src="message.pet.image" class="pet-chat-img" />
+      <div class="pet-chat-card" @click="$emit('show-pet', message.content)">
+        <img :src="message.content.image" class="pet-chat-img" />
         <div class="pet-chat-info">
           <div class="pet-chat-name">
-            {{ message.pet.name }}
+            {{ message.content.name }}
             <span class="gender">{{
-              message.pet.gender === "여" ? "♀" : "♂"
+              message.content.gender === "여" ? "♀" : "♂"
             }}</span>
           </div>
           <div class="pet-chat-detail">
-            {{ message.pet.breed }} / {{ message.pet.age }}
+            {{ message.content.breed }} / {{ message.content.age }}
           </div>
         </div>
       </div>
-      <span class="chat-time">{{ formatTime(message.timestamp) }}</span>
+      <span class="chat-time">{{ formatTime(message.createdAt) }}</span>
     </template>
 
     <!-- 일정 카드 메시지 -->
@@ -141,5 +141,44 @@ const formatTime = (timestamp) => {
   height: 32px;
   border-radius: 50%;
   margin-right: 8px;
+}
+
+.pet-chat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 20px;
+
+  width: 30%;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ddd;
+}
+
+/* 이미지 크게 */
+.pet-chat-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+
+.pet-chat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* ✅ 요소 간 세로 간격 */
+}
+
+/* 텍스트 크게 */
+.pet-chat-name {
+  font-weight: bold;
+  font-size: 18px; /* ✅ 이름 크게 */
+  margin-bottom: 4px;
+}
+
+.pet-chat-detail {
+  font-size: 14px;
+  color: #555;
 }
 </style>

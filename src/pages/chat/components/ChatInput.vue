@@ -27,9 +27,12 @@ const chatStore = useChatStore();
 const message = ref("");
 
 const send = () => {
-  console.log("test");
   if (message.value.trim()) {
-    chatStore.sendMessage(message.value, chatroomIdx); // currentUserId를 store에 저장한 경우
+    console.log(message.value);
+    const textContent = {
+      message: message.value,
+    };
+    chatStore.sendMessage(textContent, chatroomIdx, "text"); // currentUserId를 store에 저장한 경우
     message.value = "";
   }
 

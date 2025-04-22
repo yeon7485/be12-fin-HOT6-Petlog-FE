@@ -22,6 +22,7 @@ export const useChatStore = defineStore("chat", {
     myChatRooms: [],
     hasNext: true,
     lastUserId: null,
+    isParticipating: false,
   }),
 
   actions: {
@@ -76,11 +77,13 @@ export const useChatStore = defineStore("chat", {
       this.stompClient.activate(); // 연결 시작
     },
 
-    sendMessage(text, roomId) {
+    sendMessage(message, roomId, type) {
       const msg = {
         chatroomId: roomId,
-        type: "text",
-        text,
+        content: {
+          type: type,
+          ...message,
+        },
         timestamp: new Date().toISOString(),
       };
 
@@ -94,15 +97,15 @@ export const useChatStore = defineStore("chat", {
         this.messages.push({ ...msg, testMode: true });
       }
     },
-    async submitScheduleParticipation(chatroomIdx, animalIds) {
+    async submitScheduleParticipation(chatroomIdx, scheduleIdx, animalIds) {
       try {
-        // const response = await axios.post(
-        //   `/api/chatroom/${chatroomIdx}/participate`,
-        //   {
-        //     animalIds: animalIds,
-        //   }
-        // );
-        console.log("참여 완료:", animalIds);
+        const response = await axios.post(
+          `/api/chat/chatroom/${chatroomIdx}/schedule/${scheduleIdx}`,
+          {
+            animalIds: animalIds,
+          }
+        );
+        console.log("참여 완료:", response.data.result);
         // 필요하면 상태 업데이트
       } catch (error) {
         console.error("참여 실패:", error);
@@ -175,61 +178,10 @@ export const useChatStore = defineStore("chat", {
 
     async getChatRoomScheduleList(roomIdx) {
       try {
-        const response = {
-          data: [
-            {
-              idx: roomIdx,
-              time: "25.04.12 11:00",
-              place: "서울숲 산책",
-            },
-            {
-              idx: roomIdx,
-              time: "25.04.12 11:00",
-              place: "서울숲 산책",
-            },
-            {
-              idx: roomIdx,
-              time: "25.04.12 11:00",
-              place: "서울숲 산책",
-            },
-            {
-              idx: roomIdx,
-              time: "25.04.12 11:00",
-              place: "서울숲 산책",
-            },
-            {
-              idx: roomIdx,
-              time: "25.04.12 11:00",
-              place: "서울숲 산책",
-            },
-            {
-              idx: roomIdx,
-              time: "25.04.12 11:00",
-              place: "서울숲 산책",
-            },
-            {
-              idx: roomIdx,
-              time: "25.04.12 11:00",
-              place: "서울숲 산책",
-            },
-            {
-              idx: roomIdx,
-              time: "25.04.12 11:00",
-              place: "서울숲 산책",
-            },
-            {
-              idx: roomIdx,
-              time: "25.04.12 11:00",
-              place: "서울숲 산책",
-            },
-            {
-              idx: roomIdx,
-              time: "25.04.12 11:00",
-              place: "서울숲 산책",
-            },
-          ],
-        };
-        this.chatRoomScheduleList = response.data;
+        const response = await axios.get(
+          `/api/chat/chatroom/${roomIdx}/schedule`
+        );
+        this.chatRoomScheduleList = response.data.result;
       } catch (err) {
         console.error("❌ 멤버 목록 불러오기 실패:", err);
       }
@@ -237,51 +189,23 @@ export const useChatStore = defineStore("chat", {
 
     async getUserPets() {
       try {
-        const response = {
-          data: [
-            {
-              idx: 1,
-              petName: "솜",
-            },
-            {
-              idx: 2,
-              petName: "솜",
-            },
-            {
-              idx: 3,
-              petName: "솜",
-            },
-            {
-              idx: 4,
-              petName: "솜",
-            },
-          ],
-        };
+        const response = await axios.get("/api/pet/user");
 
-        this.userPets = response.data;
+        this.userPets = response.data.result;
       } catch (err) {
         console.error("실패");
       }
     },
 
-    async getChatroomScheduleDetail(roomIdx) {
+    async getChatroomScheduleDetail(roomIdx, scheduleIdx) {
       try {
-        const response = {
-          data: {
-            title: "병원 검진 예약",
-            time: "11:00 ~ 12:00",
-            place: "서울숲",
-            memo: "진료 결과 다른 곳은 양호한데 과체중 진단을 받아서 다이어트가 필요하다고 하셨다.",
-            participants: [
-              { nickname: "agdddh", petIdx: 1 },
-              { nickname: "agh", petIdx: 2 },
-              { nickname: "agh", petIdx: 3 },
-              { nickname: "agh", petIdx: 4 },
-            ],
-          },
-        };
+        const response = await axios.get(
+          `/api/chat/chatroom/${roomIdx}/schedule/${scheduleIdx}`
+        );
 
-        this.ChatRoomScheculeDetail = response.data;
+        this.ChatRoomScheculeDetail = response.data.result;
+        this.isParticipating = this.ChatRoomScheculeDetail.participating;
+        console.log(this.ChatRoomScheculeDetail);
       } catch (err) {
         console.error(err);
       }

@@ -49,7 +49,8 @@
         <div class="participant-box">
           <div
             class="participant-name"
-            v-for="chatRoomUser in chatStore.chatRoomUsers"
+            v-for="chatRoomUser in chatStore.ChatRoomScheculeDetail
+              .participants"
           >
             {{ chatRoomUser.userName }}
           </div>
@@ -58,13 +59,13 @@
     </div>
 
     <!-- ✅ 전체를 하나의 div로 감싸고 v-if를 적용 -->
-    <div v-if="showAnimalSelect">
+    <div v-if="!chatStore.isParticipating">
       <div class="participant-title">참여 동물 선택</div>
 
       <div class="scrollable animal-select-card">
         <label
           class="participant-item"
-          v-for="pet in chatStore.userPets"
+          v-for="pet in chatStore.ChatRoomScheculeDetail.pets"
           :key="pet.idx"
         >
           <input type="checkbox" :value="pet.idx" v-model="selectedAnimals" />
@@ -82,16 +83,15 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useChatStore } from "../../stores/useChatStroe";
 const chatStore = useChatStore();
 const route = useRoute();
 const router = useRouter();
 const chatroomIdx = route.params.chatroomIdx;
+const scheduleIdx = route.params.scheduleIdx;
 const selectedAnimals = ref([]);
-const showAnimalSelect = ref(false);
-
 watch(selectedAnimals, (newVal) => {
   console.log("선택된 idx 배열:", newVal);
 });
@@ -109,6 +109,7 @@ const goComplete = async () => {
   try {
     await chatStore.submitScheduleParticipation(
       chatroomIdx,
+      scheduleIdx,
       selectedAnimals.value
     );
     router.push(`/chatroom/${chatroomIdx}/chatroom-schedule`);
@@ -117,20 +118,15 @@ const goComplete = async () => {
   }
 };
 
-const checkParticipation = () => {
-  const myId = chatStore.myInfo.userId;
-  showAnimalSelect.value = !chatStore.chatRoomUsers.some((p) => p.idx === myId);
-};
-
 onMounted(async () => {
   await Promise.all([
-    chatStore.getUserPets(),
-    chatStore.fetchUsers(chatroomIdx),
-    chatStore.getChatroomScheduleDetail(chatroomIdx),
-    chatStore.getMyInfo(),
+    // chatStore.getUserPets(),
+    // chatStore.fetchUsers(chatroomIdx),
+    chatStore.getChatroomScheduleDetail(chatroomIdx, scheduleIdx),
+    // chatStore.getMyInfo(),
   ]);
 
-  checkParticipation(); // ✅ 모든 데이터 로딩 완료 후
+  console.log(chatStore.ChatRoomScheculeDetail.isParticipating);
 });
 </script>
 

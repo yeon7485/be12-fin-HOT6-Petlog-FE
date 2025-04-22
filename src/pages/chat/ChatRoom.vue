@@ -14,6 +14,7 @@
     </div>
   </div>
 
+  <!-- Pet 선택 모달 -->
   <div
     v-if="isModalOpen"
     class="modal-overlay"
@@ -22,55 +23,22 @@
     <div class="modal-content">
       <h3>반려동물 목록</h3>
 
-      <!-- ✅ 스크롤 영역 -->
       <div class="scrollable pet-list-scroll">
-        <div v-for="i in 10" :key="i" class="pet-card">
-          <img src="../../assets/images/Ellipse 12.png" class="pet-img" />
+        <div
+          v-for="pet in chatStore.userPets"
+          :key="pet.idx"
+          class="pet-card"
+          @click="sendPetMessage(pet)"
+        >
+          <img :src="pet.imageUrl || defaultPetImage" class="pet-img" />
           <div class="pet-info">
-            <div class="pet-name">멍멍이 {{ i }}</div>
-            <div class="pet-detail">시바견 / 3살</div>
+            <div class="pet-name">{{ pet.petName }}</div>
+            <div class="pet-detail">{{ pet.breed }}</div>
           </div>
         </div>
       </div>
 
       <button class="modal-close" @click="isModalOpen = false">닫기</button>
-    </div>
-  </div>
-
-  <!-- 반려동물 상세 모달 -->
-  <div
-    v-if="petDetailModalOpen"
-    class="modal-overlay"
-    @click.self="petDetailModalOpen = false"
-  >
-    <div class="pet-detail-modal">
-      <button class="modal-close-icon" @click="petDetailModalOpen = false">
-        ✕
-      </button>
-      <img :src="selectedPet.image" class="detail-pet-img" />
-      <h2>
-        {{ selectedPet.name }}
-        <span class="gender" v-if="selectedPet.gender === '여'">♀</span>
-        <span class="gender" v-else>♂</span>
-      </h2>
-      <p class="pet-subinfo">{{ selectedPet.age }} {{ selectedPet.breed }}</p>
-
-      <div class="pet-info-box">
-        <div class="info-row">
-          <span class="label">생일</span>
-          <span>{{ selectedPet.birth }}</span>
-        </div>
-        <div class="info-row">
-          <span class="label">중성화 여부</span>
-          <span>{{ selectedPet.neutered ? "✅" : "❌" }}</span>
-        </div>
-        <div class="info-row">
-          <span class="label">특이사항</span>
-          <span style="white-space: pre-line">{{
-            selectedPet.specialNote
-          }}</span>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -86,11 +54,29 @@ const chatStore = useChatStore();
 const userStore = useUserStore();
 const route = useRoute();
 const chatroomIdx = route.params.chatroomIdx;
-const petDetailModalOpen = ref(false);
-const selectedPet = ref(null);
 
 const currentUserId = userStore.idx; // 실제론 로그인된 유저 ID
+const sendPetMessage = (pet) => {
+  try {
+    console.log(pet);
+    chatStore.sendMessage(
+      {
+        idx: pet.idx,
+        name: pet.petName,
+        breed: pet.breed,
+        gender: pet.gender,
+        age: pet.age,
+        image: pet.imageUrl,
+      },
+      chatroomIdx, // 혹은 현재 채팅방 ID
+      "pet"
+    );
 
+    isModalOpen.value = false;
+  } catch (e) {
+    alert("반려동물 카드 전송에 실패했습니다.");
+  }
+};
 onMounted(() => {
   console.log(currentUserId);
   chatStore.getRoomInfo(chatroomIdx);
@@ -98,6 +84,7 @@ onMounted(() => {
     console.log("🟢 연결된 후 실행할 추가 작업!");
   });
   chatStore.loadMessages(chatroomIdx);
+  chatStore.getUserPets();
 });
 
 const isModalOpen = ref(false);
@@ -171,44 +158,6 @@ const roomTitle = computed(() => chatStore.chatRoomInfo?.title || "채팅방");
   display: flex;
   gap: 8px;
 }
-.pet-chat-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background-color: #fff;
-  border-radius: 16px;
-  padding: 20px;
-
-  width: 30%;
-
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid #ddd;
-}
-
-/* 이미지 크게 */
-.pet-chat-img {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-}
-
-.pet-chat-info {
-  display: flex;
-  flex-direction: column;
-  gap: 6px; /* ✅ 요소 간 세로 간격 */
-}
-
-/* 텍스트 크게 */
-.pet-chat-name {
-  font-weight: bold;
-  font-size: 18px; /* ✅ 이름 크게 */
-  margin-bottom: 4px;
-}
-
-.pet-chat-detail {
-  font-size: 14px;
-  color: #555;
-}
 
 /* ✅ 일정 카드 메시지 공통 */
 .schedule-message {
@@ -256,17 +205,6 @@ const roomTitle = computed(() => chatStore.chatRoomInfo?.title || "채팅방");
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-}
-
-/* ✅ 모달 */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
 }
 
 .modal-content {
@@ -335,70 +273,5 @@ const roomTitle = computed(() => chatStore.chatRoomInfo?.title || "채팅방");
 .pet-card:hover {
   background-color: #f0f0f0; /* 밝은 회색으로 변경 */
   cursor: pointer; /* 마우스 포인터 변경 */
-}
-
-.pet-detail-modal {
-  background: #fff4ec;
-  border-radius: 20px;
-  padding: 24px;
-  width: 480px;
-  height: 480px;
-  position: relative;
-  text-align: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-
-  /* ✅ 추가 */
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-close-icon {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.detail-pet-img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  margin-bottom: 12px;
-}
-
-.gender {
-  color: #d04b4b;
-  font-size: 16px;
-  margin-left: 4px;
-}
-
-.pet-subinfo {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 16px;
-}
-
-.pet-info-box {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  text-align: left;
-  font-size: 14px;
-  color: #333;
-  margin-top: auto; /* ✅ 아래로 밀기 */
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.label {
-  font-weight: 600;
-  color: #777;
 }
 </style>

@@ -6,17 +6,22 @@ export const useBoardStore = defineStore("board", () => {
   const posts = ref([]);
   const filteredPosts = ref([]);
   const category = ref("");
+  const totalPages = ref(1);
 
-  const fetchPosts = async (boardType) => {
+  const fetchPosts = async (boardType, page = 0, size = 5) => {
     category.value = boardType;
     try {
-      const res = await axios.get(`/api/post/list/${boardType}`);
-      posts.value = res.data;
-      filteredPosts.value = [...res.data];
+      const res = await axios.get(`/api/post/list/${boardType}`, {
+        params: { page, size },
+      });
+      posts.value = res.data.content;
+      filteredPosts.value = [...res.data.content];
+      totalPages.value = res.data.totalPages;
     } catch (err) {
       console.error("게시글 조회 실패:", err);
       posts.value = [];
       filteredPosts.value = [];
+      totalPages.value = 1;
     }
   };
 
@@ -74,6 +79,7 @@ export const useBoardStore = defineStore("board", () => {
     category,
     posts,
     filteredPosts,
+    totalPages,
     fetchPosts,
     searchPosts,
     getPostDetail,

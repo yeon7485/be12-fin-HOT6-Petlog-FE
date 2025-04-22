@@ -4,64 +4,68 @@ import axios from "axios";
 
 export const useQuestionStore = defineStore("question", () => {
   const questions = ref([]);
+  const totalPages = ref(1);
   const selectedQuestion = ref(null);
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = async (page = 0, size = 5) => {
     try {
-      const res = await axios.get("/api/question/list");
-      questions.value = res.data;
+      const res = await axios.get(
+        `/api/question/list?page=${page}&size=${size}`
+      );
+      questions.value = res.data.content;
+      totalPages.value = res.data.totalPages;
     } catch (error) {
       console.error("질문 목록 조회 실패:", error);
     }
   };
 
-const createQuestion = async (questionData) => {
-  try {
-    const formData = new FormData();
-    const questionBlob = new Blob([JSON.stringify(questionData)], {
-      type: "application/json",
-    });
-    formData.append("question", questionBlob);
-
-    if (Array.isArray(questionData.file)) {
-      questionData.file.forEach((file) => {
-        formData.append("images", file);
+  const createQuestion = async (questionData) => {
+    try {
+      const formData = new FormData();
+      const questionBlob = new Blob([JSON.stringify(questionData)], {
+        type: "application/json",
       });
-    }
+      formData.append("question", questionBlob);
 
-    const res = await axios.post("/api/question/create", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+      if (Array.isArray(questionData.file)) {
+        questionData.file.forEach((file) => {
+          formData.append("images", file);
+        });
+      }
 
-    return res.data;
-  } catch (error) {
-    console.error("질문 등록 실패:", error);
-    throw error;
-  }
-};
-
-const updateQuestion = async (idx, questionData) => {
-  try {
-    const formData = new FormData();
-    const questionBlob = new Blob([JSON.stringify(questionData)], {
-      type: "application/json",
-    });
-    formData.append("question", questionBlob);
-
-    if (Array.isArray(questionData.file)) {
-      questionData.file.forEach((file) => {
-        formData.append("images", file);
+      const res = await axios.post("/api/question/create", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-    }
 
-    await axios.put(`/api/question/update/${idx}`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-  } catch (error) {
-    console.error("질문 수정 실패:", error);
-    throw error;
-  }
-};
+      return res.data;
+    } catch (error) {
+      console.error("질문 등록 실패:", error);
+      throw error;
+    }
+  };
+
+  const updateQuestion = async (idx, questionData) => {
+    try {
+      const formData = new FormData();
+      const questionBlob = new Blob([JSON.stringify(questionData)], {
+        type: "application/json",
+      });
+      formData.append("question", questionBlob);
+
+      if (Array.isArray(questionData.file)) {
+        questionData.file.forEach((file) => {
+          formData.append("images", file);
+        });
+      }
+
+      await axios.put(`/api/question/update/${idx}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    } catch (error) {
+      console.error("질문 수정 실패:", error);
+      throw error;
+    }
+  };
 
   const readQuestion = async (idx) => {
     try {
@@ -121,6 +125,7 @@ const updateQuestion = async (idx, questionData) => {
 
   return {
     questions,
+    totalPages,
     selectedQuestion,
     fetchQuestions,
     createQuestion,

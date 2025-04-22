@@ -1,4 +1,5 @@
 <script setup>
+import { format, isSameDay } from "date-fns";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 import { formatTimeFromDate } from "../../../utils/dateFormat";
 
@@ -7,6 +8,27 @@ const props = defineProps({
 });
 
 const scheduleStore = useScheduleStore();
+
+const formatScheduleTime = (item) => {
+  if (scheduleStore.type !== "SCHEDULE") {
+    return formatTimeFromDate(item.date);
+  }
+
+  const start = new Date(item.startAt);
+  const end = item.endAt ? new Date(item.endAt) : null;
+
+  if (!end) {
+    return formatTimeFromDate(item.startAt);
+  }
+
+  const sameDay = isSameDay(start, end);
+
+  if (sameDay) {
+    return `${format(start, "HH:mm")} ~ ${format(end, "HH:mm")}`;
+  } else {
+    return `${format(start, "M월 d일 HH:mm")} ~ ${format(end, "M월 d일 HH:mm")}`;
+  }
+};
 </script>
 
 <template>
@@ -21,11 +43,7 @@ const scheduleStore = useScheduleStore();
     <div class="schedule_item">
       <div class="schedule_time">
         <p>
-          {{
-            scheduleStore.type === "SCHEDULE"
-              ? formatTimeFromDate(item.startAt)
-              : formatTimeFromDate(item.date)
-          }}
+          {{ formatScheduleTime(item) }}
         </p>
         <img v-if="item.fromChat" src="/src/assets/icons/chat.png" alt="chat" class="chat_icon" />
       </div>

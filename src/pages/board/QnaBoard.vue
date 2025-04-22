@@ -73,7 +73,7 @@ function goToRegister() {
     </div>
 
     <QuestionCard
-      v-for="question in questionStore.questions"
+      v-for="question in safeQuestions"
       :key="question.idx"
       :question="{
         ...question,

@@ -37,9 +37,6 @@ const editComment = async () => {
 }
 
 const deleteComment = async () => {
-  const confirmed = window.confirm("댓글을 삭제하시겠습니까?")
-  if (!confirmed) return
-
   try {
     await commentStore.deleteComment(props.postIdx, props.comment.idx)
   } catch (err) {

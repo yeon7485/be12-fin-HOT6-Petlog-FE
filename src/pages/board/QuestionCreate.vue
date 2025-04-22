@@ -32,8 +32,7 @@ onMounted(async () => {
     form.value.tags = data.tags.join(", ");
     form.value.image = data.image || "";
     selectedPets.value = data.petList || [];
-
-    // 기존 이미지들을 previewImageUrls에 넣어줌
+    
     if (data.imageUrls && data.imageUrls.length > 0) {
       previewImageUrls.value = [...data.imageUrls];
     }
@@ -105,7 +104,7 @@ const removeImage = (index) => {
   const removed = previewImageUrls.value.splice(index, 1)[0];
 
   if (removed?.startsWith("http")) {
-    removedImageUrls.value.push(removed); // ✅ 삭제할 이미지 URL 기록
+    removedImageUrls.value.push(removed); 
   }
 
   if (form.value.file) {
@@ -129,7 +128,7 @@ const removePet = (idx) => {
 
 <template>
   <div class="qna_container">
-    <h1 class="title">Q&A {{ isEdit ? "수정" : "등록" }}</h1>
+    <h1 class="title">질문 {{ isEdit ? "수정" : "등록" }}</h1>
 
     <form @submit.prevent="handleSubmit" class="form">
       <div class="form_group">
@@ -254,7 +253,7 @@ const removePet = (idx) => {
 
 label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 13px;
   font-weight: bold;
 }
 
@@ -348,9 +347,12 @@ button {
 .preview-image {
   width: 200px;
   max-height: 200px;
-  object-fit: contain;
-  border: 1px solid #ccc;
+  object-fit: cover;
+  border: none;                
   border-radius: 6px;
+  box-shadow: none;           
+  background: transparent;     
+  outline: none;               
 }
 
 .remove-icon {

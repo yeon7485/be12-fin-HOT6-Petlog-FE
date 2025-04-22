@@ -81,10 +81,10 @@ export const useAnswerStore = defineStore("answer", () => {
     }
   };
 
-  const deleteAnswer = async (answerIdx) => {
+  const deleteAnswer = async (answerIdx, questionIdx) => {
     try {
       await axios.delete(`/api/answer/delete/${answerIdx}`);
-      await fetchAnswersByQuestionId(questionIdx);
+      await fetchAnswersByQuestionId(questionIdx); 
     } catch (err) {
       console.error("답변 삭제 실패:", err);
       throw err;

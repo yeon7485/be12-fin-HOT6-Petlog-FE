@@ -340,12 +340,19 @@ const selectPetCard = (pet) => {
   flex-direction: column;
 }
 
+.form_group label {
+  margin-bottom: 13px; 
+  font-weight: bold;   
+  font-size: 15px;
+}
+
 select,
 input[type="text"],
 textarea {
   border: 1px solid #ccc;
-  padding: 10px;
+  padding: 14px;
   border-radius: 4px;
+  font-size: 15px;
 }
 
 select {

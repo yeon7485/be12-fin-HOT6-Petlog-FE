@@ -12,40 +12,53 @@ const categoryStore = useCategoryStore()
 const searchQuery = ref("");
 const selectedCategory = ref("");
 const currentPage = ref(1);
-const pageSize = 7;
+const pageSize = 5;
 
-const categories = computed(() => categoryStore.boardCategories.map(c => ({
-  label: c.name,
-  value: c.idx
-})))
+const categories = computed(() =>
+  categoryStore.boardCategories.map(c => ({ label: c.name, value: c.idx }))
+);
 
 const loadPage = async (page) => {
   currentPage.value = page;
-  await boardStore.fetchPosts("free", page - 1, pageSize);
-}
+
+  if (boardStore.isSearching) {
+    await boardStore.searchPosts({
+      boardName: 'free',
+      category: boardStore.currentCategoryName,
+      keyword: boardStore.currentKeyword,
+      page: page - 1,
+      size: pageSize
+    });
+  } else {
+    await boardStore.fetchPosts('free', page - 1, pageSize);
+  }
+};
+
+const triggerSearch = async () => {
+  const selected = categoryStore.boardCategories.find(c => c.idx === selectedCategory.value);
+  if (!selected) {
+    alert("카테고리를 선택해주세요.");
+    return;
+  }
+
+  currentPage.value = 1;
+  await boardStore.searchPosts({
+    boardName: 'free',
+    category: selected.name,
+    keyword: searchQuery.value || '',
+    page: 0,
+    size: pageSize
+  });
+};
+
+const goToWritePage = () => {
+  router.push("/board/free/create");
+};
 
 onMounted(async () => {
   await categoryStore.fetchCategories('BOARD')
   await loadPage(1)
-})
-
-const triggerSearch = async () => {
-  const selected = categoryStore.boardCategories.find(c => c.idx === selectedCategory.value)
-  if (!selected) {
-    alert("카테고리를 선택해주세요.")
-    return
-  }
-
-  await boardStore.searchPosts({
-    boardName: 'free',
-    category: selected.name,
-    keyword: searchQuery.value || ''
-  })
-}
-
-const goToWritePage = () => {
-  router.push("/board/free/create")
-}
+});
 </script>
 
 <template>
@@ -82,7 +95,13 @@ const goToWritePage = () => {
         </tr>
       </thead>
       <tbody>
-        <Card v-for="(post, index) in boardStore.posts" :key="post.idx" :post="post" :index="(currentPage - 1) * pageSize + index + 1" :boardType="'free'" />
+        <Card
+          v-for="(post, index) in boardStore.posts"
+          :key="post.idx"
+          :post="post"
+          :index="(currentPage - 1) * pageSize + index + 1"
+          :boardType="'free'"
+        />
       </tbody>
     </table>
 

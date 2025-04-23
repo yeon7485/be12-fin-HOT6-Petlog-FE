@@ -12,6 +12,7 @@ const answerStore = useAnswerStore();
 const search = ref("");
 const keyword = ref("");
 const searchResults = ref([]);
+const searchTotalPages = ref(1);
 
 const currentPage = ref(1);
 const pageSize = 5;
@@ -25,29 +26,28 @@ const safeQuestions = computed(() => {
 
 const loadPage = async (page) => {
   currentPage.value = page;
-  await questionStore.fetchQuestions(page - 1, pageSize);
-  await Promise.all(
-    questionStore.questions.map(async (q) => {
-      await answerStore.fetchAnswersByQuestionId(q.idx);
-    })
-  );
+  if (isSearching.value) {
+    await triggerSearch(keyword.value, page);
+  } else {
+    await questionStore.fetchQuestions(page - 1, pageSize);
+    await Promise.all(questionStore.questions.map((q) => answerStore.fetchAnswersByQuestionId(q.idx)));
+  }
+};
+
+const triggerSearch = async (kw, page = 1) => {
+  keyword.value = kw;
+  currentPage.value = page;
+  const res = await questionStore.searchQuestions(kw, page - 1, pageSize);
+  searchResults.value = res.content;
+  searchTotalPages.value = res.totalPages;
+  await Promise.all(searchResults.value.map((q) => answerStore.fetchAnswersByQuestionId(q.idx)));
+};
+
+const goToRegister = () => {
+  router.push("/board/qna/create");
 };
 
 onMounted(() => loadPage(1));
-
-async function triggerSearch() {
-  currentPage.value = 1;
-  keyword.value = search.value;
-  if (!keyword.value.trim()) {
-    searchResults.value = [];
-    return;
-  }
-  searchResults.value = await questionStore.searchQuestions(keyword.value);
-}
-
-function goToRegister() {
-  router.push("/board/qna/create");
-}
 </script>
 
 <template>
@@ -56,31 +56,22 @@ function goToRegister() {
       <h1 class="title">Q&amp;A</h1>
       <div class="search_write">
         <div class="search_box">
-          <img
-            class="icon_img"
-            src="/src/assets/icons/search.png"
-            alt="검색 아이콘"
-            @click="triggerSearch"
-          />
+          <img class="icon_img" src="/src/assets/icons/search.png" alt="검색 아이콘" @click="triggerSearch(search)" />
           <input
             v-model="search"
             type="text"
             placeholder="제목, 작성자, 내용, 해시태그 검색 ..."
-            @keyup.enter="triggerSearch"
+            @keyup.enter="triggerSearch(search)"
           />
         </div>
         <button class="write_button" @click="goToRegister">
-          <img
-            class="write_icon"
-            src="/src/assets/icons/write.png"
-            alt="글쓰기 아이콘"
-          />
+          <img class="write_icon" src="/src/assets/icons/write.png" alt="글쓰기 아이콘" />
         </button>
       </div>
     </div>
 
     <QuestionCard
-      v-for="question in questionStore.questions"
+      v-for="question in safeQuestions"
       :key="question.idx"
       :question="{
         ...question,
@@ -90,20 +81,26 @@ function goToRegister() {
       }"
     />
 
-    <div v-if="questionStore.totalPages > 1" class="pagination">
+    <div v-if="(isSearching ? searchTotalPages : questionStore.totalPages) > 1" class="pagination">
       <button @click="loadPage(currentPage - 1)" :disabled="currentPage === 1">◀</button>
       <button
-        v-for="page in questionStore.totalPages"
+        v-for="page in (isSearching ? searchTotalPages : questionStore.totalPages)"
         :key="page"
         :class="{ active: page === currentPage }"
         @click="loadPage(page)"
       >
         {{ page }}
       </button>
-      <button @click="loadPage(currentPage + 1)" :disabled="currentPage === questionStore.totalPages">▶</button>
+      <button
+        @click="loadPage(currentPage + 1)"
+        :disabled="currentPage === (isSearching ? searchTotalPages : questionStore.totalPages)"
+      >
+        ▶
+      </button>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .qna_board {

@@ -109,13 +109,15 @@ export const useQuestionStore = defineStore("question", () => {
     }
   };
 
-  const searchQuestions = async (keyword) => {
+  const searchQuestions = async (keyword, page = 0, size = 5) => {
     try {
-      const res = await axios.get(`/api/question/search?keyword=${keyword}`);
-      return Array.isArray(res.data) ? res.data : [];
+      const res = await axios.get(
+        `/api/question/search?keyword=${keyword}&page=${page}&size=${size}`
+      );
+      return res.data; 
     } catch (error) {
       console.error("질문 검색 실패:", error);
-      return [];
+      return { content: [], totalPages: 1 };
     }
   };
 

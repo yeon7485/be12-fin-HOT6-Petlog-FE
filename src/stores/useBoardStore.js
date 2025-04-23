@@ -19,8 +19,8 @@ export const useBoardStore = defineStore("board", () => {
       const res = await axios.get(`/api/post/list/${boardType}`, {
         params: { page, size },
       });
-      posts.value = res.data.content;
-      totalPages.value = res.data.totalPages;
+      posts.value = res.data.result.content;
+      totalPages.value = res.data.result.totalPages;
     } catch (err) {
       console.error("게시글 조회 실패:", err);
       posts.value = [];
@@ -43,8 +43,8 @@ export const useBoardStore = defineStore("board", () => {
       const res = await axios.get("/api/post/search", {
         params: { boardName, category, keyword, page, size },
       });
-      posts.value = res.data.content;
-      totalPages.value = res.data.totalPages;
+      posts.value = res.data.result.content;
+      totalPages.value = res.data.result.totalPages;
     } catch (err) {
       console.error("검색 실패:", err);
       posts.value = [];
@@ -55,7 +55,7 @@ export const useBoardStore = defineStore("board", () => {
   const getPostDetail = async (postIdx) => {
     try {
       const res = await axios.get(`/api/post/read/${postIdx}`);
-      return res.data;
+      return res.data.result;
     } catch (err) {
       console.error("게시글 상세 조회 실패:", err);
       return null;

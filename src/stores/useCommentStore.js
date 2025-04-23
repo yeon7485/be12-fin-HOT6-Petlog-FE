@@ -10,7 +10,7 @@ export const useCommentStore = defineStore("comment", () => {
   const fetchComments = async (postIdx) => {
     try {
       const { data } = await axios.get(`/api/comment/list/${postIdx}`);
-      comments.value = data;
+      comments.value = data.result;
     } catch (e) {
       alert("댓글 목록 조회에 실패했습니다.");
       console.error("댓글 조회 실패:", e);

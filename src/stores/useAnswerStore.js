@@ -8,7 +8,7 @@ export const useAnswerStore = defineStore("answer", () => {
   const fetchAnswersByQuestionId = async (questionId) => {
     try {
       const res = await axios.get(`/api/answer/list/${questionId}`);
-      answers.value = res.data;
+      answers.value = res.data.result;
     } catch (err) {
       console.error("답변 목록 조회 실패:", err);
     }
@@ -74,7 +74,7 @@ export const useAnswerStore = defineStore("answer", () => {
   const getAnswerByIdFromServer = async (idx) => {
     try {
       const res = await axios.get(`/api/answer/read/${idx}`);
-      return res.data;
+      return res.data.result;
     } catch (err) {
       console.error("단일 답변 조회 실패:", err);
       throw err;
@@ -84,7 +84,7 @@ export const useAnswerStore = defineStore("answer", () => {
   const deleteAnswer = async (answerIdx, questionIdx) => {
     try {
       await axios.delete(`/api/answer/delete/${answerIdx}`);
-      await fetchAnswersByQuestionId(questionIdx); 
+      await fetchAnswersByQuestionId(questionIdx);
     } catch (err) {
       console.error("답변 삭제 실패:", err);
       throw err;

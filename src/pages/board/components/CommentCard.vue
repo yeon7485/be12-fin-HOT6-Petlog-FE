@@ -140,7 +140,7 @@ const deleteComment = async () => {
 .edit_buttons {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 20px;
   margin-bottom: 6px;
 }
 
@@ -152,5 +152,6 @@ const deleteComment = async () => {
   font-weight: bold;
   color: #6c7dc6;
   cursor: pointer;
+  white-space: nowrap;
 }
 </style>

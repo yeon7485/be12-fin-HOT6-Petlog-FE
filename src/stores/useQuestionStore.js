@@ -12,8 +12,8 @@ export const useQuestionStore = defineStore("question", () => {
       const res = await axios.get(
         `/api/question/list?page=${page}&size=${size}`
       );
-      questions.value = res.data.content;
-      totalPages.value = res.data.totalPages;
+      questions.value = res.data.result.content;
+      totalPages.value = res.data.result.totalPages;
     } catch (error) {
       console.error("질문 목록 조회 실패:", error);
     }
@@ -37,7 +37,7 @@ export const useQuestionStore = defineStore("question", () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      return res.data;
+      return res.data.result;
     } catch (error) {
       console.error("질문 등록 실패:", error);
       throw error;
@@ -70,8 +70,8 @@ export const useQuestionStore = defineStore("question", () => {
   const readQuestion = async (idx) => {
     try {
       const res = await axios.get(`/api/question/read/${idx}`);
-      selectedQuestion.value = res.data;
-      return res.data;
+      selectedQuestion.value = res.data.result;
+      return res.data.result;
     } catch (error) {
       console.error("질문 단건 조회 실패:", error);
       throw error;
@@ -114,7 +114,7 @@ export const useQuestionStore = defineStore("question", () => {
       const res = await axios.get(
         `/api/question/search?keyword=${keyword}&page=${page}&size=${size}`
       );
-      return res.data; 
+      return res.data.result;
     } catch (error) {
       console.error("질문 검색 실패:", error);
       return { content: [], totalPages: 1 };

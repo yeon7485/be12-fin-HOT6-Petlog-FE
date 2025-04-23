@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { usePetStore } from "../../../stores/usePetStore";
+import { useScheduleStore } from "../../../stores/useScheduleStore";
 
 const props = defineProps({
   onClose: Function,
@@ -9,16 +10,12 @@ const props = defineProps({
 });
 
 const petStore = usePetStore();
+const scheduleStore = useScheduleStore();
 const pets = ref([]);
 
 const fetchPets = async () => {
   try {
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (!user?.idx) {
-      alert("로그인이 필요합니다");
-      return;
-    }
-    await petStore.fetchPetsByUser(user.idx);
+    await petStore.fetchPetList();
     pets.value = petStore.petList;
   } catch (e) {
     console.error("반려동물 목록 불러오기 실패", e);
@@ -27,12 +24,11 @@ const fetchPets = async () => {
 
 const selectPet = (pet) => {
   props.onSelect(pet);
+  scheduleStore.currentPet = pet;
   props.onClose();
 };
 
-onMounted(() => {
-  fetchPets();
-});
+onMounted(fetchPets);
 </script>
 
 <template>
@@ -40,20 +36,29 @@ onMounted(() => {
     <div class="modal_content" @click.stop="handleModalContentClick">
       <div class="modal_title">
         <h2>반려동물 선택</h2>
-        <img class="close_btn" src="/src/assets/icons/cancel.png" alt="close" @click="props.onClose()" />
+        <img
+          class="close_btn"
+          src="/src/assets/icons/cancel.png"
+          alt="close"
+          @click="props.onClose()"
+        />
       </div>
 
       <v-divider class="line"></v-divider>
       <div class="modal_body">
         <ul class="pet_list">
-          <li class="pet_box" v-if="props.fromSchedule" @click="selectPet({})">
+          <li class="pet_box" v-if="props.fromSchedule" @click="selectPet(null)">
             <div class="profile_box">
               <span>전체</span>
             </div>
           </li>
           <li v-for="pet in pets" class="pet_box" :key="pet.idx" @click="selectPet(pet)">
             <div class="profile_box">
-              <img :src="pet.profileImageUrl || '/src/assets/images/default.png'" alt="pet.name" class="profile_img" />
+              <img
+                :src="pet.profileImageUrl || '/src/assets/images/default.png'"
+                alt="pet.name"
+                class="profile_img"
+              />
               <span>{{ pet.name }}</span>
             </div>
           </li>
@@ -96,7 +101,7 @@ onMounted(() => {
   padding: 0 5px;
 }
 
-.modal_title>h2 {
+.modal_title > h2 {
   font-size: 23px;
   font-family: Cafe24Ssurround;
 }
@@ -152,7 +157,7 @@ onMounted(() => {
   margin-right: 10px;
 }
 
-.profile_box>span {
+.profile_box > span {
   font-size: 18px;
   font-family: Cafe24Ssurround;
   line-height: normal;

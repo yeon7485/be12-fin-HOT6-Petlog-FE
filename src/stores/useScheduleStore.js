@@ -3,66 +3,11 @@ import { defineStore } from "pinia";
 
 export const useScheduleStore = defineStore("schedule", {
   state: () => ({
-    currentDate: "",
+    currentDate: new Date(),
     type: "SCHEDULE",
-    currentPet: {},
-    plans: [
-      {
-        idx: 1,
-        date: "2025-04-05T11:00:00",
-        title: "산책 가기",
-        color: "#65924D",
-        category: "산책",
-        fromChat: true,
-      },
-      {
-        idx: 2,
-        date: "2025-04-07T11:00:00",
-        title: "병원 검진 예약 병원 검진 예약",
-        color: "#00C9CD",
-        category: "병원",
-        fromChat: false,
-      },
-      {
-        idx: 3,
-        date: "2025-03-27T17:00:00",
-        title: "미용 예약",
-        color: "#E6B0BD",
-        category: "미용",
-        fromChat: false,
-      },
-    ],
-    records: [
-      {
-        idx: 1,
-        date: "2025-04-10T11:00:00",
-        title: "체중 체크",
-        color: "#FB615D",
-        category: "체중",
-        memo: "2.5kg",
-        image: null,
-      },
-      {
-        idx: 2,
-        date: "2025-04-10T12:00:00",
-        title: "밥 주기",
-        color: "#FFA264",
-        category: "식사량",
-        memo: `사료 한 그릇 다 먹음! 사료 한 그릇 다 먹음! 사료 한 그릇 다 먹음! 
-        사료 한 그릇 다 먹음! 사료 한 그릇 다 먹음! 사료 한 그릇 다 먹음! 
-        사료 한 그릇 다 먹음! 사료 한 그릇 다 먹음! 사료 한 그릇 다 먹음! `,
-        image: null,
-      },
-      {
-        idx: 3,
-        date: "2025-04-10T17:00:00",
-        title: "누워서 나를 쳐다보는 빙봉이",
-        color: "#00C9CD",
-        category: "오늘의 사진",
-        memo: "냥냥펀치 맞기 전",
-        image: "/src/assets/images/cat2.jpg",
-      },
-    ],
+    currentPet: null,
+    plans: [],
+    records: [],
     planDetail: {
       idx: 2,
       title: "병원 검진 예약 병원 검진 예약",
@@ -88,7 +33,7 @@ export const useScheduleStore = defineStore("schedule", {
 
   actions: {
     setCurrentDate(date) {
-      this.currentDate = date;
+      this.currentDate = new Date(date);
     },
     setItemDetail(data) {
       this.planDetail = data;
@@ -124,7 +69,6 @@ export const useScheduleStore = defineStore("schedule", {
       try {
         const response = await axios.post(`/api/daily-record/pet/${petIdx}`, recordData);
 
-        console.log("기록 데이터", response);
         return response.data;
       } catch (err) {
         alert("기록 등록에 실패했습니다.");
@@ -132,11 +76,60 @@ export const useScheduleStore = defineStore("schedule", {
       }
     },
 
+    async getSchedulesByDate(year, month, day) {
+      try {
+        const response =
+          this.currentPet?.idx == null
+            ? await axios.get(`/api/schedule/date/${year}/${month}/${day}`)
+            : await axios.get(
+                `/api/schedule/pet/${this.currentPet.idx}/date/${year}/${month}/${day}`
+              );
+
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
     async getRecordsByDate(year, month, day) {
       try {
-        const response = await axios.get(`/api/daily-record/date/${year}/${month}/${day}`);
+        const response =
+          this.currentPet?.idx == null
+            ? await axios.get(`/api/daily-record/date/${year}/${month}/${day}`)
+            : await axios.get(
+                `/api/daily-record/pet/${this.currentPet.idx}/date/${year}/${month}/${day}`
+              );
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
 
-        console.log(response);
+    async getSchedulesByPet(petIdx) {
+      try {
+        const response = await axios.get(`/api/schedule/pet/${petIdx}`);
+        this.plans = response.data.result;
+
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async getScheduleDetail(scheduleIdx) {
+      try {
+        const response = await axios.get(`/api/schedule/${scheduleIdx}`);
+
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async getRecordDetail(recordIdx) {
+      try {
+        const response = await axios.get(`/api/daily-record/${recordIdx}`);
+
         return response.data;
       } catch (err) {
         console.log(err);

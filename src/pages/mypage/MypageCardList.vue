@@ -1,15 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useMypageCard } from '../../stores/useMypageCard.js';
-import { storeToRefs } from 'pinia';
-import PetCard from '../../pages/mypage/components/MypagePetCard.vue';
-
-const store = useMypageCard();
-const { fetchPets } = store;
-const { pets } = storeToRefs(store);
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useMypageCard } from "../../stores/useMypageCard.js";
+import { storeToRefs } from "pinia";
+import PetCard from "../../pages/mypage/components/MypagePetCard.vue";
+import { usePetStore } from "../../stores/usePetStore.js";
 
 const router = useRouter();
+const petStore = usePetStore();
 const isLoading = ref(true);
 
 function getSessionUserIdx() {
@@ -30,7 +28,7 @@ onMounted(async () => {
   }
 
   try {
-    await fetchPets(userId); 
+    await petStore.fetchPetList();
   } catch (e) {
     alert("반려동물 목록을 불러오는 데 실패했습니다.");
   } finally {
@@ -39,14 +37,13 @@ onMounted(async () => {
 });
 
 const goToCreateCard = () => {
-  router.push('/mypage/card/create');
+  router.push("/mypage/card/create");
 };
 
 const goToDetail = (pet) => {
   router.push(`/mypage/card/detail/${pet.idx}`);
 };
 </script>
-
 
 <template>
   <div class="container">
@@ -55,18 +52,18 @@ const goToDetail = (pet) => {
       <button class="add-button" @click="goToCreateCard">➕</button>
     </div>
 
-    <div class="pet-cards" v-if="pets.length">
-  <PetCard
-    v-for="pet in pets"
-    :key="pet.idx"
-    :pet="{
-      ...pet,
-      image: pet.profileImageUrl || '/default-profile.png'
-    }"
-    @click="() => goToDetail(pet)"
-  />
-</div>
-    <div v-else style="margin-top: 150px;">반려동물이 없습니다.</div>
+    <div class="pet-cards" v-if="petStore.petList.length">
+      <PetCard
+        v-for="pet in petStore.petList"
+        :key="pet.idx"
+        :pet="{
+          ...pet,
+          image: pet.profileImageUrl || '/default-profile.png',
+        }"
+        @click="() => goToDetail(pet)"
+      />
+    </div>
+    <div v-else style="margin-top: 150px">반려동물이 없습니다.</div>
   </div>
 </template>
 
@@ -104,7 +101,7 @@ const goToDetail = (pet) => {
   border: 2px solid black;
   border-radius: 50%;
   cursor: pointer;
-  margin: 0 20px 0 80px; 
+  margin: 0 20px 0 80px;
 }
 
 .pet-cards {

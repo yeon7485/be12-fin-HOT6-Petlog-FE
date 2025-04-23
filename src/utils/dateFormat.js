@@ -12,13 +12,8 @@ export function formatToKoreanDate(dateInput) {
 export function formatTimeRange(startAt, endAt) {
   const start = parseISO(startAt);
   const end = parseISO(endAt);
-  const isSame = isSameDay(start, end);
 
-  if (isSame) {
-    return `${format(start, "HH:mm")} ~ ${format(end, "HH:mm")}`;
-  } else {
-    return `${format(start, "M월 d일 HH:mm")} ~ ${format(end, "M월 d일 HH:mm")}`;
-  }
+  return `${format(start, "M월 d일 HH:mm")} ~ ${format(end, "M월 d일 HH:mm")}`;
 }
 
 export function formatToMonthDay(dateString) {
@@ -32,4 +27,14 @@ export function formatTimeFromDate(dateString) {
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
   return `${hours}:${minutes}`;
+}
+
+export function formatDateTime(dateString) {
+  const date = new Date(dateString);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${month}월 ${day}일 ${hours}:${minutes}`;
 }

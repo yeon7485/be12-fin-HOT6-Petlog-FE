@@ -1,6 +1,7 @@
 <script setup>
 import {
   addMonths,
+  eachDayOfInterval,
   endOfMonth,
   format,
   getDay,
@@ -26,6 +27,7 @@ const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const currentDate = new Date();
 const currentYear = ref(currentDate.getFullYear());
 const currentMonth = ref(currentDate.getMonth());
+const selectedDate = ref(new Date());
 
 const calendarDates = computed(() => {
   const year = currentYear.value;
@@ -72,14 +74,32 @@ const calendarDates = computed(() => {
   return calendar;
 });
 
-const getEventsForDate = (date) => {
-  const dateStr = format(date, "yyyy-MM-dd");
+const eventsByDate = computed(() => {
+  const result = new Map();
 
-  return scheduleStore.plans.filter((event) => {
-    const eventDateStr = format(parseISO(event.startAt), "yyyy-MM-dd");
-    return eventDateStr === dateStr;
+  scheduleStore.plans.forEach((event) => {
+    const start = parseISO(event.startAt || event.date);
+    const end = event.endAt ? parseISO(event.endAt) : null;
+
+    const dateList = end ? eachDayOfInterval({ start, end }) : [start];
+
+    dateList.forEach((date, idx) => {
+      const dateStr = format(date, "yyyy-MM-dd");
+      const isStart = idx === 0;
+      const isEnd = idx === dateList.length - 1;
+
+      if (!result.has(dateStr)) result.set(dateStr, []);
+
+      result.get(dateStr).push({
+        ...event,
+        _position: end ? (isStart ? "start" : isEnd ? "end" : "middle") : "start",
+      });
+    });
   });
-};
+
+  return result;
+});
+
 const isSunday = (index) => index % 7 === 0;
 const isSaturday = (index) => index % 7 === 6;
 
@@ -119,7 +139,8 @@ const handleDateClick = (date) => {
 };
 
 const handleEventClick = (event) => {
-  scheduleStore.setCurrentDate(event.date);
+  scheduleStore.setCurrentDate(event.startAt);
+  selectedDate.value = event.date;
   //props.onDetail();
   router.push(`/schedule/detail/${event.idx}`);
 };
@@ -177,14 +198,17 @@ const handleEventClick = (event) => {
         </div>
         <div class="event_wrapper">
           <div
-            class="event"
-            v-for="event in getEventsForDate(item.date)"
-            :key="event.idx"
+            v-for="event in eventsByDate.get(format(item.date, 'yyyy-MM-dd')) || []"
+            :key="event.idx + '-' + format(item.date, 'yyyy-MM-dd')"
+            :class="['event', event._position]"
             :style="{ backgroundColor: hexToRgba(event.color, 0.25) }"
             :title="event.title"
             @click="handleEventClick(event)"
           >
-            {{ event.title }}
+            <template v-if="event._position === 'start'">
+              <span v-if="scheduleStore.currentPet?.idx == null">[{{ event.petName }}]</span>
+              {{ event.title }}
+            </template>
           </div>
         </div>
       </div>
@@ -329,12 +353,13 @@ const handleEventClick = (event) => {
 }
 
 .today_cell {
-  background-color: var(--gray200);
+  border: 1px solid var(--gray500);
 }
 
 .today_date {
   font-weight: bold;
   font-size: 16px;
+  margin: 2px 4px;
 }
 
 .event_wrapper {
@@ -342,20 +367,25 @@ const handleEventClick = (event) => {
   overflow: hidden;
 }
 
-.event {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 1px;
-  padding: 5px 6px;
-  font-size: 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
 .not_this_month {
   opacity: 0.3;
+}
+
+.event {
+  height: 20px;
+  margin-top: 2px;
+  padding: 5px 6px;
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.event.middle,
+.event.end {
+  color: transparent;
+  padding: 0;
 }
 </style>

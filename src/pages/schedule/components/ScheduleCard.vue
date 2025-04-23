@@ -1,4 +1,5 @@
 <script setup>
+import { format, isSameDay } from "date-fns";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 import { formatTimeFromDate } from "../../../utils/dateFormat";
 
@@ -7,27 +8,47 @@ const props = defineProps({
 });
 
 const scheduleStore = useScheduleStore();
+
+const formatScheduleTime = (item) => {
+  if (scheduleStore.type !== "SCHEDULE") {
+    return formatTimeFromDate(item.date);
+  }
+
+  const start = new Date(item.startAt);
+  const end = item.endAt ? new Date(item.endAt) : null;
+
+  if (!end) {
+    return formatTimeFromDate(item.startAt);
+  }
+
+  const sameDay = isSameDay(start, end);
+
+  if (sameDay) {
+    return `${format(start, "HH:mm")} ~ ${format(end, "HH:mm")}`;
+  } else {
+    return `${format(start, "M월 d일 HH:mm")} ~ ${format(end, "M월 d일 HH:mm")}`;
+  }
+};
 </script>
 
 <template>
   <div class="schedule_card">
-    <div class="category_box">
-      <div class="color_circle" :style="{ backgroundColor: item.color }"></div>
-      {{ item.categoryName }}
+    <div class="card_header">
+      <div class="category_box">
+        <div class="color_circle" :style="{ backgroundColor: item.color }"></div>
+        {{ item.categoryName }}
+      </div>
+      {{ scheduleStore.currentPet?.idx == null ? item.petName : "" }}
     </div>
     <div class="schedule_item">
       <div class="schedule_time">
         <p>
-          {{
-            scheduleStore.type === "SCHEDULE"
-              ? formatTimeFromDate(item.startAt)
-              : formatTimeFromDate(item.date)
-          }}
+          {{ formatScheduleTime(item) }}
         </p>
         <img v-if="item.fromChat" src="/src/assets/icons/chat.png" alt="chat" class="chat_icon" />
       </div>
       <p>{{ item.title }}</p>
-      <img v-if="item.image" src="/src/assets/images/cat2.jpg" alt="image" class="record_img" />
+      <img v-if="item.imageUrl" src="/src/assets/images/cat2.jpg" alt="image" class="record_img" />
       <p v-if="scheduleStore.type === 'DAILY_RECORD'" class="record_memo">{{ item.memo }}</p>
     </div>
   </div>
@@ -39,12 +60,17 @@ const scheduleStore = useScheduleStore();
   box-sizing: border-box;
 }
 
+.card_header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin: 0 0 8px 5px;
+}
+
 .category_box {
   display: flex;
   align-items: center;
-  font-size: 14px;
   gap: 5px;
-  margin: 0 0 8px 5px;
 }
 
 .color_circle {

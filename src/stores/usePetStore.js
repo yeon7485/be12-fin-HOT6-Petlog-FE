@@ -73,7 +73,7 @@ export const usePetStore = defineStore("pet", {
 
     async fetchPetList() {
       try {
-        const response = await axios.get(`/api/pet/user`);
+        const response = await axios.get(`/api/pet/list`);
         this.petList = response.data;
         return response.data;
       } catch (error) {

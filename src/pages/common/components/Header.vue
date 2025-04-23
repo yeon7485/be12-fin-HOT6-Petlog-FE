@@ -2,15 +2,21 @@
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../../stores/useUserStore";
+import { useNotificationStore } from "../../../stores/useNoticeStore";
 import NoticeDropdown from "./NoticeDropdown.vue";
 
 const router = useRouter();
 const userStore = useUserStore();
+const store = useNotificationStore();
+
+// 알림 배지 상태 (읽지 않은 알림 수)
+const unreadNotifications = ref(0);
 
 const toHome = () => router.push("/");
 const dropdownOpen = ref(false);
 const alertOpen = ref(false);
 
+// 알림 아이콘 클릭 시 드롭다운 토글
 const toggleDropdown = () => (dropdownOpen.value = !dropdownOpen.value);
 const toggleAlert = () => (alertOpen.value = !alertOpen.value);
 
@@ -21,6 +27,7 @@ const goToMyPage = () => {
     router.push("/mypage");
   }
 };
+
 const logout = async () => {
   const result = await userStore.logout();
   if (result.isSuccess) {
@@ -38,10 +45,43 @@ const logout = async () => {
 const isLoggedIn = computed(() => userStore.isLogin);
 const isLoading = ref(true);
 
-onMounted(() => {
-  userStore.loginCheck();
+// WebSocket 연결 및 알림 수 동기화
+onMounted(async () => {
+  await userStore.loginCheck();
   isLoading.value = false;
+  store.connectWebSocket();
+  store.fetchNotificationsFromServer(); // 서버에서 알림 목록 로딩
 });
+
+const handleClick = async (n) => {
+  n.read = true; // 로컬 상태에서 읽음 처리
+  unreadNotifications.value = store.notifications.filter((n) => !n.read).length; // 배지 갱신
+
+  try {
+    // 서버에 읽음 상태 반영
+    await store.markAsRead(n.idx);
+
+    alert(`${n.title}\n\n${n.content}`);
+  } catch (err) {
+    console.error("❌ 알림 읽음 처리 실패:", err);
+  }
+};
+
+// 알림 삭제
+const deleteNotification = async (idx, index) => {
+  console.log("🧪 삭제 요청: ", idx); // 여기서 undefined 뜨면 문제 발생 위치 확정
+  try {
+    await axios.delete(`/api/notification/${idx}`);
+    store.removeNotification(index);
+  } catch (err) {
+    console.error("❌ 알림 삭제 실패:", err);
+  }
+};
+
+// 읽지 않은 알림 수 계산
+store.$subscribe(() => {
+  unreadNotifications.value = store.notifications.filter((n) => !n.read).length;
+})
 </script>
 
 <template>
@@ -65,9 +105,13 @@ onMounted(() => {
           </template>
 
           <template v-else>
-            <!-- ✅ 알림 아이콘 클릭 시 드롭다운 토글 -->
+            <!-- 알림 아이콘 클릭 시 드롭다운 토글 -->
             <div class="alert-wrapper" @click="toggleAlert">
-              <img src="/src/assets/icons/alart.png" alt="alart" class="alart_icon" />
+              <div class="alart-icon-container">
+                <img src="/src/assets/icons/alart.png" alt="alart" class="alart_icon" />
+                <!-- 미확인 알림 배지 -->
+                <span v-if="unreadNotifications > 0" class="badge">{{ unreadNotifications }}</span>
+              </div>
               <NoticeDropdown v-if="alertOpen" class="notice_dropdown" />
             </div>
 
@@ -219,5 +263,19 @@ onMounted(() => {
 .login {
   text-decoration: none;
   color: inherit;
+}
+.badge {
+  position: absolute;
+  top: -7px; /* 배지 위치를 좀 더 위로 올려서 아이콘과 겹치지 않게 설정 */
+  right: -7px; /* 배지 위치를 오른쪽으로 살짝 이동 */
+  background-color: red;
+  color: white;
+  border-radius: 50%; /* 원형으로 만들기 */
+  padding: 2px 5px; /* 크기를 더 줄이기 위해 패딩을 최소화 */
+  font-size: 11px; /* 글자 크기 더 줄임 */
+  min-width: 14px; /* 배지의 최소 너비 */
+  height: 14px; /* 배지 높이 조정 */
+  text-align: center; /* 텍스트 가운데 정렬 */
+  line-height: 14px; /* 텍스트 세로 정렬 */
 }
 </style>

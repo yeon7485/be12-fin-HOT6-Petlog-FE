@@ -1,12 +1,27 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useNotificationStore } from '../../../stores/useNoticeStore'
+import axios from 'axios'
 
 const store = useNotificationStore()
 
 onMounted(() => {
   store.connectWebSocket()
+  store.fetchNotificationsFromServer() // ✅ 추가: 서버에서 알림 목록 로딩
 })
+
+
+// ✅ 삭제 함수 추가
+const deleteNotification = async (idx, index) => {
+  console.log("🧪 삭제 요청: ", idx) // 여기서 undefined 뜨면 문제 발생 위치 확정
+  try {
+    await axios.delete(`/api/notification/${idx}`)
+    store.removeNotification(index)
+  } catch (err) {
+    console.error('❌ 알림 삭제 실패:', err)
+  }
+}
+
 
 const handleClick = (n) => {
   alert(`${n.title}\n\n${n.content}`)
@@ -18,13 +33,13 @@ const handleClick = (n) => {
     <h2>🔔 알림</h2>
     <div v-if="store.notifications.length === 0">알림이 없습니다.</div>
     <ul>
-      <li v-for="(n, index) in store.notifications" :key="n.id">
+      <li v-for="(n, index) in store.notifications" :key="n.idx">
         <div @click="handleClick(n)">
           <strong>{{ n.title }}</strong>
           <p>{{ n.content }}</p>
           <small>{{ n.time }}</small>
         </div>
-        <button @click="store.removeNotification(index)">❌</button>
+        <button @click="deleteNotification(n.idx, index)">❌</button>
       </li>
     </ul>
   </div>

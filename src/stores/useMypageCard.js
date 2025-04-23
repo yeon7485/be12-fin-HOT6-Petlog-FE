@@ -13,7 +13,7 @@ export const useMypageCard = defineStore("mypageCard", {
       petCards: [],
     },
     userQuestions: [],
-    userAnswers: [], // ✅ 추가
+    userAnswers: []  
   }),
 
   actions: {

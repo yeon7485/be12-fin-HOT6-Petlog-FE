@@ -1,17 +1,34 @@
 <script setup>
 import { ref } from "vue";
+import { useMypageCard } from "../../stores/useMypageCard.js";
 const emit = defineEmits(["close"]);
+
+const petStore = useMypageCard(); 
 
 const currentPassword = ref("");
 const newPassword = ref("");
 const confirmNewPassword = ref("");
 
-const changePassword = () => {
-  // TODO: 유효성 검사 및 비밀번호 변경 API 호출
-  alert("비밀번호가 변경되었습니다.");
-  emit("close");
+
+const changePassword = async () => {
+
+  if (newPassword.value !== confirmNewPassword.value) {
+    alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+    return;
+  }
+
+  try {
+    await petStore.changePassword(currentPassword.value, newPassword.value);
+    
+    alert("비밀번호가 성공적으로 변경되었습니다.");
+    emit("close"); 
+  } catch (error) {
+    console.error("Error:", error); 
+    alert(error.response?.data || "비밀번호 변경 실패");
+  }
 };
 </script>
+
 
 <template>
   <div class="password-overlay">

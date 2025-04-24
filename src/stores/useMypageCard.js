@@ -11,6 +11,7 @@ export const useMypageCard = defineStore("mypageCard", {
       email: "",
       profileImageUrl: "",
       petCards: [],
+      provider: ""
     },
     userQuestions: [],
     userAnswers: []  
@@ -45,6 +46,7 @@ export const useMypageCard = defineStore("mypageCard", {
           email: response.data.email ?? "",
           profileImageUrl: response.data.profileImageUrl ?? "/src/assets/images/default.png",
           petCards: response.data.petCards ?? [],
+          provider: response.data.provider ?? ""
         };
       } catch (e) {
         console.error("유저 프로필 조회 실패:", e);
@@ -78,7 +80,6 @@ export const useMypageCard = defineStore("mypageCard", {
     },
 
     async fetchAnswersByUser(userId) {
-      // ✅ 옮긴 액션
       try {
         const response = await axios.get(`/api/answer/list/user/${userId}`);
         this.userAnswers = response.data;
@@ -87,5 +88,23 @@ export const useMypageCard = defineStore("mypageCard", {
         throw error;
       }
     },
+
+    async changePassword(currentPassword, newPassword) {
+      try {
+        const response = await axios.post(`/api/user/password`, {  
+          currentPassword,
+          newPassword
+        }, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+    
+        alert("비밀번호가 성공적으로 변경되었습니다.");
+      } catch (error) {
+        console.error("Error:", error);  
+        alert(error.response?.data || "비밀번호 변경 실패");
+      }
+    }
   },
 });

@@ -13,6 +13,7 @@ const { userProfile } = storeToRefs(store);
 const nickname = computed(() => userProfile.value.nickname);
 const email = computed(() => userProfile.value.email);
 const profileImageUrl = computed(() => userProfile.value.profileImageUrl);
+const provider = computed(() => userProfile.value.provider);
 
 const router = useRouter();
 const isLoading = ref(true);
@@ -44,6 +45,7 @@ onMounted(async () => {
   } finally {
     isLoading.value = false;
   }
+  console.log(provider.value);
 });
 
 const onFileChange = (event) => {
@@ -135,7 +137,7 @@ const handleDeleteConfirm = (enteredPassword) => {
     <div v-if="isLoading" class="loading">로딩 중...</div>
 
     <!-- 비밀번호 설정 -->
-    <button class="password-btn" @click="togglePasswordModal">비밀번호 설정</button>
+    <button v-if="provider !== 'kakao'" class="password-btn" @click="togglePasswordModal">비밀번호 설정</button>
 
     <!-- 회원 탈퇴 -->
     <button class="delete-link" @click="openDeleteModal">회원탈퇴</button>

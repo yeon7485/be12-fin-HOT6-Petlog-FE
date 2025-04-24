@@ -15,7 +15,15 @@ function getSessionUserIdx() {
   return null;
 }
 
-const statuses = ["HEALTHY", "LOST", "ABANDONED", "DECEASED"];
+const statusMapping = {
+  "HEALTHY": "건강",
+  "LOST": "실종",
+  "ABANDONED": "파양",
+  "DECEASED": "사망"
+};
+
+const statuses = Object.values(statusMapping);
+
 const card = ref({
   id: "",
   name: "",
@@ -81,6 +89,13 @@ onMounted(async () => {
 const saveCard = async () => {
   try {
     const formData = new FormData();
+
+    // 상태를 한글에서 영어로 변환
+    const statusInEnglish = Object.keys(statusMapping).find(
+      (key) => statusMapping[key] === card.value.status
+    );
+
+    card.value.status = statusInEnglish;
 
     // ✅ JSON 데이터를 Blob으로 감싸 'pet'이라는 키로 추가
     formData.append(

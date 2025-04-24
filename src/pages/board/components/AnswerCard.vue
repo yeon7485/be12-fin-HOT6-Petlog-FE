@@ -29,6 +29,7 @@ const confirmAndSelect = async () => {
 
     alert('채택이 완료되었습니다.')
     emit('selected')
+    router.push("/board/qna");
   } catch (e) {
     alert('채택 실패')
     console.error(e)

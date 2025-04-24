@@ -101,6 +101,7 @@ const goToQuestionDetail = () => {
 
     <div
       v-if="
+        userStore.isLogin &&
         answer.userType !== 'AI' &&
         !answer.selected &&
         !answerStore.answers.some(a => a.selected) &&

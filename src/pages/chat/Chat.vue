@@ -10,7 +10,7 @@
             <input
               class="search-box"
               v-model="searchInput"
-              @input="onSearchInput"
+              @keydown.enter="onSearchInput"
               placeholder="채팅방 제목이나 #해시태그로 검색해보세요"
             />
           </div>
@@ -116,12 +116,16 @@ const onSearchInput = () => {
   selectedTags.value = [
     ...new Set(tagMatches.map((tag) => tag.replace("#", ""))),
   ];
-
-  // 👉 이 시점에 API 호출
-  chatStore.searchRooms({
-    keyword: searchInput.value.replace(/#\S+/g, "").trim(),
-    tags: selectedTags.value,
-  });
+  const keywordOnly = searchInput.value.replace(/#\S+/g, "").trim();
+  if (keywordOnly.length > 0 || selectedTags.value.length > 0) {
+    chatStore.searchRooms({
+      keyword: keywordOnly,
+      tags: selectedTags.value,
+    });
+  } else {
+    // ✅ 조건이 없으면 기존 전체 채팅방 불러오기
+    chatStore.loadRooms();
+  }
 };
 
 const removeTag = (tagToRemove) => {

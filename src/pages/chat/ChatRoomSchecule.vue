@@ -1,7 +1,7 @@
 <template>
   <div class="chatroom-info-container">
     <!-- 뒤로가기 -->
-    <ChatHeader title="서울숲 부모 페이지 연동 하세요" />
+    <ChatHeader :title="roomTitle" :roomIdx="chatroomIdx" />
 
     <div class="schedule-inner">
       <!-- 일정 목록 -->
@@ -9,7 +9,7 @@
         <div class="schedule-section-header">
           <h3 class="schedule-title">일정 목록</h3>
           <router-link
-            to="/chatroom/1/chatroom-schedule/create"
+            :to="`/chatroom/${chatroomIdx}/chatroom-schedule/create`"
             class="edit-button"
           >
             <img
@@ -35,7 +35,7 @@
 
 <script setup>
 import { useChatStore } from "../../stores/useChatStroe";
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 
 import { useRoute } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
@@ -43,9 +43,10 @@ import ScheduleCard from "./components/ScheduleCard.vue";
 const route = useRoute();
 const chatroomIdx = route.params.chatroomIdx;
 const chatStore = useChatStore();
-
+const roomTitle = computed(() => chatStore.chatRoomInfo?.title || "채팅방");
 onMounted(() => {
   chatStore.getChatRoomScheduleList(chatroomIdx);
+  chatStore.getRoomInfo(chatroomIdx);
 });
 </script>
 

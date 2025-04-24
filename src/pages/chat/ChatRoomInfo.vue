@@ -100,15 +100,15 @@ const leaveChatRoom = () => {
 
 // 저장 버튼 클릭 시
 const save = async () => {
+  console.log(chatroomIdx);
+
   const hashtags = hashtagsText.value
     .trim()
     .split(/\s+/)
     .map((tag) => tag.replace(/^#/, ""));
+  console.log(hashtags);
 
-  await chatStore.updateRoom({
-    title: title.value,
-    hashtags,
-  });
+  await chatStore.updateRoom(title.value, hashtags, chatroomIdx);
   isEditing.value = false;
 };
 

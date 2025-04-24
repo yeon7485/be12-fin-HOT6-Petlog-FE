@@ -34,7 +34,7 @@ import ScheduleCategory from "../pages/admin/ScheduleCategory.vue";
 import UpdateScheduleCategory from "../pages/admin/ModifyScheduleCategory.vue";
 import Record from "../pages/admin/RecordCategory.vue";
 import RecordFix from "../pages/admin/ModifyRecordCategory.vue";
-import Board from "../pages/admin/BoardCategory.Vue";
+import Board from "../pages/admin/BoardCategory.vue";
 import BoardFix from "../pages/admin/ModifyBoard.vue"
 import BoardTypeCategoryFix from "../pages/admin/ModifyBoardCategory.vue";
 import BoardTypeCategory from "../pages/admin/BoardTypeCategory.vue";

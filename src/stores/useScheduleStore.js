@@ -8,6 +8,7 @@ export const useScheduleStore = defineStore("schedule", {
     currentPet: null,
     plans: [],
     records: [],
+    todaySchedules: [], // ✅ 오늘 일정 저장용
     planDetail: {
       idx: 2,
       title: "병원 검진 예약 병원 검진 예약",
@@ -45,8 +46,10 @@ export const useScheduleStore = defineStore("schedule", {
 
     async createSchedule(petIdx, planData) {
       try {
-        const response = await axios.post(`/api/schedule/pet/${petIdx}`, planData);
-
+        const response = await axios.post(
+          `/api/schedule/pet/${petIdx}`,
+          planData
+        );
         return response.data;
       } catch (err) {
         alert("일정 등록에 실패했습니다.");
@@ -57,7 +60,6 @@ export const useScheduleStore = defineStore("schedule", {
     async getAllSchedule() {
       try {
         const response = await axios.get("/api/schedule/pet");
-
         this.plans = response.data.result;
         return response.data;
       } catch (err) {
@@ -67,8 +69,10 @@ export const useScheduleStore = defineStore("schedule", {
 
     async createRecord(petIdx, recordData) {
       try {
-        const response = await axios.post(`/api/daily-record/pet/${petIdx}`, recordData);
-
+        const response = await axios.post(
+          `/api/daily-record/pet/${petIdx}`,
+          recordData
+        );
         return response.data;
       } catch (err) {
         alert("기록 등록에 실패했습니다.");
@@ -84,7 +88,6 @@ export const useScheduleStore = defineStore("schedule", {
             : await axios.get(
                 `/api/schedule/pet/${this.currentPet.idx}/date/${year}/${month}/${day}`
               );
-
         return response.data;
       } catch (err) {
         console.log(err);
@@ -109,7 +112,6 @@ export const useScheduleStore = defineStore("schedule", {
       try {
         const response = await axios.get(`/api/schedule/pet/${petIdx}`);
         this.plans = response.data.result;
-
         return response.data;
       } catch (err) {
         console.log(err);
@@ -119,7 +121,6 @@ export const useScheduleStore = defineStore("schedule", {
     async getScheduleDetail(scheduleIdx) {
       try {
         const response = await axios.get(`/api/schedule/${scheduleIdx}`);
-
         return response.data;
       } catch (err) {
         console.log(err);
@@ -129,10 +130,25 @@ export const useScheduleStore = defineStore("schedule", {
     async getRecordDetail(recordIdx) {
       try {
         const response = await axios.get(`/api/daily-record/${recordIdx}`);
-
         return response.data;
       } catch (err) {
         console.log(err);
+      }
+    },
+
+    async loadTodaySchedules() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth() + 1;
+      const day = today.getDate();
+
+      try {
+        const response = await this.getSchedulesByDate(year, month, day);
+        console.log("오늘 일정 응답:", response.result);
+        this.todaySchedules = response.result;
+      } catch (err) {
+        console.error("오늘 일정 불러오기 실패", err);
+        this.todaySchedules = [];
       }
     },
   },

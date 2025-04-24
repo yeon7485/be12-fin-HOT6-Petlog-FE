@@ -141,7 +141,47 @@ export const useChatStore = defineStore("chat", {
         throw error;
       }
     },
+    async searchRooms({ keyword, tags }) {
+      try {
+        // console.log(tags);
+        console.log("🚀 axios.get 호출 시작");
+        const response = await axios.get("/api/chat/search", {
+          params: {
+            query: keyword || null,
+            hashtags: tags.length > 0 ? tags : null,
+          },
+          paramsSerializer: (params) => {
+            try {
+              const query = new URLSearchParams();
 
+              // 💥 query 조건 안전 처리
+              if (typeof params.query === "string" && params.query.trim()) {
+                query.append("query", params.query.trim());
+              }
+
+              // 💥 hashtags 조건 안전 처리
+              if (Array.isArray(params.hashtags)) {
+                params.hashtags
+                  .filter((tag) => typeof tag === "string" && tag.trim() !== "")
+                  .forEach((tag) => query.append("hashtags", tag.trim()));
+              }
+
+              const finalQuery = query.toString();
+              console.log("✅ 직렬화된 쿼리:", finalQuery);
+              return finalQuery;
+            } catch (e) {
+              console.error("❌ paramsSerializer에서 예외 발생!", e);
+              return "";
+            }
+          },
+        });
+        console.log("✅ axios 응답:", response);
+        this.chatRooms = response.data.result;
+        console.log(this.chatRooms);
+      } catch (error) {
+        console.error("❌ 채팅방 검색 실패", error);
+      }
+    },
     async getRoomInfo(chatroomIdx) {
       try {
         const response = await axios.get(`/api/chat/chatroom/${chatroomIdx}`);

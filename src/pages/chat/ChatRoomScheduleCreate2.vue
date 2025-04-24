@@ -1,6 +1,6 @@
 <template>
   <div class="chatroom-info-container">
-    <ChatHeader title="서울숲" />
+    <ChatHeader :title="roomTitle" :roomIdx="chatroomIdx" />
     <div class="schedule-create-container">
       <div class="schedule-create-card">
         <div class="content_header">
@@ -79,14 +79,19 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
+import { useChatStore } from "../../stores/useChatStroe";
 
 //url 에서 idx 값 가져오기
 const route = useRoute();
 const router = useRouter();
 const chatroomIdx = route.params.chatroomIdx;
+
+const chatStore = useChatStore();
+
+const roomTitle = computed(() => chatStore.chatRoomInfo?.title || "채팅방");
 
 const goComplete = () => {
   router.push(`/chatroom/${chatroomIdx}/chatroom-schedule`); // 이동할 경로로 바꿔주세요
@@ -114,6 +119,10 @@ const selectCate = (category) => {
 const goBack = () => {
   router.go(-1); // 또는 window.history.back()
 };
+
+onMounted(() => {
+  chatStore.getRoomInfo(chatroomIdx);
+});
 </script>
 
 <style scoped>

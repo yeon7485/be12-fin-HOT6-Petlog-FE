@@ -1,7 +1,7 @@
 <template>
   <div class="chatroom-info-container">
     <!-- 뒤로가기 -->
-    <ChatHeader title="서울숲에서 같이 멍멍이 산책시킬 사람 !!" />
+    <ChatHeader :title="title" :roomIdx="chatroomIdx" />
 
     <div class="schedule-wrapper">
       <router-link :to="`/chatroom/${chatroomIdx}/chatroom-schedule`">
@@ -122,7 +122,6 @@ const cancel = () => {
 };
 onMounted(async () => {
   chatStore.resetUsers();
-
   await chatStore.fetchUsers(chatroomIdx);
   await chatStore.getRoomInfo(chatroomIdx);
 

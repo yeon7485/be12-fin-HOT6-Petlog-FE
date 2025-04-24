@@ -8,7 +8,7 @@ import ChatRoomSchecule from "../pages/chat/ChatRoomSchecule.vue";
 import ChatRoomScheculeCreate from "../pages/chat/ChatRoomScheduleCreate2.vue";
 import Schedule from "../pages/schedule/Schedule.vue";
 
-import Mypage from "../pages/mypage/MyPage.vue";
+import Mypage from "../pages/mypage/Mypage.vue";
 import MypageProfile from "../pages/mypage/MypageProfile.vue";
 import MypageCardList from "../pages/mypage/MypageCardList.vue";
 import MypageCardCreate from "../pages/mypage/MypageCardCreate.vue";

@@ -14,7 +14,7 @@ const fetchAnswers = async () => {
   try {
     const userId = getSessionUserIdx();
     const res = await axios.get(`/api/answer/list/user/${userId}`);
-    answers.value = res.data;
+    answers.value = res.data.result;
   } catch (e) {
     console.error("답변 불러오기 실패", e);
   }

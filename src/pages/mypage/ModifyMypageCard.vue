@@ -1,64 +1,64 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { usePetStore } from '../../stores/usePetStore'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { usePetStore } from "../../stores/usePetStore";
 
-const router = useRouter()
-const petStore = usePetStore()
+const router = useRouter();
+const petStore = usePetStore();
 
 function getSessionUserIdx() {
-  const user = sessionStorage.getItem('user')
+  const user = sessionStorage.getItem("user");
   if (user) {
-    const parsedUser = JSON.parse(user)
-    return parsedUser.idx
+    const parsedUser = JSON.parse(user);
+    return parsedUser.idx;
   }
-  return null
+  return null;
 }
 
-const statuses = ['정상', '실종', '파양', '사망']
+const statuses = ["HEALTHY", "LOST", "ABANDONED", "DECEASED"];
 const card = ref({
-  id: '',
-  name: '',
-  breed: '',
-  gender: '',
-  birthDate: '',
+  id: "",
+  name: "",
+  breed: "",
+  gender: "",
+  birthDate: "",
   isNeutering: false,
-  specificInformation: '',
-  status: '정상',
-  userId: ''
-})
+  specificInformation: "",
+  status: "HEALTHY",
+  userId: "",
+});
 
-const selectedFile = ref(null)
-const profileImage = ref('')
-const fileInput = ref(null)
+const selectedFile = ref(null);
+const profileImage = ref("");
+const fileInput = ref(null);
 
 const triggerFileInput = () => {
-  fileInput.value.click()
-}
+  fileInput.value.click();
+};
 
 const uploadImage = (event) => {
-  const file = event.target.files[0]
+  const file = event.target.files[0];
   if (file) {
-    selectedFile.value = file
-    const reader = new FileReader()
+    selectedFile.value = file;
+    const reader = new FileReader();
     reader.onload = (e) => {
-      profileImage.value = e.target.result
-    }
-    reader.readAsDataURL(file)
+      profileImage.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
   }
-}
+};
 
 onMounted(async () => {
-  const userId = getSessionUserIdx()
+  const userId = getSessionUserIdx();
   if (!userId) {
-    alert('로그인 정보가 없습니다.')
-    router.push('/user/login')
-    return
+    alert("로그인 정보가 없습니다.");
+    router.push("/user/login");
+    return;
   }
 
   try {
-    const petId = router.currentRoute.value.params.petId
-    await petStore.fetchPetById(petId)
+    const petId = router.currentRoute.value.params.petId;
+    await petStore.fetchPetById(petId);
 
     card.value = {
       id: petStore.petDetail.id,
@@ -69,14 +69,14 @@ onMounted(async () => {
       isNeutering: petStore.petDetail.isNeutering,
       specificInformation: petStore.petDetail.specificInformation,
       status: petStore.petDetail.status,
-      userId: userId
-    }
+      userId: userId,
+    };
 
-    profileImage.value = petStore.petDetail.profileImageUrl
+    profileImage.value = petStore.petDetail.profileImageUrl;
   } catch (err) {
-    console.error('불러오기 실패:', err)
+    console.error("불러오기 실패:", err);
   }
-})
+});
 
 const saveCard = async () => {
   try {
@@ -84,15 +84,15 @@ const saveCard = async () => {
 
     // ✅ JSON 데이터를 Blob으로 감싸 'pet'이라는 키로 추가
     formData.append(
-      'pet',
+      "pet",
       new Blob([JSON.stringify(card.value)], {
-        type: 'application/json'
+        type: "application/json",
       })
     );
 
     // ✅ 이미지가 있다면 같이 추가
     if (selectedFile.value) {
-      formData.append('profileImage', selectedFile.value);
+      formData.append("profileImage", selectedFile.value);
     }
 
     await petStore.updatePet(card.value.id, formData);
@@ -104,10 +104,9 @@ const saveCard = async () => {
   }
 };
 
-
 const goToCardList = () => {
-  router.push("/mypage/cardlist")
-}
+  router.push("/mypage/cardlist");
+};
 </script>
 
 <template>
@@ -115,16 +114,28 @@ const goToCardList = () => {
   <div class="form-container">
     <div class="profile-section">
       <img :src="profileImage" class="profile-img" />
-      <input type="file" ref="fileInput" accept="image/*" @change="uploadImage" hidden />
+      <input
+        type="file"
+        ref="fileInput"
+        accept="image/*"
+        @change="uploadImage"
+        hidden
+      />
       <button class="upload-btn" @click="triggerFileInput">📷</button>
     </div>
 
     <input v-model="card.name" placeholder="이름" class="input" />
 
     <div class="gender-section">
-      <label><input type="radio" value="male" v-model="card.gender" /> ♂️</label>
-      <label><input type="radio" value="female" v-model="card.gender" /> ♀️</label>
-      <label><input type="checkbox" v-model="card.isNeutering" /> 중성화 유무</label>
+      <label
+        ><input type="radio" value="male" v-model="card.gender" /> ♂️</label
+      >
+      <label
+        ><input type="radio" value="female" v-model="card.gender" /> ♀️</label
+      >
+      <label
+        ><input type="checkbox" v-model="card.isNeutering" /> 중성화 유무</label
+      >
     </div>
 
     <div class="birthdate-section">
@@ -133,7 +144,11 @@ const goToCardList = () => {
 
     <input v-model="card.breed" placeholder="품종" class="input" />
 
-    <textarea v-model="card.specificInformation" placeholder="특이사항" class="textarea" />
+    <textarea
+      v-model="card.specificInformation"
+      placeholder="특이사항"
+      class="textarea"
+    />
 
     <div class="status-section">
       <label v-for="s in statuses" :key="s" class="status-option">

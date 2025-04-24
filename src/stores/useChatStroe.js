@@ -44,7 +44,7 @@ export const useChatStore = defineStore("chat", {
       try {
         const res = await axios.get(`/api/chat/chatroom/${roomId}/chat`);
         this.messages = res.data.result;
-        console.log("📥 초기 메시지 로딩 완료:", res.data.result);
+        // console.log("📥 초기 메시지 로딩 완료:", res.data.result);
       } catch (e) {
         console.error("❌ 메시지 로딩 실패:", e);
       }
@@ -62,7 +62,7 @@ export const useChatStore = defineStore("chat", {
           // 채팅방 구독
           this.stompClient.subscribe(`/topic/chat/${roomId}`, (message) => {
             const msg = JSON.parse(message.body);
-            console.log(msg);
+            // console.log(msg);
             this.receiveMessage(msg);
           });
 
@@ -105,7 +105,7 @@ export const useChatStore = defineStore("chat", {
             animalIds: animalIds,
           }
         );
-        console.log("참여 완료:", response.data.result);
+        // console.log("참여 완료:", response.data.result);
         // 필요하면 상태 업데이트
       } catch (error) {
         console.error("참여 실패:", error);
@@ -118,7 +118,7 @@ export const useChatStore = defineStore("chat", {
           `/api/chatroom/${roomId}/messages`
         );
         this.chatMessages = response.data.result;
-        console.log(chatMessages);
+        // console.log(chatMessages);
       } catch (err) {
         console.error("💥 메시지 불러오기 실패:", err);
       }
@@ -175,9 +175,9 @@ export const useChatStore = defineStore("chat", {
             }
           },
         });
-        console.log("✅ axios 응답:", response);
+        // console.log("✅ axios 응답:", response);
         this.chatRooms = response.data.result;
-        console.log(this.chatRooms);
+        // console.log(this.chatRooms);
       } catch (error) {
         console.error("❌ 채팅방 검색 실패", error);
       }
@@ -245,7 +245,7 @@ export const useChatStore = defineStore("chat", {
 
         this.ChatRoomScheculeDetail = response.data.result;
         this.isParticipating = this.ChatRoomScheculeDetail.participating;
-        console.log(this.ChatRoomScheculeDetail);
+        // console.log(this.ChatRoomScheculeDetail);
       } catch (err) {
         console.error(err);
       }
@@ -264,7 +264,7 @@ export const useChatStore = defineStore("chat", {
         };
 
         this.myInfo = response.data;
-        console.log(this.myInfo);
+        // console.log(this.myInfo);
       } catch (err) {}
     },
 
@@ -293,6 +293,17 @@ export const useChatStore = defineStore("chat", {
       };
 
       await axios.post("/api/chat", payload);
+    },
+
+    async updateRoom(title, tags, roomIdx) {
+      try {
+        const response = await axios.put(`/api/chat/${roomIdx}`, {
+          title: title,
+          hashtags: tags, // 예: ["햄스터", "정보"]
+        });
+      } catch (error) {
+        console.error("채팅방 수정 실패:", error);
+      }
     },
   },
 });

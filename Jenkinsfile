@@ -51,50 +51,28 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Deploy Canary Ingress (10%)') {
             steps {
                 script {
-                    def targetVersion = (BUILD_NUMBER.toInteger() % 2 == 0) ? 'v2' : 'v1'
-                    def oppositeVersion = (targetVersion == 'v2') ? 'v1' : 'v2'
-                    def deployName = "frontend-${targetVersion}"
-                    def ingressName = "canary-${targetVersion}"
-                    def serviceName = "frontend-${targetVersion}-service"
-                    def imageTag = "0.1.${BUILD_NUMBER}"
+                    def ingressFile = "k8s/frontend-canary-ingress.yml"
         
-                    echo "🔀 BUILD_NUMBER: ${BUILD_NUMBER} → Deploying to ${targetVersion} (Image: ${imageTag})"
+                    echo "🛠 Creating 10% canary ingress for frontend-v2"
         
                     sh """#!/bin/bash
-                        module="frontend"
-                        local_dir="k8s"
-                        remote_dir="/home/test/k8s/\$module"
-                        K8S_MASTER="test@192.0.60.11"
+                        K8S_MASTER="${K8S_MASTER}"
+                        remote_dir="/home/test/k8s/frontend"
         
-                        echo "📤 Sending YAMLs to \$K8S_MASTER"
+                        echo "📤 Sending ingress file to \$K8S_MASTER"
                         ssh -o StrictHostKeyChecking=no \$K8S_MASTER "mkdir -p \$remote_dir"
+                        scp -o StrictHostKeyChecking=no ${ingressFile} \$K8S_MASTER:\$remote_dir/
         
-                        for file in \$local_dir/*.yml; do
-                          filename=\$(basename \$file)
-                          echo "📤 Copying \$filename"
-                          scp -o StrictHostKeyChecking=no \$file \$K8S_MASTER:\$remote_dir/
-                          echo "🛠 Updating tag"
-                          ssh -o StrictHostKeyChecking=no \$K8S_MASTER "sed -i 's/latest/${imageTag}/g' \$remote_dir/\$filename"
-                          echo "🚀 Applying \$filename"
-                          ssh -o StrictHostKeyChecking=no \$K8S_MASTER "kubectl apply -f \$remote_dir/\$filename"
-                        done
-        
-                        echo "🕹 Starting Canary rollout to ${deployName}"
-                        ssh -o StrictHostKeyChecking=no \$K8S_MASTER "kubectl patch ingress ${ingressName} -p '{\"metadata\":{\"annotations\":{\"nginx.ingress.kubernetes.io/canary-weight\":\"50\"}}}'"
-                        sleep 5
-                        ssh -o StrictHostKeyChecking=no \$K8S_MASTER "kubectl patch ingress ${ingressName} -p '{\"metadata\":{\"annotations\":{\"nginx.ingress.kubernetes.io/canary-weight\":\"100\"}}}'"
-                        sleep 5
-                        ssh -o StrictHostKeyChecking=no \$K8S_MASTER "kubectl patch ingress ${ingressName} -p '{\"metadata\":{\"annotations\":{\"nginx.ingress.kubernetes.io/canary\":\"false\"}}}'"
-        
-                        echo "🧹 Scaling down ${oppositeVersion}"
-                        ssh -o StrictHostKeyChecking=no \$K8S_MASTER "kubectl scale deployment frontend-${oppositeVersion} --replicas=0"
+                        echo "🚀 Applying canary ingress"
+                        ssh -o StrictHostKeyChecking=no \$K8S_MASTER "kubectl apply -f \$remote_dir/frontend-canary-ingress.yml"
                     """
                 }
             }
         }
+
 
     }
 }

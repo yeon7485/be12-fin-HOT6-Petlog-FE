@@ -21,7 +21,7 @@ export const useMypageCard = defineStore("mypageCard", {
     async fetchCommentsByUser(userId) {
       try {
         const response = await axios.get(`/api/comment/list/user/${userId}`);
-        this.userComments = response.data;
+        this.userComments = response.data.result;
       } catch (error) {
         console.error("❌ 댓글 목록 실패:", error);
         throw error;
@@ -31,7 +31,7 @@ export const useMypageCard = defineStore("mypageCard", {
     async fetchPostsByUser(userId) {
       try {
         const response = await axios.get(`/api/post/list/user/${userId}`);
-        this.userPosts = response.data;
+        this.userPosts = response.data.result;
       } catch (error) {
         console.error("❌ 게시글 목록 실패:", error);
         throw error;
@@ -82,7 +82,9 @@ export const useMypageCard = defineStore("mypageCard", {
     async fetchAnswersByUser(userId) {
       try {
         const response = await axios.get(`/api/answer/list/user/${userId}`);
-        this.userAnswers = response.data;
+        console.log(response);
+        this.userAnswers = response.data.result;
+        
       } catch (error) {
         console.error("❌ 답변 목록 불러오기 실패:", error);
         throw error;

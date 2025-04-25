@@ -24,6 +24,7 @@ export const useUserStore = defineStore("user", {
           return response.data;
         } else {
           alert("회원가입에 실패하였습니다.");
+
           return response;
         }
       } catch (error) {

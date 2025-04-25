@@ -20,7 +20,13 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/nginx/conf.d/
+            - name: env-volume
+              mountPath: /usr/share/nginx/html/env.js
+              subPath: env.js
       volumes:
         - name: config
           configMap:
             name: nginx-config
+        - name: env-volume
+          configMap:
+            name: frontend-env

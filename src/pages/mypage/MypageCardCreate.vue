@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePetStore } from '../../stores/usePetStore'
+import defaultImage from '../../assets/images/image_not_found.png';
 
 const store = usePetStore();
 const router = useRouter();
@@ -87,7 +88,8 @@ const cancel = () => {
     <div class="form-container">
       <!-- 프로필 사진 -->
       <div class="profile-section">
-        <img :src="profileImage" alt="프로필 이미지" class="profile-img" />
+        <img :src="profileImage || defaultImage" alt="프로필 이미지" class="profile-img" />
+
         <input type="file" ref="fileInput" accept="image/*" @change="uploadImage" hidden />
         <button class="upload-btn" @click="triggerFileInput">📷</button>
       </div>
@@ -138,7 +140,7 @@ const cancel = () => {
         <button class="cancel-btn" @click="cancel">취소</button>
         <button class="save-btn" @click="saveCard" :disabled="isUploading">저장</button>
       </div>
-    </div>  
+    </div>
   </div>
 </template>
 

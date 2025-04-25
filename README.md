@@ -10,7 +10,7 @@
 
 <div align="center">
 
-| <img src="https://petlog.s3.ap-northeast-2.amazonaws.com/admin/%EB%83%90%EC%98%B9%EC%9D%B4.jpg" width="100" height="100"/> | <img src="https://petlog.s3.ap-northeast-2.amazonaws.com/admin/%EB%A1%9C%EC%9D%B4.jpg" width="100" height="100"/> | <img src="https://petlog.s3.ap-northeast-2.amazonaws.com/admin/%EB%A1%9C%EC%82%AC.jpg" width="100" height="100"/> | <img src="https://petlog.s3.ap-northeast-2.amazonaws.com/admin/%EB%A7%88%EC%9E%90%EC%9A%A9.jpg" width="100" height="100"/> |
+| <img src="src/assets/images/냐옹이.jpg" width="100" height="100"/> | <img src="src/assets/images/로사.jpg" width="100" height="100"/> | <img src="src/assets/images/로이.jpg" width="100" height="100"/> | <img src="src/assets/images/마자용.jpg" width="100" height="100"/> |
 | :-----------------------------------------------------------: | :-----------------------------------------------------------: | :--------------------------------------------------------------: | :-----------------------------------------------------------: |
 | 🐳 **박동휘**<br/>[@parkdonghwi-git](https://github.com/donghwi)     | 🐢 **유승호**<br/>[@seungho99](https://github.com/seungho99)   |  🧶 **박세연**<br/>[@yeon7485](https://github.com/yeon7485)    | ⚽ **안규호**<br/>[@Ahngyuho](https://github.com/Ahngyuho)  |
 

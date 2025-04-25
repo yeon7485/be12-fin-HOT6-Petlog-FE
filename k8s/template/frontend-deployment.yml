@@ -20,7 +20,18 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/nginx/conf.d/
+            - name: tls-secret
+              mountPath: /etc/nginx/
+              readOnly: true
       volumes:
         - name: config
           configMap:
             name: nginx-config
+        - name: tls-secret
+          secret:
+            secretName: tls-secret
+            items:
+              - key: tls.crt
+                path: certificates.crt
+              - key: tls.key
+                path: private.key

@@ -50,7 +50,7 @@ export const useChatStore = defineStore("chat", {
       }
     },
     connectStomp(roomId, onConnectedCallback) {
-      const socket = new SockJS("/ws");
+      const socket = new SockJS("/api/ws");
 
       this.stompClient = new Client({
         webSocketFactory: () => socket,
@@ -187,6 +187,7 @@ export const useChatStore = defineStore("chat", {
         const response = await axios.get(`/api/chat/chatroom/${chatroomIdx}`);
 
         this.chatRoomInfo = response.data.result;
+        console.log(this.chatRoomInfo);
       } catch (error) {
         console.error("채팅방 정보 불러오기 실패:", error);
       }

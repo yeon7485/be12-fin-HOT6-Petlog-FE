@@ -7,13 +7,12 @@ const store = useNotificationStore()
 
 onMounted(() => {
   store.connectWebSocket()
-  store.fetchNotificationsFromServer() // ✅ 추가: 서버에서 알림 목록 로딩
+  store.fetchNotificationsFromServer() 
 })
 
 
-// ✅ 삭제 함수 추가
 const deleteNotification = async (idx, index) => {
-  console.log("🧪 삭제 요청: ", idx) // 여기서 undefined 뜨면 문제 발생 위치 확정
+  console.log("🧪 삭제 요청: ", idx) 
   try {
     await axios.delete(`/api/notification/${idx}`)
     store.removeNotification(index)

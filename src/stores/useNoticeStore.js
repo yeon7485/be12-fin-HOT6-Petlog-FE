@@ -32,8 +32,8 @@ export const useNotificationStore = defineStore('notification', () => {
       const res = await axios.get(`/api/notification/user/${currentUserId.value}`)
       notifications.value = res.data.map((n) => ({
         idx: n.idx,
-        title: '새 알림',
-        content: n.message,
+        title: '[알림]',
+        content: `"${n.petName}"의 ${n.message}`,
         time: formatTime(n.sentAt),
         read: false // 기본적으로 읽지 않은 상태로 설정
       }))
@@ -59,13 +59,12 @@ export const useNotificationStore = defineStore('notification', () => {
       webSocketFactory: () => new SockJS('/ws'),
       reconnectDelay: 5000,
       onConnect: () => {
-        console.log('✅ 알림 WebSocket 연결됨')
         client.subscribe(`/topic/alerts/${currentUserId.value}`, (msg) => {
           const data = JSON.parse(msg.body)
           notifications.value.unshift({
             idx: data.idx,
-            title: '새 알림',
-            content: data.message,
+            title: '[알림]',
+            content: `"${n.petName}"의 ${n.message}`,
             time: '방금 전',
             read: false // 새로운 알림은 기본적으로 읽지 않은 상태
           })

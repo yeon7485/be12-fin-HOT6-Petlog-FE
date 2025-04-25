@@ -57,6 +57,8 @@ pipeline {
                     def imageTag = "0.1.${buildId}"
                     def resourceBase = "frontend-${buildId}"
                     sh """
+                        echo "🧼 Cleaning old YAMLs"
+                        rm -rf k8s/generated/*
                         echo \"Generating YAMLs for ${resourceBase}\"
                         mkdir -p k8s/generated
                         cp k8s/template/*.yml k8s/generated/

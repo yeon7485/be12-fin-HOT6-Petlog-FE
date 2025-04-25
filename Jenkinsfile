@@ -79,6 +79,7 @@ pipeline {
                     sh """
                         echo \"Sending resources to ${K8S_MASTER}\"
                         ssh -o StrictHostKeyChecking=no ${K8S_MASTER} "mkdir -p ${remote_dir}"
+                        ssh -o StrictHostKeyChecking=no ${K8S_MASTER} "rm -rf ${remote_dir}/*"
                         scp -o StrictHostKeyChecking=no k8s/generated/*.yml ${K8S_MASTER}:${remote_dir}/
 
                         echo \"Applying deployment and service\"

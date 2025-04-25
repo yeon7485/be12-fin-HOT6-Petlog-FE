@@ -61,7 +61,7 @@ const handleSignup = async () => {
     const result = await userStore.signup(signupData);
     console.log(result);
     if (result.isSuccess) {
-      alert("회원가입이 완료되었습니다.");
+      alert("이메일 인증 후 로그인 가능합니다.");
       router.push("/user/login");
     } else {
       alert(result.message || "회원가입에 실패했습니다.");
@@ -96,7 +96,7 @@ const kakaoSignup = () => {
           id="email"
           autocomplete="username"
           v-model="signupData.email"
-          placeholder="이메일을 입력해주세요."
+          placeholder="이메일 형식에 맞게 입력 (test@test.com)"
         />
       </div>
 
@@ -107,7 +107,7 @@ const kakaoSignup = () => {
           id="password"
           autocomplete="current-password"
           v-model="signupData.password"
-          placeholder="비밀번호를 입력해주세요."
+          placeholder="비밀번호 입력 (영어, 숫자, 특수문자 포함 8자 이상)"
         />
       </div>
 
@@ -117,7 +117,7 @@ const kakaoSignup = () => {
           type="text"
           id="nickname"
           v-model="signupData.nickname"
-          placeholder="닉네임을 입력해주세요."
+          placeholder="4~16자의 한글, 영문, 숫자만 사용 (자음/모음, 특수문자 X)"
         />
       </div>
 
@@ -197,7 +197,7 @@ input[type="text"] {
   padding: 14px;
   border: 1px solid #ccc;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 13px;
   background-color: #fff;
   box-sizing: border-box;
 }

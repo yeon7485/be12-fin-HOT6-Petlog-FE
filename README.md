@@ -1,6 +1,6 @@
 <br>
 
-<h1 align="center" style="color: #FFD675;">🍽️ Petlog </h1>
+<h1 align="center" style="color: #FFD675;">🐶 Petlog </h1>
 
 <h4 align="center">6팀 - Team Hot6 </h4>
 
@@ -47,8 +47,9 @@
 **Petlog**는 반려동물의 일상과 건강, 소통을 위한 올인원 플랫폼입니다.  
 일정, 기록, 커뮤니티, 채팅까지 —  
 당신의 반려 친구를 위한 **완벽한 케어 시스템**을 제공합니다.
-
 ---
+
+[![펫로그 사이트 이동](https://img.shields.io/badge/🐶_펫로그_바로가기-6A0DAD?style=for-the-badge&logo=googlechrome&logoColor=white)](https://www.petlog.kro.kr)
 
 ## 👤 회원 서비스
 

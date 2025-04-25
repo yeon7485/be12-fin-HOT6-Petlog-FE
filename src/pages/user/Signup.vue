@@ -21,17 +21,57 @@ const signupData = reactive({
 const agreed = ref(false);
 
 const handleSignup = async () => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/;
+  const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,16}$/;
+
   if (!agreed.value) {
     alert("약관에 동의하셔야 회원가입이 가능합니다.");
     return;
   }
-  const result = await userStore.signup(signupData);
-  console.log(result);
-  if (result.isSuccess) {
-    alert("회원가입이 완료되었습니다.");
-    router.push("/user/login");
+
+  if (!signupData.email.trim()) {
+    alert("이메일을 입력해주세요.");
+    return;
+  }
+  if (!emailRegex.test(signupData.email)) {
+    alert("올바른 이메일 형식을 입력해주세요.");
+    return;
+  }
+
+  if (!signupData.password) {
+    alert("비밀번호를 입력해주세요.");
+    return;
+  }
+  if (!pwRegex.test(signupData.password)) {
+    alert("비밀번호는 영어, 숫자, 특수문자를 포함한 8~20자여야 합니다.");
+    return;
+  }
+
+  if (!signupData.nickname.trim()) {
+    alert("닉네임을 입력해주세요.");
+    return;
+  }
+  if (!nicknameRegex.test(signupData.nickname)) {
+    alert("닉네임은 4~16자의 한글, 영문, 숫자만 사용할 수 있습니다. (자음/모음, 특수문자 불가)");
+    return;
+  }
+
+  try {
+    const result = await userStore.signup(signupData);
+    console.log(result);
+    if (result.isSuccess) {
+      alert("회원가입이 완료되었습니다.");
+      router.push("/user/login");
+    } else {
+      alert(result.message || "회원가입에 실패했습니다.");
+    }
+  } catch (err) {
+    console.error("회원가입 오류:", err);
+    alert("서버 오류로 회원가입에 실패했습니다.");
   }
 };
+
 
 const kakaoSignup = () => {
   window.location.href = import.meta.env.VITE_KAKAO_LOGIN_URL;

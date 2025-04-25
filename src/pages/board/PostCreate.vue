@@ -109,6 +109,24 @@ const handleCancel = () => {
 };
 
 const handleSubmit = async () => {
+  const trimmedTitle = form.value.title.trim();
+  const trimmedContent = form.value.content.trim();
+
+  if (!trimmedTitle && !trimmedContent) {
+    alert("제목은 필수 입력사항 입니다.");
+    return;
+  }
+
+  if (!trimmedTitle) {
+    alert("제목은 필수 입력사항 입니다.");
+    return;
+  }
+
+  if (!trimmedContent) {
+    alert("내용을 입력해주세요.");
+    return;
+  }
+
   const confirmed = window.confirm(
     isEdit ? "수정하시겠습니까?" : "등록하시겠습니까?"
   );
@@ -143,7 +161,7 @@ const handleSubmit = async () => {
         [
           JSON.stringify({
             ...postPayload,
-            removedImageUrls: form.value.removedImageUrls, // ✅ 여기 추가
+            removedImageUrls: form.value.removedImageUrls,
           }),
         ],
         { type: "application/json" }
@@ -164,10 +182,22 @@ const handleSubmit = async () => {
       router.push(`/board/${form.value.boardType}`);
     }
   } catch (err) {
-    console.error(err);
-    alert("작업에 실패하였습니다");
+    const res = err?.response?.data;
+    const code = res?.code;
+
+    if (code === 6006) {
+      alert("제목은 필수 입력 항목입니다.");
+    } else if (code === 6007) {
+      alert("내용은 필수 입력 항목입니다.");
+    } else {
+      alert("작업에 실패하였습니다.");
+    }
+
+    console.error("요청 실패:", err);
   }
 };
+
+
 
 const openPetCardModal = () => {
   isModalOpen.value = true;

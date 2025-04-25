@@ -2,6 +2,8 @@
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/useUserStore";
+import { useLoadingStore } from "../../stores/useLoadingStore";
+import LoadingSpinner from "../common/components/LoadingSpinner.vue";
 
 const router = useRouter();
 const toHome = () => {
@@ -9,6 +11,7 @@ const toHome = () => {
 };
 
 const userStore = useUserStore();
+const loadingStore = useLoadingStore();
 
 const signupData = reactive({
   email: "",
@@ -19,49 +22,55 @@ const signupData = reactive({
 });
 
 const agreed = ref(false);
+const showPassword = ref(false);
 
-const handleSignup = async () => {
+const validateSignupData = (data, agreed) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/;
   const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,16}$/;
 
-  if (!agreed.value) {
-    alert("약관에 동의하셔야 회원가입이 가능합니다.");
-    return;
+  if (!agreed) {
+    return "약관에 동의하셔야 회원가입이 가능합니다.";
   }
 
-  if (!signupData.email.trim()) {
-    alert("이메일을 입력해주세요.");
-    return;
+  if (!data.email.trim()) {
+    return "이메일을 입력해주세요.";
   }
-  if (!emailRegex.test(signupData.email)) {
-    alert("올바른 이메일 형식을 입력해주세요.");
-    return;
+  if (!emailRegex.test(data.email)) {
+    return "올바른 이메일 형식을 입력해주세요.";
   }
 
-  if (!signupData.password) {
-    alert("비밀번호를 입력해주세요.");
-    return;
+  if (!data.password) {
+    return "비밀번호를 입력해주세요.";
   }
-  if (!pwRegex.test(signupData.password)) {
-    alert("비밀번호는 영어, 숫자, 특수문자를 포함한 8~20자여야 합니다.");
-    return;
+  if (!pwRegex.test(data.password)) {
+    return "비밀번호는 영어, 숫자, 특수문자를 포함한 8~20자여야 합니다.";
   }
 
-  if (!signupData.nickname.trim()) {
-    alert("닉네임을 입력해주세요.");
-    return;
+  if (!data.nickname.trim()) {
+    return "닉네임을 입력해주세요.";
   }
-  if (!nicknameRegex.test(signupData.nickname)) {
-    alert("닉네임은 4~16자의 한글, 영문, 숫자만 사용할 수 있습니다. (자음/모음, 특수문자 불가)");
+  if (!nicknameRegex.test(data.nickname)) {
+    return "닉네임은 4~16자의 한글, 영문, 숫자만 사용할 수 있습니다. (자음/모음, 특수문자 불가)";
+  }
+
+  return null; // 모든 검증 통과
+};
+
+const handleSignup = async () => {
+  const errorMsg = validateSignupData(signupData, agreed.value);
+  if (errorMsg) {
+    alert(errorMsg);
     return;
   }
 
   try {
+    loadingStore.isLoading = true;
     const result = await userStore.signup(signupData);
     console.log(result);
+
     if (result.isSuccess) {
-      alert("이메일 인증 후 로그인 가능합니다.");
+      alert("이메일 인증 후 로그인 가능합니다. 이메일을 확인해주세요 📩");
       router.push("/user/login");
     } else {
       alert(result.message || "회원가입에 실패했습니다.");
@@ -69,9 +78,10 @@ const handleSignup = async () => {
   } catch (err) {
     console.error("회원가입 오류:", err);
     alert("서버 오류로 회원가입에 실패했습니다.");
+  } finally {
+    loadingStore.isLoading = false;
   }
 };
-
 
 const kakaoSignup = () => {
   window.location.href = import.meta.env.VITE_KAKAO_LOGIN_URL;
@@ -80,6 +90,7 @@ const kakaoSignup = () => {
 </script>
 
 <template>
+  <LoadingSpinner :isLoading="loadingStore.isLoading" />
   <div class="signup_container">
     <img src="/src/assets/images/logo.png" alt="logo" class="logo_img" @click="toHome" />
 
@@ -92,6 +103,7 @@ const kakaoSignup = () => {
       <div class="form_group">
         <label for="email">이메일</label>
         <input
+          class="input_box"
           type="email"
           id="email"
           autocomplete="username"
@@ -103,17 +115,23 @@ const kakaoSignup = () => {
       <div class="form_group">
         <label for="password">비밀번호</label>
         <input
-          type="password"
+          class="input_box"
+          :type="showPassword ? 'text' : 'password'"
           id="password"
           autocomplete="current-password"
           v-model="signupData.password"
           placeholder="비밀번호 입력 (영어, 숫자, 특수문자 포함 8자 이상)"
         />
+        <div class="password_toggle">
+          <input type="checkbox" id="showPassword" v-model="showPassword" class="checkbox" />
+          <label class="show_password" for="showPassword">비밀번호 보기</label>
+        </div>
       </div>
 
       <div class="form_group">
         <label for="nickname">닉네임</label>
         <input
+          class="input_box"
           type="text"
           id="nickname"
           v-model="signupData.nickname"
@@ -131,9 +149,21 @@ const kakaoSignup = () => {
         </label>
       </div>
 
-      <button type="button" class="signup_btn" @click="handleSignup">회원가입</button>
+      <button
+        type="button"
+        class="signup_btn"
+        @click="handleSignup"
+        :disabled="loadingStore.isLoading"
+      >
+        회원가입
+      </button>
 
-      <button type="button" class="kakao_btn" @click="kakaoSignup">
+      <button
+        type="button"
+        class="kakao_btn"
+        @click="kakaoSignup"
+        :disabled="loadingStore.isLoading"
+      >
         <img src="/src/assets/icons/kakao.png" alt="카카오 아이콘" class="kakao_icon" />
         카카오로 회원가입
       </button>
@@ -183,16 +213,14 @@ const kakaoSignup = () => {
   margin-bottom: 25px;
 }
 
-label {
+.form_group > label {
   display: block;
   margin-bottom: 15px;
   font-weight: bold;
   font-size: 15px;
 }
 
-input[type="email"],
-input[type="password"],
-input[type="text"] {
+.input_box {
   width: 100%;
   padding: 14px;
   border: 1px solid #ccc;
@@ -200,6 +228,17 @@ input[type="text"] {
   font-size: 13px;
   background-color: #fff;
   box-sizing: border-box;
+}
+
+.show_password {
+  font-size: 14px;
+}
+
+.password_toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
 }
 
 .agree {

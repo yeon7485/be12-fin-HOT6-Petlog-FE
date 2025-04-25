@@ -2,6 +2,8 @@
 import { reactive, watch, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/useUserStore";
+import LoadingSpinner from "../common/components/LoadingSpinner.vue";
+import { useLoadingStore } from "../../stores/useLoadingStore";
 
 const router = useRouter();
 const toHome = () => {
@@ -14,13 +16,24 @@ const loginData = reactive({
 });
 
 const userStore = useUserStore();
-console.log("초기 isLogin:", userStore.isLogin);
+const loadingStore = useLoadingStore();
 
 const login = async () => {
-  const result = await userStore.login(loginData);
-  if (result.code !== 1102) {
-    alert("로그인되었습니다.");
-    router.replace("/");
+  loadingStore.isLoading = true;
+
+  try {
+    const result = await userStore.login(loginData);
+
+    if (result.code !== 1102) {
+      alert("로그인되었습니다.");
+      router.replace("/");
+    } else {
+      alert("로그인에 실패했습니다. 다시 시도해주세요.");
+    }
+  } catch (error) {
+    console.error("로그인 중 오류 발생:", error);
+  } finally {
+    loadingStore.isLoading = false;
   }
 };
 
@@ -32,6 +45,7 @@ const kakaoLogin = () => {
 </script>
 
 <template>
+  <LoadingSpinner :isLoading="loadingStore.isLoading" />
   <div class="login_container">
     <img src="/src/assets/images/logo.png" alt="logo" class="logo_img" @click="toHome" />
 

@@ -11,6 +11,12 @@ const confirmNewPassword = ref("");
 
 
 const changePassword = async () => {
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+
+  if (!passwordRegex.test(newPassword.value)) {
+    alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
+    return;
+  }
 
   if (newPassword.value !== confirmNewPassword.value) {
     alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
@@ -19,11 +25,10 @@ const changePassword = async () => {
 
   try {
     await petStore.changePassword(currentPassword.value, newPassword.value);
-    
     alert("비밀번호가 성공적으로 변경되었습니다.");
-    emit("close"); 
+    emit("close");
   } catch (error) {
-    console.error("Error:", error); 
+    console.error("Error:", error);
     alert(error.response?.data || "비밀번호 변경 실패");
   }
 };

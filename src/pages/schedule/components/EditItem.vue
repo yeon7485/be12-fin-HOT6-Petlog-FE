@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { useCategoryStore } from "../../../stores/useCategoryStore";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 
@@ -13,11 +13,14 @@ Object.assign(updateItem, props.item);
 
 const categories = ref([]);
 const isCateDropdownOpen = ref(false);
-const selectedCate = ref({ idx: 1, color: updateItem.color, name: updateItem.category });
+const selectedCate = ref({
+  idx: 1,
+  color: updateItem.color,
+  name: updateItem.category,
+});
 
 const scheduleStore = useScheduleStore();
 const categoryStore = useCategoryStore();
-categories.value = categoryStore.getCategoryList("SCHEDULE");
 
 const toggleCategory = () => {
   isCateDropdownOpen.value = !isCateDropdownOpen.value;
@@ -25,6 +28,7 @@ const toggleCategory = () => {
 
 const selectCate = (option) => {
   selectedCate.value = option;
+  updateItem.categoryIdx = option.idx;
   updateItem.color = option.color;
   updateItem.category = option.name;
   isCateDropdownOpen.value = false;
@@ -33,8 +37,17 @@ const selectCate = (option) => {
 const handleEditClick = () => {
   // 아이템 변경 요청
   scheduleStore.setItemDetail(updateItem);
+  scheduleStore.updateSchedule(updateItem.idx, updateItem.petIdx, updateItem);
   props.onClose();
 };
+
+const loadCategories = async () => {
+  categories.value = await categoryStore.fetchCategories("SCHEDULE");
+};
+
+onMounted(() => {
+  loadCategories();
+});
 </script>
 
 <template>
@@ -45,19 +58,33 @@ const handleEditClick = () => {
         <div class="cate_dropdown_btn" @click="toggleCategory">
           <div class="selected_cate">
             <div class="cate_item">
-              <div class="color_box" :style="{ backgroundColor: selectedCate.color }"></div>
+              <div
+                class="color_box"
+                :style="{ backgroundColor: selectedCate.color }"
+              ></div>
               <span>{{ selectedCate.name }}</span>
             </div>
           </div>
-          <img src="/src/assets/icons/dropdown.png" alt="down" class="dropdown_icon" />
+          <img
+            src="/src/assets/icons/dropdown.png"
+            alt="down"
+            class="dropdown_icon"
+          />
         </div>
 
         <!-- 카테고리 드롭다운 메뉴 (옵션들) -->
         <div v-if="isCateDropdownOpen" class="cate_dropdown_menu" @click.stop>
           <ul>
-            <li v-for="option in categories" :key="option.name" @click="selectCate(option)">
+            <li
+              v-for="option in categories"
+              :key="option.name"
+              @click="selectCate(option)"
+            >
               <div class="cate_item">
-                <div class="color_box" :style="{ backgroundColor: option.color }"></div>
+                <div
+                  class="color_box"
+                  :style="{ backgroundColor: option.color }"
+                ></div>
                 <span>{{ option.name }}</span>
               </div>
             </li>
@@ -70,17 +97,25 @@ const handleEditClick = () => {
       type="text"
       name="title"
       id="title"
-      :value="updateItem.title"
+      v-model="updateItem.title"
       class="input_title"
       placeholder="제목을 입력해주세요."
     />
     <div class="content_box">
       <p>시작 시간</p>
-      <input v-model="updateItem.startAt" type="datetime-local" class="input_time" />
+      <input
+        v-model="updateItem.startAt"
+        type="datetime-local"
+        class="input_time"
+      />
     </div>
     <div class="content_box">
       <p>종료 시간</p>
-      <input v-model="updateItem.endAt" type="datetime-local" class="input_time" />
+      <input
+        v-model="updateItem.endAt"
+        type="datetime-local"
+        class="input_time"
+      />
     </div>
     <div class="content_box">
       <p>장소</p>
@@ -104,12 +139,36 @@ const handleEditClick = () => {
       <div v-if="updateItem.recurring">
         <div class="content_box">
           <p>반복 종료 날짜</p>
-          <input v-model="updateItem.repeatEndAt" type="date" class="input_time" />
+          <input
+            v-model="updateItem.repeatEndAt"
+            type="date"
+            class="input_time"
+          />
         </div>
-        <v-radio-group hide-details inline v-model="updateItem.repeatCycle" class="radio_btn">
-          <v-radio label="일" value="일" color="#757575" class="radio_item"></v-radio>
-          <v-radio label="주" value="주" color="#757575" class="radio_item"></v-radio>
-          <v-radio label="월" value="월" color="#757575" class="radio_item"></v-radio>
+        <v-radio-group
+          hide-details
+          inline
+          v-model="updateItem.repeatCycle"
+          class="radio_btn"
+        >
+          <v-radio
+            label="일"
+            value="일"
+            color="#757575"
+            class="radio_item"
+          ></v-radio>
+          <v-radio
+            label="주"
+            value="주"
+            color="#757575"
+            class="radio_item"
+          ></v-radio>
+          <v-radio
+            label="월"
+            value="월"
+            color="#757575"
+            class="radio_item"
+          ></v-radio>
         </v-radio-group>
         <input
           type="number"

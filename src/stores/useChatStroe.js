@@ -306,5 +306,19 @@ export const useChatStore = defineStore("chat", {
         console.error("채팅방 수정 실패:", error);
       }
     },
+
+    async createChatRoomSchedule(chatroomIdx, requestBody) {
+      this.errorMessage = "";
+      try {
+        await axios.post(
+          `/api/chat/chatroom/${chatroomIdx}/schedule`,
+          requestBody
+        );
+      } catch (err) {
+        console.error(err);
+        this.errorMessage = "일정 저장에 실패했습니다.";
+        throw err; // ❗ 컴포넌트 쪽에서도 catch 할 수 있게 throw
+      }
+    },
   },
 });

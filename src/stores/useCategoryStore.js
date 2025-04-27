@@ -53,6 +53,8 @@ export const useCategoryStore = defineStore("category", {
           default:
             console.warn("⚠️ 알 수 없는 타입:", type);
         }
+
+        return response.data;
       } catch (error) {
         console.error("❌ 카테고리 목록 조회 실패:", error);
       }
@@ -77,7 +79,7 @@ export const useCategoryStore = defineStore("category", {
     },
 
     // ✅ 카테고리 삭제
-    async deleteCategory(type, { idx }) { 
+    async deleteCategory(type, { idx }) {
       console.log(`🗑️ 카테고리 삭제 요청: ${idx}`);
       await axios.delete(`/api/category/${idx}`);
       await this.fetchCategories(type);

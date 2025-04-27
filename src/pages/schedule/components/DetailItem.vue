@@ -2,7 +2,11 @@
 import { watch, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
-import { formatTimeRange, formatToMonthDay, formatDateTime } from "../../../utils/dateFormat";
+import {
+  formatTimeRange,
+  formatToMonthDay,
+  formatDateTime,
+} from "../../../utils/dateFormat";
 import DeleteModal from "../../common/components/DeleteModal.vue";
 import EditItem from "./EditItem.vue";
 
@@ -56,7 +60,7 @@ watch(
 </script>
 
 <template>
-  <EditItem v-if="isEditMode" :item="item" :onClose="onCloseEditMode" />
+  <EditItem v-if="isEditMode && item" :item="item" :onClose="onCloseEditMode" />
   <div v-else>
     <button class="back_btn" @click="handleBackClick">
       <img src="/src/assets/icons/arrow_left.svg" alt="back" class="back_img" />
@@ -66,11 +70,18 @@ watch(
     <div v-if="item" class="detail_box">
       <div class="detail_header">
         <div class="category_box">
-          <div class="color_circle" :style="{ backgroundColor: item.color }"></div>
+          <div
+            class="color_circle"
+            :style="{ backgroundColor: item.color }"
+          ></div>
           {{ item.categoryName }}
         </div>
         <div>
-          <img src="/src/assets/icons/share.svg" alt="share" class="header_icon" />
+          <img
+            src="/src/assets/icons/share.svg"
+            alt="share"
+            class="header_icon"
+          />
           <img
             @click="handleEditClick"
             src="/src/assets/icons/edit.svg"
@@ -90,7 +101,9 @@ watch(
         <p>시간</p>
         <div>
           {{
-            item.endAt ? formatTimeRange(item.startAt, item.endAt) : formatDateTime(item.startAt)
+            item.endAt
+              ? formatTimeRange(item.startAt, item.endAt)
+              : formatDateTime(item.startAt)
           }}
         </div>
       </div>
@@ -114,7 +127,11 @@ watch(
     </div>
   </div>
 
-  <DeleteModal v-if="isDeleteModalOpen" :onClose="onCloseModal" :itemIdx="itemIdx" />
+  <DeleteModal
+    v-if="isDeleteModalOpen"
+    :onClose="onCloseModal"
+    :itemIdx="itemIdx"
+  />
 </template>
 
 <style scoped>

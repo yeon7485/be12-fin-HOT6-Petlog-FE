@@ -57,6 +57,19 @@ export const useScheduleStore = defineStore("schedule", {
       }
     },
 
+    async updateSchedule(scheduleIdx, petIdx, scheduleUpdateData) {
+      try {
+        const response = await axios.put(
+          `/api/schedule/pet/${petIdx}/schedule/${scheduleIdx}`,
+          scheduleUpdateData
+        );
+        return response.data;
+      } catch (err) {
+        alert("일정 수정에 실패했습니다.");
+        console.error(err);
+      }
+    },
+
     async getAllSchedule() {
       try {
         const response = await axios.get("/api/schedule/pet");

@@ -52,22 +52,23 @@
         <!-- 입력 폼 -->
         <div class="form-section">
           <input
+            v-model="title"
             type="text"
             class="input-title"
             placeholder="제목을 입력해주세요."
           />
 
           <label class="input-label">시작 시간</label>
-          <input type="datetime-local" class="input-box" />
+          <input v-model="startAt" type="datetime-local" class="input-box" />
 
           <label class="input-label">종료 시간</label>
-          <input type="datetime-local" class="input-box" />
+          <input v-model="endAt" type="datetime-local" class="input-box" />
 
           <label class="input-label">장소</label>
-          <input type="text" class="input-box" />
+          <input v-model="placeId" type="text" class="input-box" />
 
           <label class="input-label">메모</label>
-          <textarea class="memo-box" rows="5"></textarea>
+          <textarea v-model="memo" class="memo-box" rows="5"></textarea>
         </div>
       </div>
     </div>
@@ -83,6 +84,7 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
 import { useChatStore } from "../../stores/useChatStroe";
+import { useCategoryStore } from "../../stores/useCategoryStore";
 
 //url 에서 idx 값 가져오기
 const route = useRoute();
@@ -90,22 +92,47 @@ const router = useRouter();
 const chatroomIdx = route.params.chatroomIdx;
 
 const chatStore = useChatStore();
+const categoryStore = useCategoryStore();
 
 const roomTitle = computed(() => chatStore.chatRoomInfo?.title || "채팅방");
+const title = ref("");
+const startAt = ref("");
+const endAt = ref("");
+const placeId = ref("");
+const memo = ref("");
+const goComplete = async () => {
+  if (!selectedCate.value.idx) {
+    alert("카테고리를 선택해주세요!");
+    return;
+  }
+  if (!title.value || !startAt.value || !endAt.value) {
+    alert("필수 항목(제목, 시작/종료 시간)을 입력해주세요.");
+    return;
+  }
 
-const goComplete = () => {
+  const requestBody = {
+    title: title.value,
+    startAt: startAt.value,
+    endAt: endAt.value,
+    placeId: placeId.value, // 선택 사항
+    memo: memo.value, // 선택 사항
+    categoryIdx: selectedCate.value.idx,
+  };
+
+  try {
+    await chatStore.createChatRoomSchedule(chatroomIdx, requestBody);
+    alert("일정이 저장되었습니다.");
+    router.push(`/chatroom/${chatroomIdx}/chatroom-schedule`);
+  } catch (err) {
+    alert("일정 저장에 실패했습니다.");
+  }
+
   router.push(`/chatroom/${chatroomIdx}/chatroom-schedule`); // 이동할 경로로 바꿔주세요
 };
 
 const isCateDropdownOpen = ref(false);
 const selectedCate = ref({});
-const planCategories = ref([
-  { color: "#00C9CD", name: "병원" },
-  { color: "#E6B0BD", name: "미용실" },
-  { color: "#65924D", name: "산책" },
-  { color: "#BDBDBD", name: "기타" },
-]);
-
+const planCategories = computed(() => categoryStore.scheduleCategories);
 const toggleCategory = () => {
   isCateDropdownOpen.value = !isCateDropdownOpen.value;
 };
@@ -120,7 +147,8 @@ const goBack = () => {
   router.go(-1); // 또는 window.history.back()
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await categoryStore.fetchCategories("SCHEDULE");
   chatStore.getRoomInfo(chatroomIdx);
 });
 </script>

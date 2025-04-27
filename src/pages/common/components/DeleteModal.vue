@@ -1,14 +1,19 @@
 <script setup>
-import { ref } from "vue";
-
+import { ref, reactive } from "vue";
+import { useScheduleStore } from "../../../stores/useScheduleStore";
 const props = defineProps({
   onClose: Function,
-  itemIdx: Number,
+  item: Object,
 });
 
+const scheduleStore = useScheduleStore();
 const deleteSuccess = ref(false);
 
-const handleDeleteClick = () => {
+const delteItem = reactive({});
+Object.assign(delteItem, props.item);
+
+const handleDeleteClick = async () => {
+  await scheduleStore.deleteSchedule(delteItem.idx, delteItem.petIdx);
   // item 삭제
   deleteSuccess.value = true;
 };
@@ -18,7 +23,12 @@ const handleDeleteClick = () => {
   <div class="modal_overlay">
     <div class="modal_content">
       <div class="modal_header">
-        <img class="close_btn" src="/src/assets/icons/cancel.png" alt="close" @click="props.onClose()" />
+        <img
+          class="close_btn"
+          src="/src/assets/icons/cancel.png"
+          alt="close"
+          @click="props.onClose()"
+        />
       </div>
       <div class="modal_body">
         <div v-if="!deleteSuccess">

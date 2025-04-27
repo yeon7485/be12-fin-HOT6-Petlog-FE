@@ -127,11 +127,7 @@ watch(
     </div>
   </div>
 
-  <DeleteModal
-    v-if="isDeleteModalOpen"
-    :onClose="onCloseModal"
-    :itemIdx="itemIdx"
-  />
+  <DeleteModal v-if="isDeleteModalOpen" :onClose="onCloseModal" :item="item" />
 </template>
 
 <style scoped>

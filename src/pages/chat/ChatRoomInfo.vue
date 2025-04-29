@@ -20,7 +20,7 @@
       <input
         type="text"
         class="room-input"
-        :value="title"
+        v-model="updateTitle"
         :readonly="!isEditing"
       />
 
@@ -32,14 +32,16 @@
         :readonly="!isEditing"
       />
 
-      <div v-if="isEditing" class="edit-actions">
-        <button class="cancel-button" @click="cancel">취소</button>
-        <button class="save-button" @click="save">저장</button>
-      </div>
-      <div v-else class="edit-actions">
-        <button class="update-button" @click="isEditing = true">
-          채팅방 수정
-        </button>
+      <div v-if="isAdmin">
+        <div v-if="isEditing" class="edit-actions">
+          <button class="cancel-button" @click="cancel">취소</button>
+          <button class="save-button" @click="save">저장</button>
+        </div>
+        <div v-else class="edit-actions">
+          <button class="update-button" @click="isEditing = true">
+            채팅방 수정
+          </button>
+        </div>
       </div>
     </div>
 
@@ -79,10 +81,12 @@ const route = useRoute();
 const router = useRouter();
 
 const isEditing = ref(false); // ✨ 수정 모드 여부
+const isAdmin = ref(false);
 
 const chatroomIdx = route.params.chatroomIdx;
 
 const title = ref("");
+const updateTitle = ref("");
 const hashtagsText = ref("");
 const scrollContainer = ref(null);
 
@@ -108,7 +112,7 @@ const save = async () => {
     .map((tag) => tag.replace(/^#/, ""));
   console.log(hashtags);
 
-  await chatStore.updateRoom(title.value, hashtags, chatroomIdx);
+  await chatStore.updateRoom(updateTitle.value, hashtags, chatroomIdx);
   isEditing.value = false;
 };
 
@@ -126,6 +130,8 @@ onMounted(async () => {
   await chatStore.getRoomInfo(chatroomIdx);
 
   title.value = chatStore.chatRoomInfo.title;
+  updateTitle.value = chatStore.chatRoomInfo.title;
+  isAdmin.value = chatStore.chatRoomInfo.isAdmin;
 
   const tags = chatStore.chatRoomInfo.hashtags;
   hashtagsText.value = (tags ?? [])

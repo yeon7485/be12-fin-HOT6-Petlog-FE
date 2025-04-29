@@ -1,16 +1,17 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import { useProfileStore } from '../../stores/useProfileStore.js'; // Pinia 스토어 사용
+import { useProfileStore } from '../../stores/useProfileStore.js'; 
+import { useUserStore } from '../../stores/useUserStore.js'; 
 import { storeToRefs } from "pinia";
 import MypageDelete from "../mypage/components/MypageDelete.vue";
 import MypagePassword from "../mypage/MypagePasswordModal.vue";
 
-// Pinia 스토어 연결
+
 const store = useProfileStore(); 
+const userStore = useUserStore();
 const { userProfile } = storeToRefs(store);
 
-// 템플릿에서 사용하기 위해 computed로 매핑
 const nickname = computed(() => userProfile.value.nickname);
 const email = computed(() => userProfile.value.email);
 const profileImageUrl = computed(() => userProfile.value.profileImageUrl);
@@ -20,19 +21,18 @@ const router = useRouter();
 const isLoading = ref(true);
 const editingNickname = ref(false);
 const selectedImage = ref(null);
-const newNickname = ref(""); // 새로운 닉네임 입력을 위한 변수
+const newNickname = ref(""); 
 
 const isPasswordModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 
-// 세션에서 사용자 인덱스 가져오기
+
 function getSessionUserIdx() {
   const user = sessionStorage.getItem("user");
   if (user) return JSON.parse(user).idx;
   return null;
 }
 
-// 컴포넌트 마운트 시 프로필 정보 가져오기
 onMounted(async () => {
   const userId = getSessionUserIdx();
   if (!userId) {
@@ -51,7 +51,6 @@ onMounted(async () => {
   }
 });
 
-// 프로필 이미지 변경 시 미리보기
 const onFileChange = (event) => {
   selectedImage.value = event.target.files[0];
   const reader = new FileReader();
@@ -61,7 +60,7 @@ const onFileChange = (event) => {
   reader.readAsDataURL(selectedImage.value);
 };
 
-// 프로필 이미지 저장
+
 const saveProfileImage = async () => {
   if (!selectedImage.value) {
     alert("변경할 이미지가 없습니다.");
@@ -76,37 +75,40 @@ const saveProfileImage = async () => {
   }
 };
 
-// 닉네임 편집 토글
+
 const toggleEditNickname = () => {
   editingNickname.value = !editingNickname.value;
-  newNickname.value = nickname.value; // 기존 닉네임을 새로운 닉네임 변수에 할당
+  newNickname.value = nickname.value; 
 };
 
 const saveNickname = async () => {
-  // 닉네임 길이 체크
   if (newNickname.value.length < 4) {
     alert("닉네임은 최소 4글자 이상이어야 합니다.");
     return;
   }
 
-  // 기존 닉네임과 동일하면 저장하지 않음
   if (newNickname.value === nickname.value) {
     alert("닉네임이 동일합니다. 변경할 필요가 없습니다.");
     return;
   }
 
-  editingNickname.value = false; // 편집 상태 종료
-  const userId = getSessionUserIdx(); // 사용자 ID 가져오기
+  editingNickname.value = false;
+  const userId = getSessionUserIdx();
+
   try {
-    await store.updateNickname(userId, newNickname.value); // Pinia 스토어에서 API 호출
-    nickname.value = newNickname.value; // 실제 닉네임 값 업데이트
-    alert("닉네임이 변경되었습니다.");
+    await store.updateNickname(userId, newNickname.value); 
+
+    await userStore.loginCheck();
+
+    await store.fetchUserProfile(userId);
+
+    alert("닉네임이 변경되었습니다!");
   } catch (e) {
-    // 실패 시 편집 상태 유지하고 오류 메시지 출력
     editingNickname.value = true;
     alert("닉네임 변경 실패: " + e.message);
   }
 };
+
 // 비밀번호 설정 모달 열기
 const togglePasswordModal = () => {
   isPasswordModalOpen.value = !isPasswordModalOpen.value;
@@ -122,9 +124,15 @@ const closeDeleteModal = () => {
   isDeleteModalOpen.value = false;
 };
 
-// 회원 탈퇴 확인
-const handleDeleteConfirm = (enteredPassword) => {
-  alert(`회원 탈퇴 완료. 비밀번호: ${enteredPassword}`);
+const handleDeleteConfirm = async (enteredPassword) => {
+  try {
+    await userStore.deleteUser(enteredPassword); // 스토어에 삭제 요청
+    alert("회원 탈퇴가 완료되었습니다.");
+    router.push("/"); // 탈퇴 후 메인으로 이동
+  } catch (error) {
+    alert("회원 탈퇴에 실패했습니다. 다시 시도해주세요.");
+    console.error(error);
+  }
 };
 </script>
 

@@ -1,89 +1,49 @@
 <script setup>
-import { ref } from 'vue';
-import AdminPassword from "./AdminPasswordModal.vue";
+import { ref, onMounted } from 'vue';
+import { useAdminStore } from '../../stores/useAdminStore.js';  // Pinia 스토어 임포트
 
-// 사용자 정보
-const user = ref({
-  name: '관리자01',
-  email: 'test@example.com'
+const adminStore = useAdminStore();  // Pinia 스토어 사용
+  
+// 컴포넌트가 마운트될 때 삭제된 사용자 목록을 가져옵니다.
+onMounted(() => {
+  adminStore.fetchDeletedUsers();
 });
 
-// 이름 수정 상태
-const editingName = ref(false);
-
-// 이름 수정 토글
-const toggleEditName = () => {
-  editingName.value = true;
-};
-
-// 이름 저장 (Enter 또는 blur)
-const saveName = () => {
-  editingName.value = false;
-};
-
-// 모달 상태 관리
-const isPasswordModalOpen = ref(false);
-const changePassword = () => {
-  isPasswordModalOpen.value = true;
-};
-const closePasswordModal = () => {
-  isPasswordModalOpen.value = false;
-};
-
-// 회원 탈퇴
-const deleteAccount = () => {
-  if (confirm('정말 회원 탈퇴를 하시겠습니까?')) {
-    alert('회원 탈퇴가 완료되었습니다.');
-  }
+// 사용자를 복구하는 메서드
+const restoreUser = (userId) => {
+  adminStore.restoreUser(userId);
 };
 </script>
 
 <template>
   <div class="container">
-    <h2 class="title">내 정보</h2>
+    <h2 class="title">관리자 페이지</h2>
 
-    <div class="profile">
-      <h3 class="username">
-        <!-- 이름 수정 중일 때 input 필드 -->
-        <template v-if="editingName">
-          <input
-            v-model="user.name"
-            class="name-input"
-            @keyup.enter="saveName"
-            @blur="saveName"
-          />
-        </template>
-        <!-- 수정 중이 아닐 때 텍스트와 연필 아이콘 -->
-        <template v-else>
-          <strong>{{ user.name }}</strong> 님
-          <span class="edit-icon" @click="toggleEditName">✏️</span>
-        </template>
-      </h3>
+    <div v-if="adminStore.isLoading" class="loading">로딩 중...</div>
+
+    <!-- 삭제된 사용자 목록 -->
+    <div v-if="adminStore.deletedUsers.length > 0">
+      <h3>탈퇴한 사용자 목록</h3>
+      <ul>
+        <li v-for="user in adminStore.deletedUsers" :key="user.idx">
+          <strong>{{ user.nickname }}</strong> ({{ user.email }}) - <span class="user-idx">ID: {{ user.id }}</span>
+          <button @click="restoreUser(user.idx)" class="btn">복구</button>
+        </li>
+      </ul>
     </div>
-
-    <div class="info">
-      <label class="label">이메일</label>
-      <input type="text" class="input" v-model="user.email" disabled />
-
-      <label class="label">비밀번호</label>
-      <button class="btn" @click="changePassword">비밀번호 설정</button>
+    <div v-else>
+      <p>삭제된 사용자가 없습니다.</p>
     </div>
-
-    <p class="delete" @click="deleteAccount">회원탈퇴</p>
   </div>
-
-  <!-- 비밀번호 변경 모달 -->
-  <AdminPassword v-if="isPasswordModalOpen" @close="closePasswordModal" />
 </template>
 
 <style scoped>
 .title {
   font-size: 32px;
   font-weight: bold;
-  top: 20px;
-  left: 20px;
-  margin-right: 500px;
+  margin-bottom: 20px;
 }
+
 .container {
   display: flex;
   flex-direction: column;
@@ -95,64 +55,22 @@ const deleteAccount = () => {
   position: relative;
   margin-left: 35%;
 }
-.profile {
-  margin-top: 40px;
-  text-align: center;
-}
-.username {
-  font-size: 22px;
-  font-weight: bold;
-  border-bottom: 2px solid black;
-  display: inline-block;
-  padding-bottom: 8px;
-}
-.name-input {
-  font-size: 22px;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-.edit-icon {
-  font-size: 16px;
-  cursor: pointer;
-  margin-left: 5px;
-}
-.info {
-  margin-top: 10px;
-  width: 50%;
-}
-.label {
-  display: block;
-  font-size: 18px;
-  margin-top: 15px;
-}
-.input {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-}
+
 .btn {
-  margin-top: 15px;
-  padding: 12px 16px;
-  border: 2px solid #000;
-  background: #fff;
-  font-size: 16px;
+  margin-left: 10px;
+  padding: 8px 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
   cursor: pointer;
-  border-radius: 8px;
 }
+
 .btn:hover {
-  background: #f0f0f0;
+  background-color: #45a049;
 }
-.delete {
-  margin-top: 30px;
-  font-size: 14px;
-  color: gray;
-  cursor: pointer;
-  text-decoration: underline;
-}
-.delete:hover {
-  color: red;
+
+.loading {
+  font-size: 18px;
+  color: #777;
 }
 </style>

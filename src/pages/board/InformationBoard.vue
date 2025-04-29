@@ -32,24 +32,36 @@ const loadPage = async (page) => {
   } else {
     await boardStore.fetchPosts('information', page - 1, pageSize);
   }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' }); 
 };
 
 const triggerSearch = async () => {
-  const selected = categoryStore.boardCategories.find(c => c.idx === selectedCategory.value);
-  if (!selected) {
-    alert("카테고리를 선택해주세요.");
-    return;
+  currentPage.value = 1;
+
+  const selectedCategoryName = selectedCategory.value 
+    ? categoryStore.boardCategories.find(c => c.idx === selectedCategory.value)?.name 
+    : '';
+
+  const keyword = searchQuery.value.trim();
+
+  if (!keyword && !selectedCategoryName) {
+    boardStore.isSearching = false;
+    await boardStore.fetchPosts('information', 0, pageSize);
+  } else {
+    boardStore.isSearching = true;
+    await boardStore.searchPosts({
+      boardName: 'information',
+      category: selectedCategoryName,
+      keyword: keyword,
+      page: 0,
+      size: pageSize
+    });
   }
 
-  currentPage.value = 1;
-  await boardStore.searchPosts({
-    boardName: 'information',
-    category: selected.name,
-    keyword: searchQuery.value || '',
-    page: 0,
-    size: pageSize
-  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
+
 
 const goToWritePage = () => {
   router.push("/board/information/create");
@@ -64,7 +76,7 @@ onMounted(async () => {
 <template>
   <div>
     <div class="board_header">
-      <h1>정보 공유</h1>
+      <h1>자유 게시판</h1>
       <div class="search_box">
         <select
           v-model="selectedCategory"

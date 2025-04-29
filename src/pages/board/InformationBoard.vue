@@ -86,7 +86,7 @@ onMounted(async () => {
 <template>
   <div>
     <div class="board_header">
-      <h1>자유 게시판</h1>
+      <h1>정보 공유</h1>
       <div class="search_box">
         <select
           v-model="selectedCategory"

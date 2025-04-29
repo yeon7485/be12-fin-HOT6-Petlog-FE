@@ -13,7 +13,6 @@ export const useUserStore = defineStore("user", {
     storage: sessionStorage,
     paths: ["type", "nickname", "isLogin", "idx"],
   },
-  
 
   actions: {
     async signup(signupData) {
@@ -40,7 +39,7 @@ export const useUserStore = defineStore("user", {
 
         if (response.data.isSuccess) {
           this.isLogin = true;
-          this.nickname = response.data.nickname; 
+          this.nickname = response.data.nickname;
           this.type = response.data.role;
           this.idx = response.data.idx;
         } else {
@@ -52,7 +51,7 @@ export const useUserStore = defineStore("user", {
         }
         return response.data;
       } catch (error) {
-        alert("로그인 중 오류가 발생했습니다.");
+        alert("이메일과 비밀번호를 다시 확인해주세요.");
         console.error(error);
       }
     },
@@ -113,12 +112,23 @@ export const useUserStore = defineStore("user", {
 
         if (response.status === 200) {
           alert("회원 탈퇴가 완료되었습니다.");
-          await this.logout(); 
+          await this.logout();
         }
         return response.data;
       } catch (error) {
         alert("회원 탈퇴에 실패하였습니다.");
         console.error(error);
+      }
+    },
+
+    async checkEmailDuplicate(email) {
+      try {
+        const response = await axios.get(`/api/user/email/check?email=${email}`);
+
+        return response.data;
+      } catch (err) {
+        console.log(err);
+        alert(err);
       }
     },
   },

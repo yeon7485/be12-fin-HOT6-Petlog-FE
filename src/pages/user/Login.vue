@@ -17,8 +17,28 @@ const loginData = reactive({
 
 const userStore = useUserStore();
 const loadingStore = useLoadingStore();
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const validateLoginData = () => {
+  if (!loginData.email.trim()) {
+    return "이메일을 입력해주세요";
+  }
+  if (!emailRegex.test(loginData.email)) {
+    return "올바른 이메일 형식을 입력해주세요.";
+  }
+  if (!loginData.password.trim()) {
+    return "비밀번호를 입력해주세요.";
+  }
+  return null;
+};
 
 const login = async () => {
+  const errorMsg = validateLoginData();
+  if (errorMsg) {
+    alert(errorMsg);
+    return;
+  }
+
   loadingStore.isLoading = true;
 
   try {
@@ -38,9 +58,7 @@ const login = async () => {
 };
 
 const kakaoLogin = () => {
-  window.location.href = window.ENV.VITE_KAKAO_LOGIN_URL;
-  alert("로그인 되었습니다.");
-  router.replace("/");
+  window.location.href = import.meta.env.VITE_KAKAO_LOGIN_URL;
 };
 </script>
 
@@ -93,9 +111,8 @@ const kakaoLogin = () => {
   flex-direction: column;
   align-items: center;
   justify-content: start;
-  height: 100vh;
   background-color: #fdf7f1;
-  padding-top: 80px;
+  padding: 80px 0;
 }
 
 .logo_img {
@@ -114,12 +131,12 @@ const kakaoLogin = () => {
 }
 
 .form_group {
-  margin-bottom: 25px;
+  margin-bottom: 35px;
 }
 
-label {
+.form_group > label {
   display: block;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   font-weight: bold;
   font-size: 15px;
 }

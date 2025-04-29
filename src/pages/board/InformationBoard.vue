@@ -44,11 +44,21 @@ const triggerSearch = async () => {
     : '';
 
   const keyword = searchQuery.value.trim();
-
   if (!keyword && !selectedCategoryName) {
     boardStore.isSearching = false;
     await boardStore.fetchPosts('information', 0, pageSize);
-  } else {
+  }
+  else if (!selectedCategoryName) {
+    boardStore.isSearching = true;
+    await boardStore.searchPosts({
+      boardName: 'information',
+      category: '',
+      keyword: keyword,
+      page: 0,
+      size: pageSize
+    });
+  }
+  else {
     boardStore.isSearching = true;
     await boardStore.searchPosts({
       boardName: 'information',

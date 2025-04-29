@@ -11,8 +11,9 @@ export const useUserStore = defineStore("user", {
 
   persist: {
     storage: sessionStorage,
-    paths: ["type", "nickname"],
+    paths: ["type", "nickname", "isLogin", "idx"],
   },
+  
 
   actions: {
     async signup(signupData) {
@@ -24,7 +25,6 @@ export const useUserStore = defineStore("user", {
           return response.data;
         } else {
           alert("회원가입에 실패하였습니다.");
-
           return response;
         }
       } catch (error) {
@@ -40,20 +40,20 @@ export const useUserStore = defineStore("user", {
 
         if (response.data.isSuccess) {
           this.isLogin = true;
-          this.nickname = response.data.userId;
+          this.nickname = response.data.nickname; 
           this.type = response.data.role;
           this.idx = response.data.idx;
-        } else if (response.data.code === 1102) {
-          alert(response.data.message + " 메일을 확인해주세요.");
+        } else {
+          if (response.data.code === 1400) {
+            alert("탈퇴한 회원입니다. 다시 가입해 주세요.");
+          } else if (response.data.code === 1102) {
+            alert(response.data.message + " 메일을 확인해주세요.");
+          }
         }
         return response.data;
       } catch (error) {
-        if (error.status === 401) {
-          alert("이메일과 비밀번호를 다시 입력해주세요.");
-        } else {
-          alert("로그인에 실패하였습니다.");
-          console.error(error);
-        }
+        alert("로그인 중 오류가 발생했습니다.");
+        console.error(error);
       }
     },
 
@@ -97,6 +97,29 @@ export const useUserStore = defineStore("user", {
 
     getNickname() {
       return this.nickname;
+    },
+
+    async deleteUser(password = "") {
+      try {
+        const requestBody = {
+          email: this.nickname,
+          password: password,
+        };
+
+        const response = await axios.delete(`/api/user/${this.idx}`, {
+          data: requestBody,
+          withCredentials: true,
+        });
+
+        if (response.status === 200) {
+          alert("회원 탈퇴가 완료되었습니다.");
+          await this.logout(); 
+        }
+        return response.data;
+      } catch (error) {
+        alert("회원 탈퇴에 실패하였습니다.");
+        console.error(error);
+      }
     },
   },
 });

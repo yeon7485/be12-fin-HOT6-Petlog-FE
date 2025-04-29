@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { useUserStore } from "../stores/useUserStore.js";
 
 export const useProfileStore = defineStore("profile", {
   state: () => ({
@@ -17,6 +18,12 @@ export const useProfileStore = defineStore("profile", {
       try {
         const response = await axios.get(`/api/user/${userId}/profile`);
         this.userProfile = response.data;
+
+        // userStore에 있는 nickname도 업데이트
+        const userStore = useUserStore();
+        userStore.nickname = this.userProfile.nickname; // nickname 동기화
+        userStore.type = this.userProfile.provider;     // provider 업데이트
+        userStore.idx = userId; // idx 업데이트
       } catch (error) {
         console.error("프로필 정보를 불러오는 데 실패했습니다.", error);
       }
@@ -43,11 +50,17 @@ export const useProfileStore = defineStore("profile", {
         console.log("Request body:", { newNickname });
         
         const response = await axios.put(`/api/user/${userId}/nickname`, { newNickname });
+
+        // 닉네임 업데이트 후 userStore도 갱신
+        const userStore = useUserStore();
+        await userStore.loginCheck();
+
+        // userStore에서 최신화된 nickname 반영
+        userStore.nickname = newNickname; // nickname 동기화
+        this.userProfile.nickname = newNickname; // 프로필에도 반영
         
-        this.userProfile.nickname = newNickname;
         console.log("Response:", response.data);
       } catch (error) {
-        // 에러 메시지 상세히 출력
         if (error.response) {
           console.error("닉네임 업데이트 실패: ", error.response.data);
           alert("닉네임 업데이트 실패: " + error.response.data.message);

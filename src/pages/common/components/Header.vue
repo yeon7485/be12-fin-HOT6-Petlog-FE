@@ -4,6 +4,8 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "../../../stores/useUserStore";
 import { useNotificationStore } from "../../../stores/useNoticeStore";
 import NoticeDropdown from "./NoticeDropdown.vue";
+import { watch } from 'vue';
+
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -11,6 +13,7 @@ const store = useNotificationStore();
 
 // 알림 배지 상태 (읽지 않은 알림 수)
 const unreadNotifications = ref(0);
+const nickname = computed(() => userStore.nickname);
 
 const toHome = () => router.push("/");
 const dropdownOpen = ref(false);
@@ -82,6 +85,14 @@ const deleteNotification = async (idx, index) => {
 store.$subscribe(() => {
   unreadNotifications.value = store.notifications.filter((n) => !n.read).length;
 })
+
+watch(
+  () => userStore.nickname,
+  (newNickname, oldNickname) => {
+    console.log('닉네임 변경 감지:', oldNickname, '->', newNickname);
+  
+  }
+);
 </script>
 
 <template>
@@ -117,7 +128,7 @@ store.$subscribe(() => {
 
             <div class="nickname_wrapper" @click="toggleDropdown">
               <span :class="['nickname', { active: dropdownOpen }]"
-                >{{ userStore.getNickname() }} 님</span
+                >  {{ nickname }} 님</span
               >
               <div v-if="dropdownOpen" class="dropdown">
                 <div class="dropdown_item" @click="goToMyPage">마이페이지</div>

@@ -44,11 +44,21 @@ const triggerSearch = async () => {
     : '';
 
   const keyword = searchQuery.value.trim();
-
   if (!keyword && !selectedCategoryName) {
     boardStore.isSearching = false;
     await boardStore.fetchPosts('free', 0, pageSize);
-  } else {
+  }
+  else if (!selectedCategoryName) {
+    boardStore.isSearching = true;
+    await boardStore.searchPosts({
+      boardName: 'free',
+      category: '',
+      keyword: keyword,
+      page: 0,
+      size: pageSize
+    });
+  }
+  else {
     boardStore.isSearching = true;
     await boardStore.searchPosts({
       boardName: 'free',
@@ -61,6 +71,7 @@ const triggerSearch = async () => {
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
+
 
 
 const goToWritePage = () => {

@@ -4,19 +4,16 @@ import axios from "axios";
 export const useAdminStore = defineStore("admin", {
   state: () => ({
     deletedUsers: [], 
-    isLoading: false, 
   }),
 
   actions: {
     async fetchDeletedUsers() {
-      this.isLoading = true;
       try {
+
         const response = await axios.get('/api/admin/deletedUsers');
-        this.deletedUsers = response.data;  
+        this.deletedUsers = response.data.result;  
       } catch (error) {
         console.error("삭제된 사용자 목록을 불러오는 데 실패했습니다.", error);
-      } finally {
-        this.isLoading = false;
       }
     },
 

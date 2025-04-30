@@ -1,14 +1,13 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import { useProfileStore } from '../../stores/useProfileStore.js'; 
-import { useUserStore } from '../../stores/useUserStore.js'; 
+import { useProfileStore } from "../../stores/useProfileStore.js";
+import { useUserStore } from "../../stores/useUserStore.js";
 import { storeToRefs } from "pinia";
 import MypageDelete from "../mypage/components/MypageDelete.vue";
 import MypagePassword from "../mypage/MypagePasswordModal.vue";
 
-
-const store = useProfileStore(); 
+const store = useProfileStore();
 const userStore = useUserStore();
 const { userProfile } = storeToRefs(store);
 
@@ -21,11 +20,10 @@ const router = useRouter();
 const isLoading = ref(true);
 const editingNickname = ref(false);
 const selectedImage = ref(null);
-const newNickname = ref(""); 
+const newNickname = ref("");
 
 const isPasswordModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
-
 
 function getSessionUserIdx() {
   const user = sessionStorage.getItem("user");
@@ -60,7 +58,6 @@ const onFileChange = (event) => {
   reader.readAsDataURL(selectedImage.value);
 };
 
-
 const saveProfileImage = async () => {
   if (!selectedImage.value) {
     alert("변경할 이미지가 없습니다.");
@@ -75,10 +72,9 @@ const saveProfileImage = async () => {
   }
 };
 
-
 const toggleEditNickname = () => {
   editingNickname.value = !editingNickname.value;
-  newNickname.value = nickname.value; 
+  newNickname.value = nickname.value;
 };
 
 const saveNickname = async () => {
@@ -96,7 +92,7 @@ const saveNickname = async () => {
   const userId = getSessionUserIdx();
 
   try {
-    await store.updateNickname(userId, newNickname.value); 
+    await store.updateNickname(userId, newNickname.value);
 
     await userStore.loginCheck();
 
@@ -115,13 +111,24 @@ const togglePasswordModal = () => {
 };
 
 // 회원 탈퇴 모달 열기
-const openDeleteModal = () => {
-  isDeleteModalOpen.value = true;
+const openDeleteModal = async () => {
+  const isOAuthUser = await checkOAuthLogin();
+  console.log("isOAuth", isOAuthUser);
+  if (isOAuthUser) {
+    await handleDeleteConfirm("");
+  } else {
+    isDeleteModalOpen.value = true;
+  }
 };
 
 // 회원 탈퇴 모달 닫기
 const closeDeleteModal = () => {
   isDeleteModalOpen.value = false;
+};
+
+const checkOAuthLogin = async () => {
+  const result = await userStore.checkOAuthLogin();
+  return result.result;
 };
 
 const handleDeleteConfirm = async (enteredPassword) => {
@@ -176,7 +183,9 @@ const handleDeleteConfirm = async (enteredPassword) => {
     <div v-if="isLoading" class="loading">로딩 중...</div>
 
     <!-- 비밀번호 설정 -->
-    <button v-if="provider !== 'kakao'" class="password-btn" @click="togglePasswordModal">비밀번호 설정</button>
+    <button v-if="provider !== 'kakao'" class="password-btn" @click="togglePasswordModal">
+      비밀번호 설정
+    </button>
 
     <!-- 회원 탈퇴 -->
     <button class="delete-link" @click="openDeleteModal">회원탈퇴</button>
@@ -278,7 +287,7 @@ const handleDeleteConfirm = async (enteredPassword) => {
   cursor: not-allowed;
 }
 .password-btn {
-  background: #A0522D;
+  background: #a0522d;
   border: none;
   color: white;
   padding: 10px 15px;
@@ -302,7 +311,7 @@ const handleDeleteConfirm = async (enteredPassword) => {
   text-decoration: underline;
 }
 .save-image-btn {
-  background: #A0522D;
+  background: #a0522d;
   color: white;
   padding: 10px 15px;
   font-size: 16px;
@@ -313,6 +322,6 @@ const handleDeleteConfirm = async (enteredPassword) => {
   margin-bottom: 20px;
 }
 .save-image-btn:hover {
-  background: #A0522D;
+  background: #a0522d;
 }
 </style>

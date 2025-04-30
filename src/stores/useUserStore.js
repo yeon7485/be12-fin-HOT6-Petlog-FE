@@ -131,5 +131,14 @@ export const useUserStore = defineStore("user", {
         alert(err);
       }
     },
+
+    async checkOAuthLogin() {
+      try {
+        const response = await axios.get(`/api/user/oauth/check`);
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
   },
 });

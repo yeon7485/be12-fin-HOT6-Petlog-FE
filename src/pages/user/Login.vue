@@ -43,15 +43,23 @@ const login = async () => {
 
   try {
     const result = await userStore.login(loginData);
+    console.log("login", result);
 
-    if (result.code !== 1102) {
+    // 백엔드가 리디렉션 URL을 준 경우
+    if (result.redirectUrl) {
+      window.location.href = result.redirectUrl;
+      return;
+    }
+
+    if (result.code === 200) {
       alert("로그인되었습니다.");
       router.replace("/");
     } else {
-      alert("로그인에 실패했습니다. 다시 시도해주세요.");
+      alert(result.message || "로그인에 실패했습니다.");
     }
   } catch (error) {
     console.error("로그인 중 오류 발생:", error);
+    alert("서버 오류가 발생했습니다.");
   } finally {
     loadingStore.isLoading = false;
   }

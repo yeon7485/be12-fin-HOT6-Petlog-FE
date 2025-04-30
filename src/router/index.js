@@ -35,7 +35,7 @@ import UpdateScheduleCategory from "../pages/admin/ModifyScheduleCategory.vue";
 import Record from "../pages/admin/RecordCategory.vue";
 import RecordFix from "../pages/admin/ModifyRecordCategory.vue";
 import Board from "../pages/admin/BoardCategory.vue";
-import BoardFix from "../pages/admin/ModifyBoard.vue"
+import BoardFix from "../pages/admin/ModifyBoard.vue";
 import BoardTypeCategoryFix from "../pages/admin/ModifyBoardCategory.vue";
 import BoardTypeCategory from "../pages/admin/BoardTypeCategory.vue";
 
@@ -50,6 +50,7 @@ import DetailList from "../pages/schedule/components/DetailList.vue";
 import DetailItem from "../pages/schedule/components/DetailItem.vue";
 import DetailRecordItem from "../pages/schedule/components/DetailRecordItem.vue";
 import { useUserStore } from "../stores/useUserStore";
+import DeletedUser from "../pages/user/DeletedUser.vue";
 
 // admin 체크
 const adminOnlyGuard = (to, from, next) => {
@@ -100,6 +101,7 @@ const routes = [
     children: [
       { path: "login", component: Login },
       { path: "signup", component: Signup },
+      { path: "login/error/deleted", component: DeletedUser },
     ],
   },
   {
@@ -182,10 +184,9 @@ const routes = [
       { path: "category/record", component: Record },
       { path: "category/record/fix", component: RecordFix },
       { path: "category/board", component: Board },
-      { path: "category/board/fix", component: BoardFix},
-      { path: "category/boardtype/fix", component: BoardTypeCategoryFix},
+      { path: "category/board/fix", component: BoardFix },
+      { path: "category/boardtype/fix", component: BoardTypeCategoryFix },
       { path: "category/boardtype", component: BoardTypeCategory },
-      
     ],
   },
 ];

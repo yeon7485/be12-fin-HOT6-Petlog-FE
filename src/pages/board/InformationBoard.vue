@@ -12,7 +12,8 @@ const categoryStore = useCategoryStore()
 const searchQuery = ref("");
 const selectedCategory = ref("");
 const currentPage = ref(1);
-const pageSize = 5;
+const pageSize = 10;
+const pageGroupSize = 10;
 
 const categories = computed(() =>
   categoryStore.boardCategories.map(c => ({ label: c.name, value: c.idx }))
@@ -47,18 +48,7 @@ const triggerSearch = async () => {
   if (!keyword && !selectedCategoryName) {
     boardStore.isSearching = false;
     await boardStore.fetchPosts('information', 0, pageSize);
-  }
-  else if (!selectedCategoryName) {
-    boardStore.isSearching = true;
-    await boardStore.searchPosts({
-      boardName: 'information',
-      category: '',
-      keyword: keyword,
-      page: 0,
-      size: pageSize
-    });
-  }
-  else {
+  } else {
     boardStore.isSearching = true;
     await boardStore.searchPosts({
       boardName: 'information',
@@ -72,14 +62,47 @@ const triggerSearch = async () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-
 const goToWritePage = () => {
   router.push("/board/information/create");
 };
 
+const pageGroupStart = computed(() =>
+  Math.floor((currentPage.value - 1) / pageGroupSize) * pageGroupSize + 1
+);
+const pageGroupEnd = computed(() =>
+  Math.min(pageGroupStart.value + pageGroupSize - 1, boardStore.totalPages)
+);
+const visiblePages = computed(() => {
+  const pages = [];
+  for (let i = pageGroupStart.value; i <= pageGroupEnd.value; i++) {
+    pages.push(i);
+  }
+  return pages;
+});
+
+const goToPrevGroup = () => {
+  if (pageGroupStart.value > 1) {
+    loadPage(pageGroupStart.value - 1);
+  }
+};
+
+const goToNextGroup = () => {
+  if (pageGroupEnd.value < boardStore.totalPages) {
+    loadPage(pageGroupEnd.value + 1);
+  }
+};
+
+const goToFirst = () => {
+  loadPage(1);
+};
+
+const goToLast = () => {
+  loadPage(boardStore.totalPages);
+};
+
 onMounted(async () => {
-  await categoryStore.fetchCategories('BOARD')
-  await loadPage(1)
+  await categoryStore.fetchCategories('BOARD');
+  await loadPage(1);
 });
 </script>
 
@@ -128,17 +151,22 @@ onMounted(async () => {
     </table>
 
     <div v-if="boardStore.totalPages > 1" class="pagination">
-      <button @click="loadPage(currentPage - 1)" :disabled="currentPage === 1">◀</button>
-      <button
-        v-for="page in boardStore.totalPages"
-        :key="page"
-        :class="{ active: page === currentPage }"
-        @click="loadPage(page)"
-      >
-        {{ page }}
-      </button>
-      <button @click="loadPage(currentPage + 1)" :disabled="currentPage === boardStore.totalPages">▶</button>
-    </div>
+  <button @click="goToFirst" :disabled="currentPage === 1">처음으로</button>
+  <button @click="goToPrevGroup" :disabled="pageGroupStart === 1">◀ 이전</button>
+
+  <button
+    v-for="page in visiblePages"
+    :key="page"
+    :class="{ active: page === currentPage }"
+    @click="loadPage(page)"
+  >
+    {{ page }}
+  </button>
+
+  <button @click="goToNextGroup" :disabled="pageGroupEnd === boardStore.totalPages">다음 ▶</button>
+  <button @click="goToLast" :disabled="currentPage === boardStore.totalPages">끝으로</button>
+</div>
+
 
     <button class="write_btn" @click="goToWritePage">글쓰기</button>
   </div>

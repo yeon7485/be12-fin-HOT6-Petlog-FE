@@ -180,7 +180,7 @@ const kakaoSignup = () => {
           type="text"
           id="nickname"
           v-model="signupData.nickname"
-          placeholder="4~16자의 한글, 영문, 숫자만 사용 (자음/모음, 특수문자 X)"
+          placeholder="2~16자의 한글, 영문, 숫자만 사용 (자음/모음, 특수문자 X)"
         />
       </div>
 

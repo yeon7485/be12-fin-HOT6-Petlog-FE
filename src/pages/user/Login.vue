@@ -66,7 +66,7 @@ const login = async () => {
 };
 
 const kakaoLogin = () => {
-  window.location.href = import.meta.env.VITE_KAKAO_LOGIN_URL;
+  window.location.href = window.ENV.VITE_KAKAO_LOGIN_URL;
 };
 </script>
 

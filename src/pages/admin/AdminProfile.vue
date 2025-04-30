@@ -1,15 +1,19 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useAdminStore } from '../../stores/useAdminStore.js';  // Pinia 스토어 임포트
+import { useAdminStore } from '../../stores/useAdminStore.js';  
+import { useLoadingStore } from '../../stores/useLoadingStore.js';
 
-const adminStore = useAdminStore();  // Pinia 스토어 사용
-  
-// 컴포넌트가 마운트될 때 삭제된 사용자 목록을 가져옵니다.
-onMounted(() => {
-  adminStore.fetchDeletedUsers();
+const adminStore = useAdminStore();  
+const loadingStore = useLoadingStore();
+
+onMounted(async () => {
+  loadingStore.isloading = true; // 로딩 시작
+  await adminStore.fetchDeletedUsers();
+  console.log('adminStore deleteUser', adminStore.deletedUsers);
+  loadingStore.isloading = false; // 로딩 종료
 });
 
-// 사용자를 복구하는 메서드
+
 const restoreUser = (userId) => {
   adminStore.restoreUser(userId);
 };
@@ -19,14 +23,14 @@ const restoreUser = (userId) => {
   <div class="container">
     <h2 class="title">관리자 페이지</h2>
 
-    <div v-if="adminStore.isLoading" class="loading">로딩 중...</div>
+    <div v-if="loadingStore.isLoading" class="loading">로딩 중...</div>
 
     <!-- 삭제된 사용자 목록 -->
     <div v-if="adminStore.deletedUsers.length > 0">
       <h3>탈퇴한 사용자 목록</h3>
       <ul>
         <li v-for="user in adminStore.deletedUsers" :key="user.idx">
-          <strong>{{ user.nickname }}</strong> ({{ user.email }}) - <span class="user-idx">ID: {{ user.id }}</span>
+          <strong>{{ user.nickname }}</strong> ({{ user.email }}) - <span class="user-idx">ID: {{ user.idx }}</span>
           <button @click="restoreUser(user.idx)" class="btn">복구</button>
         </li>
       </ul>

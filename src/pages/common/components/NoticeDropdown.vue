@@ -1,18 +1,18 @@
 <script setup>
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useNotificationStore } from '../../../stores/useNoticeStore'
 import axios from 'axios'
 
 const store = useNotificationStore()
+const router = useRouter()
 
 onMounted(() => {
   store.connectWebSocket()
-  store.fetchNotificationsFromServer() 
+  store.fetchNotificationsFromServer()
 })
 
-
 const deleteNotification = async (idx, index) => {
-  console.log("🧪 삭제 요청: ", idx) 
   try {
     await axios.delete(`/api/notification/${idx}`)
     store.removeNotification(index)
@@ -21,9 +21,14 @@ const deleteNotification = async (idx, index) => {
   }
 }
 
-
 const handleClick = (n) => {
-  alert(`${n.title}\n\n${n.content}`)
+
+  if (n.scheduleId) {
+    console.log(`📌 이동할 스케줄 ID: ${n.scheduleId}`)
+    router.push({ path: `/schedule/detail/${n.scheduleId}` })
+  } else {
+    console.warn("⚠️ scheduleId가 없습니다.")
+  }
 }
 </script>
 

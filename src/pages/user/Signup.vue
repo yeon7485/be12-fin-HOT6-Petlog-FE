@@ -1,9 +1,10 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/useUserStore";
 import { useLoadingStore } from "../../stores/useLoadingStore";
 import LoadingSpinner from "../common/components/LoadingSpinner.vue";
+import { nextTick } from "vue";
 
 const router = useRouter();
 const toHome = () => {
@@ -23,42 +24,76 @@ const signupData = reactive({
 
 const agreed = ref(false);
 const showPassword = ref(false);
+const checkEmail = ref(false);
 
-const validateSignupData = (data, agreed) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/;
-  const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,16}$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/;
+const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,16}$/;
 
-  if (!agreed) {
+const handleCheckEmail = async () => {
+  if (!signupData.email.trim()) {
+    alert("이메일을 입력해주세요.");
+  } else if (!emailRegex.test(signupData.email)) {
+    alert("올바른 이메일 형식을 입력해주세요.");
+  } else {
+    const result = await userStore.checkEmailDuplicate(signupData.email);
+    if (result.isSuccess) {
+      if (result.result) {
+        alert("이미 사용 중인 이메일입니다.");
+      } else {
+        alert("사용 가능한 이메일입니다.");
+        checkEmail.value = true;
+        await nextTick();
+      }
+    }
+  }
+};
+
+// 이메일이 변경되면 checkEmail을 false로 초기화
+watch(
+  () => signupData.email,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      checkEmail.value = false;
+    }
+  }
+);
+
+const validateSignupData = () => {
+  if (!agreed.value) {
     return "약관에 동의하셔야 회원가입이 가능합니다.";
   }
 
-  if (!data.email.trim()) {
+  if (!signupData.email.trim()) {
     return "이메일을 입력해주세요.";
   }
-  if (!emailRegex.test(data.email)) {
+  if (!emailRegex.test(signupData.email)) {
     return "올바른 이메일 형식을 입력해주세요.";
   }
 
-  if (!data.password) {
+  if (!signupData.password) {
     return "비밀번호를 입력해주세요.";
   }
-  if (!pwRegex.test(data.password)) {
+  if (!pwRegex.test(signupData.password)) {
     return "비밀번호는 영어, 숫자, 특수문자를 포함한 8~20자여야 합니다.";
   }
 
-  if (!data.nickname.trim()) {
+  if (!signupData.nickname.trim()) {
     return "닉네임을 입력해주세요.";
   }
-  if (!nicknameRegex.test(data.nickname)) {
-    return "닉네임은 4~16자의 한글, 영문, 숫자만 사용할 수 있습니다. (자음/모음, 특수문자 불가)";
+  if (!nicknameRegex.test(signupData.nickname)) {
+    return "닉네임은 2~16자의 한글, 영문, 숫자만 사용할 수 있습니다. (자음/모음, 특수문자 불가)";
+  }
+
+  if (!checkEmail.value) {
+    return "이메일 중복 확인이 필요합니다.";
   }
 
   return null; // 모든 검증 통과
 };
 
 const handleSignup = async () => {
-  const errorMsg = validateSignupData(signupData, agreed.value);
+  const errorMsg = validateSignupData();
   if (errorMsg) {
     alert(errorMsg);
     return;
@@ -71,7 +106,7 @@ const handleSignup = async () => {
 
     if (result.isSuccess) {
       alert("이메일 인증 후 로그인 가능합니다. 이메일을 확인해주세요 📩");
-      router.push("/user/login");
+      router.push("/");
     } else {
       alert(result.message || "회원가입에 실패했습니다.");
     }
@@ -84,8 +119,7 @@ const handleSignup = async () => {
 };
 
 const kakaoSignup = () => {
-  window.location.href = import.meta.env.VITE_KAKAO_LOGIN_URL;
-  alert("회원가입이 완료되었습니다.");
+  window.location.href = window.ENV.VITE_KAKAO_LOGIN_URL;
 };
 </script>
 
@@ -102,14 +136,25 @@ const kakaoSignup = () => {
     <form class="signup_box">
       <div class="form_group">
         <label for="email">이메일</label>
-        <input
-          class="input_box"
-          type="email"
-          id="email"
-          autocomplete="username"
-          v-model="signupData.email"
-          placeholder="이메일 형식에 맞게 입력 (test@test.com)"
-        />
+        <div class="email_box">
+          <input
+            class="input_box"
+            type="email"
+            id="email"
+            autocomplete="username"
+            v-model="signupData.email"
+            placeholder="이메일 형식에 맞게 입력 (test@test.com)"
+          />
+          <button
+            type="button"
+            class="email_check_btn"
+            :class="{ disabled_btn: checkEmail }"
+            @click="handleCheckEmail"
+            :disabled="checkEmail"
+          >
+            {{ checkEmail ? "확인 완료" : "중복 확인" }}
+          </button>
+        </div>
       </div>
 
       <div class="form_group">
@@ -135,7 +180,7 @@ const kakaoSignup = () => {
           type="text"
           id="nickname"
           v-model="signupData.nickname"
-          placeholder="4~16자의 한글, 영문, 숫자만 사용 (자음/모음, 특수문자 X)"
+          placeholder="2~16자의 한글, 영문, 숫자만 사용 (자음/모음, 특수문자 X)"
         />
       </div>
 
@@ -177,8 +222,7 @@ const kakaoSignup = () => {
   flex-direction: column;
   align-items: center;
   background-color: #fdf7f1;
-  height: 100vh;
-  padding-top: 60px;
+  padding: 60px 0;
 }
 
 .logo_img {
@@ -210,21 +254,48 @@ const kakaoSignup = () => {
 }
 
 .form_group {
-  margin-bottom: 25px;
+  margin-bottom: 35px;
 }
 
 .form_group > label {
   display: block;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   font-weight: bold;
   font-size: 15px;
+}
+
+.email_box {
+  display: flex;
+  gap: 5px;
+}
+
+.email_check_btn {
+  background: var(--main-color-brown);
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  white-space: nowrap;
+  padding: 5px 8px;
+}
+
+.email_check_btn:active {
+  background-color: var(--main-color-hover);
+}
+
+.disabled_btn {
+  background-color: var(--gray400);
+  cursor: not-allowed;
+}
+
+.email_check_btn:disabled:active {
+  background-color: var(--gray400);
 }
 
 .input_box {
   width: 100%;
   padding: 14px;
   border: 1px solid #ccc;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 13px;
   background-color: #fff;
   box-sizing: border-box;
@@ -232,6 +303,8 @@ const kakaoSignup = () => {
 
 .show_password {
   font-size: 14px;
+  margin-top: 3px;
+  color: var(--gray700);
 }
 
 .password_toggle {

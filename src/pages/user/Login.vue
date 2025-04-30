@@ -17,30 +17,56 @@ const loginData = reactive({
 
 const userStore = useUserStore();
 const loadingStore = useLoadingStore();
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const validateLoginData = () => {
+  if (!loginData.email.trim()) {
+    return "이메일을 입력해주세요";
+  }
+  if (!emailRegex.test(loginData.email)) {
+    return "올바른 이메일 형식을 입력해주세요.";
+  }
+  if (!loginData.password.trim()) {
+    return "비밀번호를 입력해주세요.";
+  }
+  return null;
+};
 
 const login = async () => {
+  const errorMsg = validateLoginData();
+  if (errorMsg) {
+    alert(errorMsg);
+    return;
+  }
+
   loadingStore.isLoading = true;
 
   try {
     const result = await userStore.login(loginData);
+    console.log("login", result);
 
-    if (result.code !== 1102) {
+    // 백엔드가 리디렉션 URL을 준 경우
+    if (result.redirectUrl) {
+      window.location.href = result.redirectUrl;
+      return;
+    }
+
+    if (result.code === 200) {
       alert("로그인되었습니다.");
       router.replace("/");
     } else {
-      alert("로그인에 실패했습니다. 다시 시도해주세요.");
+      alert(result.message || "로그인에 실패했습니다.");
     }
   } catch (error) {
     console.error("로그인 중 오류 발생:", error);
+    alert("서버 오류가 발생했습니다.");
   } finally {
     loadingStore.isLoading = false;
   }
 };
 
 const kakaoLogin = () => {
-  window.location.href = window.ENV.VITE_KAKAO_LOGIN_URL;
-  alert("로그인 되었습니다.");
-  router.replace("/");
+  window.location.href = import.meta.env.VITE_KAKAO_LOGIN_URL;
 };
 </script>
 
@@ -93,9 +119,8 @@ const kakaoLogin = () => {
   flex-direction: column;
   align-items: center;
   justify-content: start;
-  height: 100vh;
   background-color: #fdf7f1;
-  padding-top: 80px;
+  padding: 80px 0;
 }
 
 .logo_img {
@@ -114,12 +139,12 @@ const kakaoLogin = () => {
 }
 
 .form_group {
-  margin-bottom: 25px;
+  margin-bottom: 35px;
 }
 
-label {
+.form_group > label {
   display: block;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   font-weight: bold;
   font-size: 15px;
 }

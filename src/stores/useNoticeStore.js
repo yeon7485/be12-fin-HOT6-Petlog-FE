@@ -39,6 +39,7 @@ export const useNotificationStore = defineStore("notification", () => {
         title: "[알림]",
         content: `"${n.petName}"의 ${n.message}`,
         time: formatTime(n.sentAt),
+        scheduleId: n.scheduleId,
         read: false, // 기본적으로 읽지 않은 상태로 설정
       }));
     } catch (err) {
@@ -60,7 +61,7 @@ export const useNotificationStore = defineStore("notification", () => {
   const connectWebSocket = () => {
     if (!currentUserId.value) return;
     const client = new Client({
-      webSocketFactory: () => new SockJS("/api/ws"),
+      webSocketFactory: () => new SockJS("/ws"),
       reconnectDelay: 5000,
       onConnect: () => {
         client.subscribe(`/topic/alerts/${currentUserId.value}`, (msg) => {

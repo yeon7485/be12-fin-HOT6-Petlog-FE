@@ -11,7 +11,7 @@ export const useBoardStore = defineStore("board", () => {
   const currentKeyword = ref("");
   const currentCategoryName = ref("");
 
-  const fetchPosts = async (boardType, page = 0, size = 5) => {
+  const fetchPosts = async (boardType, page = 0, size = 10) => {
     isSearching.value = false;
     category.value = boardType;
 
@@ -33,7 +33,7 @@ export const useBoardStore = defineStore("board", () => {
     category,
     keyword,
     page = 0,
-    size = 5,
+    size = 10,
   }) => {
     isSearching.value = true;
     currentKeyword.value = keyword;

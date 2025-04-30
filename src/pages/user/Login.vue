@@ -46,7 +46,7 @@ const login = async () => {
     console.log("login", result);
 
     // 백엔드가 리디렉션 URL을 준 경우
-    if (result.redirectUrl) {
+    if (result.code === 1400) {
       window.location.href = result.redirectUrl;
       return;
     }

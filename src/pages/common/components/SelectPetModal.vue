@@ -55,7 +55,7 @@ onMounted(fetchPets);
           <li v-for="pet in pets" class="pet_box" :key="pet.idx" @click="selectPet(pet)">
             <div class="profile_box">
               <img
-                :src="pet.profileImageUrl || '/src/assets/images/default.png'"
+                :src="pet.profileImageUrl || '/src/assets/images/image_not_found.png'"
                 alt="pet.name"
                 class="profile_img"
               />

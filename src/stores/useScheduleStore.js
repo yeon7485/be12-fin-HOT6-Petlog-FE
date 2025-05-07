@@ -9,22 +9,7 @@ export const useScheduleStore = defineStore("schedule", {
     plans: [],
     records: [],
     todaySchedules: [], // ✅ 오늘 일정 저장용
-    planDetail: {
-      idx: 2,
-      title: "병원 검진 예약 병원 검진 예약",
-      color: "#00C9CD",
-      category: "병원",
-      fromChat: false,
-      recurring: true,
-      repeatCycle: "일",
-      repeatCount: 3,
-      repeatEndAt: "2025-04-07T12:00:00",
-      startAt: "2025-04-07T11:00:00",
-      endAt: "2025-04-07T12:00:00",
-      placeId: "api_place_id",
-      placeName: "서울멍냥병원",
-      memo: "정기검진",
-    },
+    planDetail: {},
   }),
 
   persist: {
@@ -46,10 +31,7 @@ export const useScheduleStore = defineStore("schedule", {
 
     async createSchedule(petIdx, planData) {
       try {
-        const response = await axios.post(
-          `/api/schedule/pet/${petIdx}`,
-          planData
-        );
+        const response = await axios.post(`/api/schedule/pet/${petIdx}`, planData);
         return response.data;
       } catch (err) {
         alert("일정 등록에 실패했습니다.");
@@ -82,10 +64,7 @@ export const useScheduleStore = defineStore("schedule", {
 
     async createRecord(petIdx, recordData) {
       try {
-        const response = await axios.post(
-          `/api/daily-record/pet/${petIdx}`,
-          recordData
-        );
+        const response = await axios.post(`/api/daily-record/pet/${petIdx}`, recordData);
         return response.data;
       } catch (err) {
         alert("기록 등록에 실패했습니다.");

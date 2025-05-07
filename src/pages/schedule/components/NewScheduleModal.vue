@@ -1,9 +1,11 @@
 <script setup>
 import { reactive, ref, watch, computed, onMounted } from "vue";
-import axios from "axios";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
 import { useCategoryStore } from "../../../stores/useCategoryStore";
 import { usePetStore } from "../../../stores/usePetStore";
+import { useLoadingStore } from "../../../stores/useLoadingStore";
+import LoadingSpinner from "../../common/components/LoadingSpinner.vue";
+import PlacePicker from "./PlacePicker.vue";
 
 const props = defineProps({
   onClose: Function,
@@ -14,6 +16,7 @@ const emit = defineEmits(["schedule-created"]);
 const scheduleStore = useScheduleStore();
 const categoryStore = useCategoryStore();
 const petStore = usePetStore();
+const loadingStore = useLoadingStore();
 
 const pets = ref([]);
 const selectedPet = ref(null);
@@ -26,14 +29,24 @@ const recordCategories = computed(() => categoryStore.recordCategories);
 onMounted(async () => {
   // 내 반려동물 불러오기
   try {
+    loadingStore.value = true;
     const result = await petStore.fetchPetList();
-    console.log(result);
+
     pets.value = result;
+
     if (pets.value.length > 0) {
       selectedPet.value = props.selectedPet ?? pets.value[0];
+    } else {
+      alert("반려동물을 먼저 추가해주세요");
+
+      props.onClose();
     }
   } catch (e) {
     console.error("반려동물 목록 불러오기 실패", e);
+
+    props.onClose();
+  } finally {
+    loadingStore.value = false;
   }
 
   await categoryStore.fetchCategories("SCHEDULE");
@@ -57,6 +70,7 @@ const isCateDropdownOpen = ref(false);
 const planData = reactive({
   title: "",
   placeId: "",
+  placeName: "",
   memo: "",
   categoryIdx: 0,
   startAt: "",
@@ -76,6 +90,17 @@ const recordData = reactive({
 });
 
 const recordPreviewUrl = ref("");
+
+const selectedPlaceName = ref("");
+const showPicker = ref(false);
+
+const handlePlaceSelect = (place) => {
+  console.log(place);
+  selectedPlaceName.value = place.place_name;
+  planData.placeId = place.id;
+  planData.placeName = place.place_name;
+  showPicker.value = false;
+};
 
 const closeModal = () => {
   selectedPet.value = pets.value[0];
@@ -109,6 +134,7 @@ const selectType = (type) => {
     Object.assign(planData, {
       title: "",
       placeId: "",
+      placeName: "",
       memo: "",
       categoryIdx: 0,
       startAt: "",
@@ -180,6 +206,7 @@ const checkForm = (type) => {
 
 // 일정/기록 생성
 const handleCreateSchedule = async () => {
+  loadingStore.isLoading = true;
   if (checkForm(scheduleStore.type)) {
     // 일정 생성
     if (scheduleStore.type === "SCHEDULE") {
@@ -187,6 +214,7 @@ const handleCreateSchedule = async () => {
       console.log(result.isSuccess);
 
       if (result.isSuccess) {
+        loadingStore.isLoading = false;
         alert("일정이 등록되었습니다.");
         emit("schedule-created");
         closeModal();
@@ -198,8 +226,10 @@ const handleCreateSchedule = async () => {
       console.log(result.isSuccess);
 
       if (result.isSuccess) {
+        loadingStore.isLoading = false;
         alert("기록이 등록되었습니다.");
         //emit("record-created");
+
         closeModal();
       }
     }
@@ -214,6 +244,7 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
 </script>
 
 <template>
+  <LoadingSpinner :isLoading="loadingStore.isLoading" />
   <div class="modal_overlay">
     <div class="modal_content" @click.stop="handleModalContentClick">
       <div class="modal_title">
@@ -231,11 +262,11 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
             <div class="pet_dropdown_btn" @click.stop="togglePet">
               <div class="profile_box">
                 <img
-                  :src="selectedPet?.profileImageUrl || '/src/assets/images/default.png'"
+                  :src="selectedPet?.profileImageUrl || '/src/assets/images/image_not_found.png'"
                   alt="Profile"
                   class="profile_img"
                 />
-                <span>{{ selectedPet?.name || "이름 없음" }}</span>
+                <span>{{ selectedPet?.name || "" }}</span>
               </div>
               <img src="/src/assets/icons/arrow_down.png" alt="Arrow" class="arrow_icon" />
             </div>
@@ -334,7 +365,18 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
               <!-- 장소 입력 -->
               <div>
                 <label>장소</label>
-                <button type="button" class="place_btn">장소 선택</button>
+                <div v-if="selectedPlaceName !== ''" class="place_box">
+                  <img src="/src/assets/icons/place.svg" alt="" />
+                  <p>{{ selectedPlaceName }}</p>
+                </div>
+                <button type="button" class="place_btn" @click="showPicker = true">
+                  장소 선택
+                </button>
+                <PlacePicker
+                  v-if="showPicker"
+                  @select="handlePlaceSelect"
+                  @close="showPicker = false"
+                />
               </div>
 
               <!-- 메모 입력 -->
@@ -733,6 +775,17 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
 
 .textarea_memo:focus {
   outline-color: var(--gray600);
+}
+
+.place_box {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.place_box > p {
+  font-size: 14px;
 }
 
 .input_box .v-input--density-default {

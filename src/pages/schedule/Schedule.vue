@@ -103,7 +103,7 @@ watch(
           :style="{
             backgroundImage: selectedPet?.profileImageUrl
               ? `url(${selectedPet.profileImageUrl})`
-              : `url('/src/assets/images/profile_1.jpg')`,
+              : `url('/src/assets/images/default_profile.png')`,
           }"
         ></div>
 

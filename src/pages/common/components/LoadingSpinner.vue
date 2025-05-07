@@ -2,6 +2,7 @@
 const props = defineProps({
   isLoading: Boolean,
 });
+console.log("loadingSpinner", props.isLoading);
 </script>
 
 <template>

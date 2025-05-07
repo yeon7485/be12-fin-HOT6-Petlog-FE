@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { useAdminStore } from '../../stores/useAdminStore.js';  
 import { useLoadingStore } from '../../stores/useLoadingStore.js';
 
@@ -7,10 +7,10 @@ const adminStore = useAdminStore();
 const loadingStore = useLoadingStore();
 
 onMounted(async () => {
-  loadingStore.isloading = true; // 로딩 시작
+  loadingStore.isLoading = true; // 로딩 시작
   await adminStore.fetchDeletedUsers();
   console.log('adminStore deleteUser', adminStore.deletedUsers);
-  loadingStore.isloading = false; // 로딩 종료
+  loadingStore.isLoading = false; // 로딩 종료
 });
 
 
@@ -26,7 +26,7 @@ const restoreUser = (userId) => {
     <div v-if="loadingStore.isLoading" class="loading">로딩 중...</div>
 
     <!-- 삭제된 사용자 목록 -->
-    <div v-if="adminStore.deletedUsers.length > 0">
+    <div v-if="Array.isArray(adminStore.deletedUsers) && adminStore.deletedUsers.length > 0">
       <h3>탈퇴한 사용자 목록</h3>
       <ul>
         <li v-for="user in adminStore.deletedUsers" :key="user.idx">

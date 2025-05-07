@@ -54,6 +54,18 @@ export const useBoardStore = defineStore("board", () => {
       });
 
       const result = res.data.result;
+
+      if (!result || !result.content) {
+        console.warn("검색 응답 비정상:", res.data);
+        posts.value = [];
+        totalPages.value = 1;
+        visiblePages.value = [];
+        currentPage.value = 1;
+        pageGroupStart.value = 1;
+        pageGroupEnd.value = 1;
+        return;
+      }
+
       posts.value = result.content;
       currentPage.value = result.currentPage;
       totalPages.value = result.totalPages;
@@ -65,8 +77,12 @@ export const useBoardStore = defineStore("board", () => {
       posts.value = [];
       totalPages.value = 1;
       visiblePages.value = [];
+      currentPage.value = 1;
+      pageGroupStart.value = 1;
+      pageGroupEnd.value = 1;
     }
   };
+
 
   const getPostDetail = async (postIdx) => {
     try {

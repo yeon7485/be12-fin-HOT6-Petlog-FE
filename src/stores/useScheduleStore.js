@@ -137,7 +137,7 @@ export const useScheduleStore = defineStore("schedule", {
       try {
         const response = await this.getSchedulesByDate(year, month, day);
         console.log("오늘 일정 응답:", response.result);
-        this.todaySchedules = response.result;
+        this.todaySchedules = response.result.slice(0, 3);
       } catch (err) {
         console.error("오늘 일정 불러오기 실패", err);
         this.todaySchedules = [];

@@ -4,18 +4,56 @@ import axios from "axios";
 
 export const useQuestionStore = defineStore("question", () => {
   const questions = ref([]);
+  const currentPage = ref(1);
   const totalPages = ref(1);
+  const pageGroupStart = ref(1);
+  const pageGroupEnd = ref(1);
+  const visiblePages = ref([]);
   const selectedQuestion = ref(null);
 
+  const isSearching = ref(false);
+  const currentKeyword = ref("");
+
   const fetchQuestions = async (page = 0, size = 5) => {
+    isSearching.value = false;
+
     try {
       const res = await axios.get(
         `/api/question/list?page=${page}&size=${size}`
       );
-      questions.value = res.data.result.content;
-      totalPages.value = res.data.result.totalPages;
+      const result = res.data.result;
+
+      questions.value = result.content;
+      currentPage.value = result.currentPage;
+      totalPages.value = result.totalPages;
+      pageGroupStart.value = result.pageGroupStart;
+      pageGroupEnd.value = result.pageGroupEnd;
+      visiblePages.value = result.visiblePages;
     } catch (error) {
       console.error("질문 목록 조회 실패:", error);
+      questions.value = [];
+    }
+  };
+
+  const searchQuestions = async (keyword, page = 0, size = 5) => {
+    isSearching.value = true;
+    currentKeyword.value = keyword;
+
+    try {
+      const res = await axios.get(`/api/question/search`, {
+        params: { keyword, page, size },
+      });
+      const result = res.data.result;
+
+      questions.value = result.content;
+      currentPage.value = result.currentPage;
+      totalPages.value = result.totalPages;
+      pageGroupStart.value = result.pageGroupStart;
+      pageGroupEnd.value = result.pageGroupEnd;
+      visiblePages.value = result.visiblePages;
+    } catch (error) {
+      console.error("질문 검색 실패:", error);
+      questions.value = [];
     }
   };
 
@@ -109,33 +147,27 @@ export const useQuestionStore = defineStore("question", () => {
     }
   };
 
-  const searchQuestions = async (keyword, page = 0, size = 5) => {
-    try {
-      const res = await axios.get(
-        `/api/question/search?keyword=${keyword}&page=${page}&size=${size}`
-      );
-      return res.data.result;
-    } catch (error) {
-      console.error("질문 검색 실패:", error);
-      return { content: [], totalPages: 1 };
-    }
-  };
-
   const setSelectedQuestion = (q) => {
     selectedQuestion.value = q;
   };
 
   return {
     questions,
+    currentPage,
     totalPages,
+    pageGroupStart,
+    pageGroupEnd,
+    visiblePages,
     selectedQuestion,
+    isSearching,
+    currentKeyword,
     fetchQuestions,
+    searchQuestions,
     createQuestion,
+    updateQuestion,
     readQuestion,
     deleteQuestion,
     refreshQuestionStatus,
-    searchQuestions,
     setSelectedQuestion,
-    updateQuestion,
   };
 });

@@ -10,42 +10,43 @@ const questionStore = useQuestionStore();
 const answerStore = useAnswerStore();
 
 const search = ref("");
-const keyword = ref("");
-const searchResults = ref([]);
-const searchTotalPages = ref(1);
-
-const currentPage = ref(1);
-const pageSize = 5;
-
-const isSearching = computed(() => keyword.value.trim().length > 0);
-
-const safeQuestions = computed(() => {
-  const list = isSearching.value ? searchResults.value : questionStore.questions;
-  return Array.isArray(list) ? list.filter((q) => typeof q === "object" && q !== null) : [];
-});
 
 const loadPage = async (page) => {
-  currentPage.value = page;
-  if (isSearching.value) {
-    await triggerSearch(keyword.value, page);
+  if (questionStore.isSearching) {
+    await questionStore.searchQuestions(questionStore.currentKeyword, page - 1, 5);
   } else {
-    await questionStore.fetchQuestions(page - 1, pageSize);
-    await Promise.all(questionStore.questions.map((q) => answerStore.fetchAnswersByQuestionId(q.idx)));
+    await questionStore.fetchQuestions(page - 1, 5);
   }
+
+  await Promise.all(questionStore.questions.map(q =>
+    answerStore.fetchAnswersByQuestionId(q.idx)
+  ));
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
-const triggerSearch = async (kw, page = 1) => {
-  keyword.value = kw;
-  currentPage.value = page;
-  const res = await questionStore.searchQuestions(kw, page - 1, pageSize);
-  searchResults.value = res.content;
-  searchTotalPages.value = res.totalPages;
-  await Promise.all(searchResults.value.map((q) => answerStore.fetchAnswersByQuestionId(q.idx)));
+const triggerSearch = async () => {
+  const kw = search.value.trim();
+  if (!kw) {
+    questionStore.isSearching = false;
+    await loadPage(1);
+    return;
+  }
+
+  await questionStore.searchQuestions(kw, 0, 5);
+  await Promise.all(questionStore.questions.map(q =>
+    answerStore.fetchAnswersByQuestionId(q.idx)
+  ));
 };
 
 const goToRegister = () => {
   router.push("/board/qna/create");
 };
+
+const goToFirst = () => loadPage(1);
+const goToLast = () => loadPage(questionStore.totalPages);
+const goToPrevGroup = () => loadPage(questionStore.pageGroupStart - 1);
+const goToNextGroup = () => loadPage(questionStore.pageGroupEnd + 1);
 
 onMounted(() => loadPage(1));
 </script>
@@ -56,12 +57,12 @@ onMounted(() => loadPage(1));
       <h1 class="title">Q&amp;A</h1>
       <div class="search_write">
         <div class="search_box">
-          <img class="icon_img" src="/src/assets/icons/search.png" alt="검색 아이콘" @click="triggerSearch(search)" />
+          <img class="icon_img" src="/src/assets/icons/search.png" alt="검색 아이콘" @click="triggerSearch" />
           <input
             v-model="search"
             type="text"
             placeholder="제목, 작성자, 내용, 해시태그 검색 ..."
-            @keyup.enter="triggerSearch(search)"
+            @keyup.enter="triggerSearch"
           />
         </div>
         <button class="write_button" @click="goToRegister">
@@ -71,7 +72,7 @@ onMounted(() => loadPage(1));
     </div>
 
     <QuestionCard
-      v-for="question in safeQuestions"
+      v-for="question in questionStore.questions"
       :key="question.idx"
       :question="{
         ...question,
@@ -81,21 +82,30 @@ onMounted(() => loadPage(1));
       }"
     />
 
-    <div v-if="(isSearching ? searchTotalPages : questionStore.totalPages) > 1" class="pagination">
-      <button @click="loadPage(currentPage - 1)" :disabled="currentPage === 1">◀</button>
+    <div v-if="questionStore.totalPages > 1" class="pagination">
+      <button @click="goToFirst" :disabled="questionStore.currentPage === 1">처음으로</button>
+      <button @click="goToPrevGroup" :disabled="questionStore.pageGroupStart === 1">◀ 이전</button>
+
       <button
-        v-for="page in (isSearching ? searchTotalPages : questionStore.totalPages)"
+        v-for="page in questionStore.visiblePages"
         :key="page"
-        :class="{ active: page === currentPage }"
+        :class="{ active: page === questionStore.currentPage }"
         @click="loadPage(page)"
       >
         {{ page }}
       </button>
+
       <button
-        @click="loadPage(currentPage + 1)"
-        :disabled="currentPage === (isSearching ? searchTotalPages : questionStore.totalPages)"
+        @click="goToNextGroup"
+        :disabled="questionStore.pageGroupEnd === questionStore.totalPages"
       >
-        ▶
+        다음 ▶
+      </button>
+      <button
+        @click="goToLast"
+        :disabled="questionStore.currentPage === questionStore.totalPages"
+      >
+        끝으로
       </button>
     </div>
   </div>
@@ -220,34 +230,18 @@ onMounted(() => loadPage(1));
 }
 
 @keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 @keyframes fadeSlideUp {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 </style>
+  

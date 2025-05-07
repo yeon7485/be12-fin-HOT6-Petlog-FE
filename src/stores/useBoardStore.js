@@ -4,8 +4,11 @@ import axios from "axios";
 
 export const useBoardStore = defineStore("board", () => {
   const posts = ref([]);
-  const category = ref("");
+  const currentPage = ref(1);
   const totalPages = ref(1);
+  const pageGroupStart = ref(1);
+  const pageGroupEnd = ref(1);
+  const visiblePages = ref([]);
 
   const isSearching = ref(false);
   const currentKeyword = ref("");
@@ -13,18 +16,24 @@ export const useBoardStore = defineStore("board", () => {
 
   const fetchPosts = async (boardType, page = 0, size = 10) => {
     isSearching.value = false;
-    category.value = boardType;
 
     try {
       const res = await axios.get(`/api/post/list/${boardType}`, {
         params: { page, size },
       });
-      posts.value = res.data.result.content;
-      totalPages.value = res.data.result.totalPages;
+
+      const result = res.data.result;
+      posts.value = result.content;
+      currentPage.value = result.currentPage;
+      totalPages.value = result.totalPages;
+      pageGroupStart.value = result.pageGroupStart;
+      pageGroupEnd.value = result.pageGroupEnd;
+      visiblePages.value = result.visiblePages;
     } catch (err) {
       console.error("게시글 조회 실패:", err);
       posts.value = [];
       totalPages.value = 1;
+      visiblePages.value = [];
     }
   };
 
@@ -43,12 +52,19 @@ export const useBoardStore = defineStore("board", () => {
       const res = await axios.get("/api/post/search", {
         params: { boardName, category, keyword, page, size },
       });
-      posts.value = res.data.result.content;
-      totalPages.value = res.data.result.totalPages;
+
+      const result = res.data.result;
+      posts.value = result.content;
+      currentPage.value = result.currentPage;
+      totalPages.value = result.totalPages;
+      pageGroupStart.value = result.pageGroupStart;
+      pageGroupEnd.value = result.pageGroupEnd;
+      visiblePages.value = result.visiblePages;
     } catch (err) {
       console.error("검색 실패:", err);
       posts.value = [];
       totalPages.value = 1;
+      visiblePages.value = [];
     }
   };
 
@@ -93,8 +109,11 @@ export const useBoardStore = defineStore("board", () => {
 
   return {
     posts,
-    category,
+    currentPage,
     totalPages,
+    pageGroupStart,
+    pageGroupEnd,
+    visiblePages,
     isSearching,
     currentKeyword,
     currentCategoryName,

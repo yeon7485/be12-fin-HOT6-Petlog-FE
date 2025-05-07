@@ -2,11 +2,7 @@
 import { watch, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useScheduleStore } from "../../../stores/useScheduleStore";
-import {
-  formatTimeRange,
-  formatToMonthDay,
-  formatDateTime,
-} from "../../../utils/dateFormat";
+import { formatTimeRange, formatToMonthDay, formatDateTime } from "../../../utils/dateFormat";
 import DeleteModal from "../../common/components/DeleteModal.vue";
 import EditItem from "./EditItem.vue";
 
@@ -39,11 +35,16 @@ const onCloseModal = () => {
   isDeleteModalOpen.value = false;
 };
 
+const handlePlaceClick = () => {
+  window.open(`http://place.map.kakao.com/${item.value.placeId}`, "_blank");
+};
+
 const fetchScheduleDetail = async () => {
   const result = await scheduleStore.getScheduleDetail(route.params?.id);
 
   if (result.isSuccess) {
     item.value = result.result;
+    console.log(item);
   }
 
   isLoading.value = false;
@@ -70,18 +71,11 @@ watch(
     <div v-if="item" class="detail_box">
       <div class="detail_header">
         <div class="category_box">
-          <div
-            class="color_circle"
-            :style="{ backgroundColor: item.color }"
-          ></div>
+          <div class="color_circle" :style="{ backgroundColor: item.color }"></div>
           {{ item.categoryName }}
         </div>
         <div>
-          <img
-            src="/src/assets/icons/share.svg"
-            alt="share"
-            class="header_icon"
-          />
+          <img src="/src/assets/icons/share.svg" alt="share" class="header_icon" />
           <img
             @click="handleEditClick"
             src="/src/assets/icons/edit.svg"
@@ -101,17 +95,15 @@ watch(
         <p>시간</p>
         <div>
           {{
-            item.endAt
-              ? formatTimeRange(item.startAt, item.endAt)
-              : formatDateTime(item.startAt)
+            item.endAt ? formatTimeRange(item.startAt, item.endAt) : formatDateTime(item.startAt)
           }}
         </div>
       </div>
-      <div v-if="item.placeId" class="content_box">
+      <div v-if="item.placeName" class="content_box">
         <p>장소</p>
-        <div class="place_box">
-          <img src="/src/assets/icons/green_place.svg" alt="place" />
-          {{ item.placeId }}
+        <div class="place_box" @click="handlePlaceClick">
+          <img src="/src/assets/icons/place.svg" alt="place" />
+          {{ item.placeName }}
         </div>
       </div>
       <div class="content_box">
@@ -198,9 +190,21 @@ watch(
 }
 
 .place_box {
+  width: fit-content;
   display: flex;
   align-items: center;
   gap: 3px;
+  white-space: nowrap;
+  border: 1px solid var(--gray400);
+  border-radius: 8px;
+  padding: 7px 15px 7px 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+
+.place_box:hover {
+  background-color: var(--gray200);
 }
 
 .memo_box {

@@ -5,6 +5,7 @@ import { useCategoryStore } from "../../../stores/useCategoryStore";
 import { usePetStore } from "../../../stores/usePetStore";
 import { useLoadingStore } from "../../../stores/useLoadingStore";
 import LoadingSpinner from "../../common/components/LoadingSpinner.vue";
+import PlacePicker from "./PlacePicker.vue";
 
 const props = defineProps({
   onClose: Function,
@@ -69,6 +70,7 @@ const isCateDropdownOpen = ref(false);
 const planData = reactive({
   title: "",
   placeId: "",
+  placeName: "",
   memo: "",
   categoryIdx: 0,
   startAt: "",
@@ -88,6 +90,17 @@ const recordData = reactive({
 });
 
 const recordPreviewUrl = ref("");
+
+const selectedPlaceName = ref("");
+const showPicker = ref(false);
+
+const handlePlaceSelect = (place) => {
+  console.log(place);
+  selectedPlaceName.value = place.place_name;
+  planData.placeId = place.id;
+  planData.placeName = place.place_name;
+  showPicker.value = false;
+};
 
 const closeModal = () => {
   selectedPet.value = pets.value[0];
@@ -121,6 +134,7 @@ const selectType = (type) => {
     Object.assign(planData, {
       title: "",
       placeId: "",
+      placeName: "",
       memo: "",
       categoryIdx: 0,
       startAt: "",
@@ -351,7 +365,18 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
               <!-- 장소 입력 -->
               <div>
                 <label>장소</label>
-                <button type="button" class="place_btn">장소 선택</button>
+                <div v-if="selectedPlaceName !== ''" class="place_box">
+                  <img src="/src/assets/icons/place.svg" alt="" />
+                  <p>{{ selectedPlaceName }}</p>
+                </div>
+                <button type="button" class="place_btn" @click="showPicker = true">
+                  장소 선택
+                </button>
+                <PlacePicker
+                  v-if="showPicker"
+                  @select="handlePlaceSelect"
+                  @close="showPicker = false"
+                />
               </div>
 
               <!-- 메모 입력 -->
@@ -750,6 +775,17 @@ watch([planData.startAt, planData.endAt], ([start, end]) => {
 
 .textarea_memo:focus {
   outline-color: var(--gray600);
+}
+
+.place_box {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.place_box > p {
+  font-size: 14px;
 }
 
 .input_box .v-input--density-default {

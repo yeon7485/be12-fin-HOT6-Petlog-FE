@@ -4,10 +4,7 @@
       <!-- 채팅방 헤더 -->
       <ChatHeader :title="roomTitle" :showMenu="true" :roomIdx="chatroomIdx" />
 
-      <ChatMessages
-        :messages="chatStore.messages"
-        :currentUserId="currentUserId"
-      />
+      <ChatMessages :messages="chatStore.messages" :currentUserId="currentUserId" />
 
       <!-- 입력 영역 -->
       <ChatInput @open-pet-modal="isModalOpen = true" />
@@ -15,11 +12,7 @@
   </div>
 
   <!-- Pet 선택 모달 -->
-  <div
-    v-if="isModalOpen"
-    class="modal-overlay"
-    @click.self="isModalOpen = false"
-  >
+  <div v-if="isModalOpen" class="modal-overlay" @click.self="isModalOpen = false">
     <div class="modal-content">
       <h3>반려동물 목록</h3>
 
@@ -46,7 +39,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
-import { useChatStore } from "../../stores/useChatStroe";
+import { useChatStore } from "../../stores/useChatStore.js";
 import { useUserStore } from "../../stores/useUserStore";
 import ChatMessages from "./components/ChatMessages.vue";
 import ChatInput from "./components/ChatInput.vue";

@@ -38,20 +38,13 @@
             내 채팅방
           </button>
           <button class="chat-button chat-button--create" @click="openModal">
-            <img
-              src="../../assets/images/iconoir_chat-plus-in.png"
-              alt="채팅방 생성"
-            />
+            <img src="../../assets/images/iconoir_chat-plus-in.png" alt="채팅방 생성" />
           </button>
         </div>
       </div>
       <!-- 채팅 목록 -->
       <div class="chat-list">
-        <ChatCard
-          v-for="room in chatStore.chatRooms"
-          :key="room.idx"
-          :room="room"
-        />
+        <ChatCard v-for="room in chatStore.chatRooms" :key="room.idx" :room="room" />
       </div>
     </div>
   </div>
@@ -91,7 +84,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useChatStore } from "../../stores/useChatStroe";
+import { useChatStore } from "../../stores/useChatStore.js";
 import ChatCard from "./components/ChatCard.vue";
 import { handleChatRoomError } from "../../utils/errorHandler";
 import { useRouter } from "vue-router";
@@ -113,9 +106,7 @@ const selectedTags = ref([]);
 // 사용자가 입력한 값에서 #태그를 추출해서 selectedTags에 추가
 const onSearchInput = () => {
   const tagMatches = searchInput.value.match(/#(\S+)/g) || [];
-  selectedTags.value = [
-    ...new Set(tagMatches.map((tag) => tag.replace("#", ""))),
-  ];
+  selectedTags.value = [...new Set(tagMatches.map((tag) => tag.replace("#", "")))];
   const keywordOnly = searchInput.value.replace(/#\S+/g, "").trim();
   if (keywordOnly.length > 0 || selectedTags.value.length > 0) {
     chatStore.searchRooms({

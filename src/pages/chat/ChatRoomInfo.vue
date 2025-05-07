@@ -17,12 +17,7 @@
       <h3 class="section-title">채팅방 정보</h3>
 
       <label class="input-label">채팅방 이름</label>
-      <input
-        type="text"
-        class="room-input"
-        v-model="updateTitle"
-        :readonly="!isEditing"
-      />
+      <input type="text" class="room-input" v-model="updateTitle" :readonly="!isEditing" />
 
       <label class="input-label">해시태그</label>
       <textarea
@@ -38,18 +33,14 @@
           <button class="save-button" @click="save">저장</button>
         </div>
         <div v-else class="edit-actions">
-          <button class="update-button" @click="isEditing = true">
-            채팅방 수정
-          </button>
+          <button class="update-button" @click="isEditing = true">채팅방 수정</button>
         </div>
       </div>
     </div>
 
     <!-- 대화상대 -->
     <div class="members-section">
-      <h3 class="section-title">
-        대화상대 {{ chatStore.chatRoomUsers.length }}
-      </h3>
+      <h3 class="section-title">대화상대 {{ chatStore.chatRoomUsers.length }}</h3>
       <div class="member-list" ref="scrollContainer" @scroll="handleScroll">
         <UserCard
           v-for="user in chatStore.chatRoomUsers"
@@ -74,7 +65,7 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
 import UserCard from "./components/UserCard.vue";
-import { useChatStore } from "../../stores/useChatStroe";
+import { useChatStore } from "../../stores/useChatStore.js";
 const chatStore = useChatStore();
 
 const route = useRoute();
@@ -119,9 +110,7 @@ const save = async () => {
 // 취소 버튼 클릭 시 → 원래 데이터 복원
 const cancel = () => {
   title.value = chatStore.chatRoomInfo.title;
-  hashtagsText.value = chatStore.chatRoomInfo.hashtags
-    .map((t) => `#${t}`)
-    .join(" ");
+  hashtagsText.value = chatStore.chatRoomInfo.hashtags.map((t) => `#${t}`).join(" ");
   isEditing.value = false;
 };
 onMounted(async () => {
@@ -134,9 +123,7 @@ onMounted(async () => {
   isAdmin.value = chatStore.chatRoomInfo.isAdmin;
 
   const tags = chatStore.chatRoomInfo.hashtags;
-  hashtagsText.value = (tags ?? [])
-    .map((tag) => (tag.startsWith("#") ? tag : `#${tag}`))
-    .join(" ");
+  hashtagsText.value = (tags ?? []).map((tag) => (tag.startsWith("#") ? tag : `#${tag}`)).join(" ");
 });
 </script>
 

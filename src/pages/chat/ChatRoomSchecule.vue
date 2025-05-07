@@ -12,11 +12,7 @@
             :to="`/chatroom/${chatroomIdx}/chatroom-schedule/create`"
             class="edit-button"
           >
-            <img
-              src="../../assets/images/jam_write.svg"
-              alt="편집"
-              class="edit-icon"
-            />
+            <img src="../../assets/images/jam_write.svg" alt="편집" class="edit-icon" />
           </router-link>
         </div>
 
@@ -34,7 +30,7 @@
 </template>
 
 <script setup>
-import { useChatStore } from "../../stores/useChatStroe";
+import { useChatStore } from "../../stores/useChatStore.js";
 import { onMounted, computed } from "vue";
 
 import { useRoute } from "vue-router";

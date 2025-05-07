@@ -2,11 +2,7 @@
   <div class="chatroom-info-container">
     <div class="info-header">
       <div class="back-wrapper">
-        <img
-          class="back-icon"
-          src="../../assets/images/arrow.svg"
-          @click="goBack"
-        />
+        <img class="back-icon" src="../../assets/images/arrow.svg" @click="goBack" />
         <!-- <button class="back-button" >뒤로</button> -->
       </div>
 
@@ -31,9 +27,7 @@
         </div>
         <div class="schedule-row">
           <span class="label">장소</span>
-          <span class="value">{{
-            chatStore.ChatRoomScheculeDetail.place
-          }}</span>
+          <span class="value">{{ chatStore.ChatRoomScheculeDetail.place }}</span>
         </div>
         <div class="schedule-row">
           <span class="label">메모</span>
@@ -49,8 +43,7 @@
         <div class="participant-box">
           <div
             class="participant-name"
-            v-for="chatRoomUser in chatStore.ChatRoomScheculeDetail
-              .participants"
+            v-for="chatRoomUser in chatStore.ChatRoomScheculeDetail.participants"
           >
             {{ chatRoomUser.userName }}
           </div>
@@ -85,7 +78,7 @@
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { useChatStore } from "../../stores/useChatStroe";
+import { useChatStore } from "../../stores/useChatStore.js";
 const chatStore = useChatStore();
 const route = useRoute();
 const router = useRouter();
@@ -107,11 +100,7 @@ const goComplete = async () => {
   }
 
   try {
-    await chatStore.submitScheduleParticipation(
-      chatroomIdx,
-      scheduleIdx,
-      selectedAnimals.value
-    );
+    await chatStore.submitScheduleParticipation(chatroomIdx, scheduleIdx, selectedAnimals.value);
     router.push(`/chatroom/${chatroomIdx}/chatroom-schedule`);
   } catch (e) {
     alert("참여 중 문제가 발생했습니다. 다시 시도해주세요.");

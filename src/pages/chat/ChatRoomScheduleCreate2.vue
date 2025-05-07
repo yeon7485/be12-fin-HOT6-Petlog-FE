@@ -9,38 +9,20 @@
             <div class="cate_dropdown_btn" @click.stop="toggleCategory">
               <div class="selected_cate">
                 <div v-if="selectedCate.name" class="cate_item">
-                  <div
-                    class="color_box"
-                    :style="{ backgroundColor: selectedCate.color }"
-                  ></div>
+                  <div class="color_box" :style="{ backgroundColor: selectedCate.color }"></div>
                   <span>{{ selectedCate.name }}</span>
                 </div>
                 <div v-else class="placeholder">카테고리 선택</div>
               </div>
-              <img
-                src="../../assets/icons/dropdown.png"
-                alt="down"
-                class="dropdown_icon"
-              />
+              <img src="../../assets/icons/dropdown.png" alt="down" class="dropdown_icon" />
             </div>
 
             <!-- 카테고리 드롭다운 메뉴 (옵션들) -->
-            <div
-              v-if="isCateDropdownOpen"
-              class="cate_dropdown_menu"
-              @click.stop
-            >
+            <div v-if="isCateDropdownOpen" class="cate_dropdown_menu" @click.stop>
               <ul>
-                <li
-                  v-for="option in planCategories"
-                  :key="option.name"
-                  @click="selectCate(option)"
-                >
+                <li v-for="option in planCategories" :key="option.name" @click="selectCate(option)">
                   <div class="cate_item">
-                    <div
-                      class="color_box"
-                      :style="{ backgroundColor: option.color }"
-                    ></div>
+                    <div class="color_box" :style="{ backgroundColor: option.color }"></div>
                     <span>{{ option.name }}</span>
                   </div>
                 </li>
@@ -83,7 +65,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import ChatHeader from "./ChatHeader.vue";
-import { useChatStore } from "../../stores/useChatStroe";
+import { useChatStore } from "../../stores/useChatStore.js";
 import { useCategoryStore } from "../../stores/useCategoryStore";
 
 //url 에서 idx 값 가져오기

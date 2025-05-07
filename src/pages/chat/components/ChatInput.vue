@@ -3,12 +3,7 @@
     <button class="chatroom-pet-icon" @click="$emit('open-pet-modal')">
       <img src="../../../assets/icons/sendpetcard.svg" alt="펫 버튼" />
     </button>
-    <input
-      v-model="message"
-      @keyup.enter="send"
-      type="text"
-      placeholder="메시지 입력"
-    />
+    <input v-model="message" @keyup.enter="send" type="text" placeholder="메시지 입력" />
     <button class="chatroom-send" @click="send">
       <img src="../../../assets/icons/sendmessage.svg" alt="보내기" />
     </button>
@@ -17,7 +12,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { useChatStore } from "../../../stores/useChatStroe";
+import { useChatStore } from "../../../stores/useChatStore.js";
 import { useRoute } from "vue-router";
 
 const route = useRoute();

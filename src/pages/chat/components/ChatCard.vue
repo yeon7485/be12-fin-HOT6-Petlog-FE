@@ -26,9 +26,7 @@ const props = defineProps({
     <div class="chat-card">
       <div class="chat-title">
         {{ room.title }}
-        <span v-if="room.isParticipating" class="participating-badge"
-          >참여중</span
-        >
+        <span v-if="room.isParticipating" class="participating-badge">참여중</span>
       </div>
       <div class="chat-tags">
         <span v-for="tag in room.hashtags" :key="tag">#{{ tag }}</span>
@@ -40,16 +38,12 @@ const props = defineProps({
     </div>
   </div>
 
-  <ChatRoomInfoModal
-    v-if="showRoomModal"
-    :room="selectedRoom"
-    @close="showRoomModal = false"
-  />
+  <ChatRoomInfoModal v-if="showRoomModal" :room="selectedRoom" @close="showRoomModal = false" />
 </template>
 
 <style scoped>
 .chat-card {
-  width: 806px;
+  width: 100%;
   padding: 33px 36px;
   border-radius: 20px;
   border: 1px solid #6a0104;

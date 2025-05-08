@@ -53,7 +53,7 @@ const formatScheduleTime = (item) => {
 .schedule_item {
   width: 100%;
   background-color: #fff;
-  padding: 22px;
+  padding: 25px;
   box-shadow: 2px 2px 3px 0px rgba(0, 0, 0, 0.15);
   border-radius: 16px;
   transition: all 0.3s;
@@ -83,7 +83,8 @@ const formatScheduleTime = (item) => {
 }
 
 .schedule_item:hover {
-  background-color: var(--gray100);
+  scale: 1.05;
+  border-color: var(--gray500);
 }
 
 .schedule_time {

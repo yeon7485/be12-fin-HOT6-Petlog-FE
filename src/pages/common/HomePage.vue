@@ -141,14 +141,14 @@ onMounted(async () => {
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   flex-wrap: wrap;
-  margin: 15px 0 70px;
+  margin: 25px 0 70px;
 }
 
 .chat_card_list {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 15px;
+  margin: 25px 10px 0;
 }
 
 .no_schedule,

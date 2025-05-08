@@ -62,7 +62,7 @@ export const useNotificationStore = defineStore("notification", () => {
     if (!currentUserId.value || stompClient.value) return;
 
     const client = new Client({
-      webSocketFactory: () => new SockJS("/ws"),
+      webSocketFactory: () => new SockJS("/api/ws"),
       reconnectDelay: 5000,
       onConnect: () => {
         client.subscribe(`/topic/alerts/${currentUserId.value}`, (msg) => {

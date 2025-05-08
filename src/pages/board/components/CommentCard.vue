@@ -1,62 +1,73 @@
 <script setup>
-import { ref } from 'vue'
-import { useCommentStore } from '/src/stores/useCommentStore'
+import { ref } from "vue";
+import { useCommentStore } from "/src/stores/useCommentStore";
 
-const commentStore = useCommentStore()
+const commentStore = useCommentStore();
 
 const props = defineProps({
   comment: Object,
   postIdx: Number,
-  currentUserIdx: Number
-})
+  currentUserIdx: Number,
+});
 
-const isEditing = ref(false)
-const editedText = ref(props.comment.content)
+const isEditing = ref(false);
+const editedText = ref(props.comment.content);
 
 const startEdit = () => {
-  isEditing.value = true
-  editedText.value = props.comment.content
-}
+  isEditing.value = true;
+  editedText.value = props.comment.content;
+};
 
 const cancelEdit = () => {
-  isEditing.value = false
-  editedText.value = ''
-}
+  isEditing.value = false;
+  editedText.value = "";
+};
 
 const editComment = async () => {
-  if (editedText.value.trim() === '') {
-    alert('댓글 내용을 입력해주세요')
-    return
+  if (editedText.value.trim() === "") {
+    alert("댓글 내용을 입력해주세요");
+    return;
   }
   try {
-    await commentStore.editComment(props.postIdx, props.comment.idx, editedText.value)
-    isEditing.value = false
+    await commentStore.editComment(props.postIdx, props.comment.idx, editedText.value);
+    isEditing.value = false;
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
-}
+};
 
 const deleteComment = async () => {
   try {
-    await commentStore.deleteComment(props.postIdx, props.comment.idx)
+    await commentStore.deleteComment(props.postIdx, props.comment.idx);
   } catch (err) {
-    alert("댓글 삭제에 실패했습니다. 다시 시도해주세요.")
+    alert("댓글 삭제에 실패했습니다. 다시 시도해주세요.");
   }
-}
+};
 </script>
 
 <template>
   <div class="comment_card">
     <div class="comment_header">
-      <img class="avatar" :src="comment.profileImageUrl || '/src/assets/images/default.png'" alt="프로필 이미지" />
+      <img
+        class="avatar"
+        :src="comment.profileImageUrl || '/src/assets/images/default.png'"
+        alt="프로필 이미지"
+      />
 
       <span class="nickname">{{ comment.writer }}</span>
       <span class="divider">ㅣ</span>
       <span class="date">{{ comment.createdAt }}</span>
 
       <template v-if="comment.userIdx === currentUserIdx">
-        <img src="/src/assets/icons/write.png" class="icon_btn" alt="수정" @click="startEdit" />
-        <img src="/src/assets/icons/x-button.png" class="icon_btn" alt="삭제" @click="deleteComment" />
+        <div class="btn_box">
+          <img src="/src/assets/icons/edit.svg" class="icon_btn" alt="수정" @click="startEdit" />
+          <img
+            src="/src/assets/icons/x_button.svg"
+            class="icon_btn delete"
+            alt="삭제"
+            @click="deleteComment"
+          />
+        </div>
       </template>
     </div>
 
@@ -74,12 +85,10 @@ const deleteComment = async () => {
   </div>
 </template>
 
-
-
 <style scoped>
 .comment_card {
   background: #f1f1f1;
-  padding: 16px;
+  padding: 20px;
   border-radius: 20px;
   margin-bottom: 16px;
 }
@@ -107,6 +116,7 @@ const deleteComment = async () => {
 .date {
   color: #888;
   font-size: 13px;
+  line-height: normal;
 }
 
 .divider {
@@ -114,17 +124,27 @@ const deleteComment = async () => {
   color: #999;
 }
 
+.btn_box {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
 .icon_btn {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   margin-left: 8px;
   cursor: pointer;
 }
 
+.icon_btn.delete {
+  width: 10px;
+  height: 10px;
+}
+
 .comment_text {
-  font-size: 15px;
-  color: #222;
-  line-height: 1.5;
+  line-height: 140%;
+  padding: 10px;
 }
 
 .edit_input {
@@ -141,7 +161,7 @@ const deleteComment = async () => {
   display: flex;
   justify-content: flex-end;
   gap: 20px;
-  margin-bottom: 6px;
+  margin: 0 15px 6px 0;
 }
 
 .edit_save,
@@ -149,9 +169,14 @@ const deleteComment = async () => {
   height: 12px;
   width: 12px;
   font-size: 14px;
-  font-weight: bold;
-  color: #6c7dc6;
+  color: var(--gray700);
   cursor: pointer;
   white-space: nowrap;
+  transition: all 0.3s;
+}
+
+.edit_save:hover,
+.edit_cancel:hover {
+  font-weight: bold;
 }
 </style>

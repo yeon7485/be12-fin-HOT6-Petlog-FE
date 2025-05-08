@@ -5,8 +5,8 @@ import { useAnswerStore } from "/src/stores/useAnswerStore";
 import { useQuestionStore } from "/src/stores/useQuestionStore";
 import { useUserStore } from "/src/stores/useUserStore";
 import AnswerCard from "/src/pages/board/components/AnswerCard.vue";
-import PetCard from "/src/pages/board/components/PetCardModal.vue";
 import PetCardDetail from "/src/pages/board/components/PetCardDetailModal.vue";
+import PetCard from "./components/PetCard.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -24,24 +24,15 @@ const openPetModal = (id) => {
   isPetModalOpen.value = true;
 };
 
-const hasSelectedAnswer = computed(() =>
-  answerStore.answers.some((a) => a.selected)
-);
+const hasSelectedAnswer = computed(() => answerStore.answers.some((a) => a.selected));
 
 const isOwner = computed(
-  () =>
-    userStore.isLogin &&
-    userStore.nickname &&
-    question.value?.writer === userStore.nickname
+  () => userStore.isLogin && userStore.nickname && question.value?.writer === userStore.nickname
 );
 
-const aiAnswer = computed(() =>
-  answerStore.answers.find((a) => a.userType === "AI")
-);
+const aiAnswer = computed(() => answerStore.answers.find((a) => a.userType === "AI"));
 
-const userAnswers = computed(() =>
-  answerStore.answers.filter((a) => a.userType !== "AI")
-);
+const userAnswers = computed(() => answerStore.answers.filter((a) => a.userType !== "AI"));
 
 const answerCount = computed(() => userAnswers.value.length);
 
@@ -95,12 +86,12 @@ const goToModifyAnswer = (answerId) => {
 };
 
 const goToModify = () => {
-  questionStore.setSelectedQuestion(question.value); 
+  questionStore.setSelectedQuestion(question.value);
   router.push(`/board/qna/${questionIdx}/modify`);
 };
 
 const goToRegister = () => {
-  questionStore.setSelectedQuestion(question.value); 
+  questionStore.setSelectedQuestion(question.value);
   router.push(`/board/qna/${question.value.idx}/answer/create`);
 };
 </script>
@@ -111,11 +102,7 @@ const goToRegister = () => {
       <router-link to="/board/qna" class="list_button">목록으로</router-link>
 
       <div class="post_title">
-        <img
-          class="icon_img"
-          src="/src/assets/icons/question.png"
-          alt="질문 아이콘"
-        />
+        <img class="icon_img" src="/src/assets/icons/question.png" alt="질문 아이콘" />
         <span class="text">{{ question.qTitle }}</span>
       </div>
 
@@ -134,13 +121,13 @@ const goToRegister = () => {
         <div class="icons" v-if="isOwner">
           <img
             v-if="!hasSelectedAnswer"
-            src="/src/assets/icons/write.png"
+            src="/src/assets/icons/edit.svg"
             class="icon_btn"
             alt="수정 아이콘"
             @click="goToModify"
           />
           <img
-            src="/src/assets/icons/x-button.png"
+            src="/src/assets/icons/x_button.svg"
             class="icon_btn"
             alt="삭제 아이콘"
             @click="handleDelete"
@@ -151,10 +138,7 @@ const goToRegister = () => {
       <hr class="divider_line" />
 
       <div class="content_area">
-        <div
-          v-if="question.imageUrls && question.imageUrls.length"
-          class="image_gallery"
-        >
+        <div v-if="question.imageUrls && question.imageUrls.length" class="image_gallery">
           <img
             v-for="(url, index) in question.imageUrls"
             :key="index"
@@ -168,8 +152,6 @@ const goToRegister = () => {
         <hr class="pet_section_divider" />
 
         <div v-if="question.petList?.length">
-          <h2 class="card">&lt;반려동물 카드&gt;</h2>
-
           <div class="pet_card_section">
             <div class="pet_card_list">
               <PetCard
@@ -192,51 +174,33 @@ const goToRegister = () => {
         />
 
         <div class="hashtags">
-          <span v-for="tag in question.tags" :key="tag" class="tag"
-            ># {{ tag }}</span
-          >
+          <span v-for="tag in question.tags" :key="tag" class="tag"># {{ tag }}</span>
         </div>
       </div>
 
       <div
         class="action_area"
-        v-if="
-          !hasSelectedAnswer &&
-          userStore.isLogin &&
-          userStore.nickname !== question.writer
-        "
+        v-if="!hasSelectedAnswer && userStore.isLogin && userStore.nickname !== question.writer"
       >
         <button class="reply_btn" @click="goToRegister">답변하기</button>
       </div>
     </div>
 
     <div class="ai_link_bridge">
-      <img
-        src="/src/assets/icons/connect.png"
-        alt="AI 연결 아이콘"
-        class="bridge_icon"
-      />
+      <img src="/src/assets/icons/more.svg" alt="AI 연결 아이콘" class="bridge_icon" />
     </div>
 
     <!-- AI 답변 영역 -->
     <div v-if="aiAnswer" class="ai_answer_v2">
       <div class="ai_header_v2">
-        <img
-          class="ai_icon_img"
-          src="/src/assets/icons/Ai.png"
-          alt="전구 아이콘"
-        />
+        <img class="ai_icon_img" src="/src/assets/icons/Ai.png" alt="전구 아이콘" />
         <div class="ai_title_v2">AI 우선 답변 - 제가 먼저 도와드릴게요!</div>
       </div>
 
       <div class="ai_card">
         <div class="ai_card_header">
           <div class="ai_card_left">
-            <img
-              class="ai_profile_img"
-              src="/src/assets/icons/petbot.png"
-              alt="ChatGPS 프로필"
-            />
+            <img class="ai_profile_img" src="/src/assets/icons/petbot.png" alt="ChatGPS 프로필" />
             <span class="ai_card_name">petbot</span>
             <span class="divider">ㅣ</span>
             <span class="ai_card_date">{{ aiAnswer.createdAt }}</span>
@@ -244,21 +208,15 @@ const goToRegister = () => {
         </div>
 
         <div class="ai_card_body">
-          <pre style="white-space: pre-wrap; font-family: inherit">{{
-            aiAnswer.content
-          }}</pre>
+          <pre style="white-space: pre-wrap; font-family: inherit">{{ aiAnswer.content }}</pre>
         </div>
       </div>
     </div>
 
     <div class="answer_wrapper">
       <div class="answer_count" v-if="answerStore.answers.length > 0">
-        <img
-          src="/src/assets/icons/answer.png"
-          class="answer_icon"
-          alt="답변 아이콘"
-        />
-        {{ answerCount }}개 답변
+        <img src="/src/assets/icons/answer.png" class="answer_icon" alt="답변 아이콘" />
+        {{ answerCount }}개의 답변
       </div>
 
       <AnswerCard
@@ -271,6 +229,7 @@ const goToRegister = () => {
         @delete="(id) => confirmDeleteAnswer(id)"
         @selected="handleSelectedAnswer"
       />
+      <div v-if="answerCount == 0" class="no_answer">아직 답변이 달리지 않은 질문입니다.</div>
     </div>
   </div>
 </template>
@@ -311,13 +270,12 @@ const goToRegister = () => {
   align-items: center;
   font-size: 22px;
   font-weight: 600;
-  margin-bottom: 16px;
-  animation: fadeIn 1s ease-out forwards;
+  margin-bottom: 20px;
 }
 
 .icon_img {
-  width: 36px;
-  height: 36px;
+  width: 27px;
+  height: 27px;
   margin-right: 10px;
   animation: pulse 2s infinite ease-in-out;
 }
@@ -353,13 +311,19 @@ const goToRegister = () => {
 }
 .icons {
   display: flex;
+  align-items: center;
   gap: 10px;
 }
+
 .icon_btn {
   width: 16px;
   height: 16px;
   cursor: pointer;
-  animation: pulse 2s infinite ease-in-out;
+}
+
+.icon_btn:nth-child(2) {
+  width: 14px;
+  height: 14px;
 }
 
 .divider_line {
@@ -407,12 +371,8 @@ const goToRegister = () => {
 .tag {
   font-size: 13px;
   color: #666;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  padding: 2px 8px;
   margin-right: 6px;
   margin-bottom: 4px;
-  display: inline-block;
 }
 
 .action_area {
@@ -439,10 +399,11 @@ const goToRegister = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 20px 0;
+  margin: 30px 0;
 }
+
 .bridge_icon {
-  width: 40px;
+  width: 30px;
 }
 
 .ai_answer_v2 {
@@ -535,10 +496,9 @@ const goToRegister = () => {
   color: #333;
 }
 .answer_icon {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   margin-right: 18px;
-  animation: pulse 2s infinite ease-in-out;
 }
 
 .pet_section_divider {
@@ -555,21 +515,47 @@ const goToRegister = () => {
   color: #333;
 }
 
+.no_answer {
+  background-color: var(--gray100);
+  color: var(--gray700);
+  text-align: center;
+  padding: 50px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @keyframes scaleUp {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.05); }
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
 }
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 @keyframes petbot-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
 }
 </style>
-

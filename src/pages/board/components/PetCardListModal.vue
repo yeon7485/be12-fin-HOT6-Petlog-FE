@@ -1,47 +1,50 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { usePetStore } from '/src/stores/usePetStore'
-import { useUserStore } from '/src/stores/useUserStore'
+import { onMounted, ref } from "vue";
+import { usePetStore } from "/src/stores/usePetStore";
+import { useUserStore } from "/src/stores/useUserStore";
 
-const petStore = usePetStore()
-const userStore = useUserStore()
-const pets = ref([])
-const selectedIdx = ref(null)
+const petStore = usePetStore();
+const userStore = useUserStore();
+const pets = ref([]);
+const selectedIdx = ref(null);
 
-const emits = defineEmits(['close', 'select'])
+const emits = defineEmits(["close", "select"]);
 
 onMounted(async () => {
   if (userStore.idx) {
-    await petStore.fetchPetList(userStore.idx)
-    pets.value = petStore.petList
+    await petStore.fetchPetList(userStore.idx);
+    pets.value = petStore.petList;
   }
-})
+});
 
 const calculateAge = (birthDate) => {
-  const birth = new Date(birthDate)
-  const today = new Date()
-  let age = today.getFullYear() - birth.getFullYear()
-  const m = today.getMonth() - birth.getMonth()
+  const birth = new Date(birthDate);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-    age--
+    age--;
   }
-  return age
-}
+  return age;
+};
 
 const selectPet = (pet) => {
-  selectedIdx.value = pet.idx
-  emits('select', pet)
-}
+  selectedIdx.value = pet.idx;
+  emits("select", pet);
+};
 
 const closeModal = () => {
-  emits('close')
-}
+  emits("close");
+};
 </script>
 
 <template>
   <div class="modal-overlay" @click.self="closeModal">
     <div class="modal-content">
-      <h3>반려동물 목록</h3>
+      <div class="modal-header">
+        <h3>반려동물 목록</h3>
+        <img src="/src/assets/icons/cancel.png" alt="close" class="close_btn" @click="closeModal" />
+      </div>
 
       <div class="scrollable pet-list-scroll">
         <div
@@ -58,8 +61,6 @@ const closeModal = () => {
           </div>
         </div>
       </div>
-
-      <button class="modal-close" @click="closeModal">닫기</button>
     </div>
   </div>
 </template>
@@ -91,8 +92,19 @@ const closeModal = () => {
 }
 
 .modal-content h3 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.close_btn {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 }
 
 .scrollable.pet-list-scroll {
@@ -120,9 +132,9 @@ const closeModal = () => {
 }
 
 .pet-card.selected {
-  border-color: #6A0104;
+  border-color: #6a0104;
   background-color: #fbeee7;
-  box-shadow: 0 0 0 2px #6A0104;
+  box-shadow: 0 0 0 2px #6a0104;
 }
 
 .pet-img {
@@ -135,6 +147,7 @@ const closeModal = () => {
 .pet-info {
   display: flex;
   flex-direction: column;
+  gap: 5px;
 }
 
 .pet-name {
@@ -150,7 +163,7 @@ const closeModal = () => {
   align-self: flex-end;
   padding: 6px 12px;
   border: none;
-  background-color: #6A0104;
+  background-color: #6a0104;
   color: white;
   border-radius: 4px;
   cursor: pointer;

@@ -1,32 +1,39 @@
 <script setup>
-defineProps({ question: Object })
+defineProps({ question: Object });
 </script>
 
 <template>
   <div class="post_card">
     <div class="post_header">
       <div class="user_info">
-        <img class="avatar" :src="question.profileImageUrl || '/src/assets/images/default.png'" alt="유저 아바타" />
+        <img
+          class="avatar"
+          :src="question.profileImageUrl || '/src/assets/images/default.png'"
+          alt="유저 아바타"
+        />
 
         <span class="author">{{ question.writer }}</span>
         <span class="divider">ㅣ</span>
         <span class="date">{{ question.createdAt }}</span>
       </div>
-    </div>    
+    </div>
 
     <div class="post_body">
-      <div class="status_badge" :class="question.selected ? 'resolved' : 'unresolved'">
-        {{ question.selected ? '해결됨' : '미해결' }}
-      </div>
+      <div class="title_box">
+        <div class="status_badge" :class="question.selected ? 'resolved' : 'unresolved'">
+          {{ question.selected ? "해결됨" : "미해결" }}
+        </div>
 
-      <router-link :to="`/board/qna/${question.idx}`" class="post_title">
-        {{ question.qTitle || question.qtitle }}
-        <img
-         v-if="question.imageUrls && question.imageUrls.length > 0"
-          src="/src/assets/icons/image.png"
-          alt="이미지 있음"
-          class="image_icon"/>
-       </router-link>
+        <router-link :to="`/board/qna/${question.idx}`" class="post_title">
+          {{ question.qtitle }}
+          <img
+            v-if="question.imageUrls && question.imageUrls.length > 0"
+            src="/src/assets/icons/image.png"
+            alt="이미지 있음"
+            class="image_icon"
+          />
+        </router-link>
+      </div>
 
       <p class="post_content">{{ question.content }}</p>
 
@@ -40,7 +47,6 @@ defineProps({ question: Object })
       </div>
     </div>
   </div>
-
 </template>
 
 <style scoped>
@@ -72,8 +78,7 @@ defineProps({ question: Object })
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-.post_card:hover .post_title {
-  color: #6a0104;
+.post_card:hover {
   transform: scale(1.01);
 }
 
@@ -86,7 +91,7 @@ defineProps({ question: Object })
   align-items: center;
   font-size: 14px;
   color: #666;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
   gap: 6px;
 }
 
@@ -106,15 +111,17 @@ defineProps({ question: Object })
   position: relative;
 }
 
+.title_box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
 .status_badge {
-  display: inline-block;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 4px 10px;
+  font-size: 12px;
+  padding: 5px 8px;
   border-radius: 12px;
-  margin-bottom: 12px;
-  margin-right: 8px;
-  margin-top: 10px;
 }
 
 .status_badge.resolved {
@@ -123,8 +130,8 @@ defineProps({ question: Object })
 }
 
 .status_badge.unresolved {
-  background-color: #f6e3df;  
-  color: #914141;
+  background-color: var(--gray400);
+  color: white;
 }
 
 .post_title {
@@ -132,10 +139,6 @@ defineProps({ question: Object })
   font-weight: 800;
   color: #111;
   text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  margin-bottom: 10px;
-  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .image_icon {
@@ -148,10 +151,15 @@ defineProps({ question: Object })
 }
 
 .post_content {
-  font-size: 16px;
-  color: #444;
+  font-size: 14px;
   margin: 6px 0 12px;
-  line-height: 1.5;
+  line-height: 140%;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* 최대 3줄 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
 }
 
 .post_tags {
@@ -164,9 +172,6 @@ defineProps({ question: Object })
 .tag {
   font-size: 13px;
   color: #666;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  padding: 2px 8px;
 }
 
 .comment_count {
@@ -184,6 +189,3 @@ defineProps({ question: Object })
   margin-right: 4px;
 }
 </style>
-
-
-

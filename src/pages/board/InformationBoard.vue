@@ -1,59 +1,59 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useBoardStore } from '/src/stores/useBoardStore.js'
-import { useCategoryStore } from '/src/stores/useCategoryStore.js'
-import Card from '/src/pages/board/components/PostCard.vue'
+import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useBoardStore } from "/src/stores/useBoardStore.js";
+import { useCategoryStore } from "/src/stores/useCategoryStore.js";
+import Card from "/src/pages/board/components/PostCard.vue";
 
-const router = useRouter()
-const boardStore = useBoardStore()
-const categoryStore = useCategoryStore()
+const router = useRouter();
+const boardStore = useBoardStore();
+const categoryStore = useCategoryStore();
 
 const searchQuery = ref("");
 const selectedCategory = ref("");
 const pageSize = 10;
 
 const categories = computed(() =>
-  categoryStore.boardCategories.map(c => ({ label: c.name, value: c.idx }))
+  categoryStore.boardCategories.map((c) => ({ label: c.name, value: c.idx }))
 );
 
 const loadPage = async (page) => {
   if (boardStore.isSearching) {
     await boardStore.searchPosts({
-      boardName: 'information',
+      boardName: "information",
       category: boardStore.currentCategoryName,
       keyword: boardStore.currentKeyword,
       page: page - 1,
-      size: pageSize
+      size: pageSize,
     });
   } else {
-    await boardStore.fetchPosts('information', page - 1, pageSize);
+    await boardStore.fetchPosts("information", page - 1, pageSize);
   }
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 const triggerSearch = async () => {
-  const selectedCategoryName = selectedCategory.value 
-    ? categoryStore.boardCategories.find(c => c.idx === selectedCategory.value)?.name 
-    : '';
+  const selectedCategoryName = selectedCategory.value
+    ? categoryStore.boardCategories.find((c) => c.idx === selectedCategory.value)?.name
+    : "";
 
   const keyword = searchQuery.value.trim();
   if (!keyword && !selectedCategoryName) {
     boardStore.isSearching = false;
-    await boardStore.fetchPosts('information', 0, pageSize);
+    await boardStore.fetchPosts("information", 0, pageSize);
   } else {
     boardStore.isSearching = true;
     await boardStore.searchPosts({
-      boardName: 'information',
+      boardName: "information",
       category: selectedCategoryName,
       keyword: keyword,
       page: 0,
-      size: pageSize
+      size: pageSize,
     });
   }
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 const goToWritePage = () => {
@@ -66,7 +66,7 @@ const goToPrevGroup = () => loadPage(boardStore.pageGroupStart - 1);
 const goToNextGroup = () => loadPage(boardStore.pageGroupEnd + 1);
 
 onMounted(async () => {
-  await categoryStore.fetchCategories('BOARD');
+  await categoryStore.fetchCategories("BOARD");
   await loadPage(1);
 });
 </script>
@@ -76,20 +76,24 @@ onMounted(async () => {
     <div class="board_header">
       <h1>정보 공유</h1>
       <div class="search_box">
-        <select
-          v-model="selectedCategory"
-          class="category_dropdown"
-          @change="triggerSearch"
-        >
+        <select v-model="selectedCategory" class="category_dropdown" @change="triggerSearch">
           <option value="">카테고리를 선택하세요.</option>
           <option v-for="cat in categories" :key="cat.value" :value="cat.value">
             {{ cat.label }}
           </option>
         </select>
-
         <div class="search_input_wrap">
-          <input v-model="searchQuery" placeholder="제목, 작성자 검색 ..." @keyup.enter="triggerSearch" />
-          <img class="search_icon_img" src="/src/assets/icons/search.png" alt="검색 아이콘" @click="triggerSearch" />
+          <input
+            v-model="searchQuery"
+            placeholder="제목, 작성자 검색 ..."
+            @keyup.enter="triggerSearch"
+          />
+          <img
+            class="search_icon_img"
+            src="/src/assets/icons/search.png"
+            alt="검색 아이콘"
+            @click="triggerSearch"
+          />
         </div>
       </div>
     </div>
@@ -128,14 +132,17 @@ onMounted(async () => {
         {{ page }}
       </button>
 
-      <button @click="goToNextGroup" :disabled="boardStore.pageGroupEnd === boardStore.totalPages">다음 ▶</button>
-      <button @click="goToLast" :disabled="boardStore.currentPage === boardStore.totalPages">끝으로</button>
+      <button @click="goToNextGroup" :disabled="boardStore.pageGroupEnd === boardStore.totalPages">
+        다음 ▶
+      </button>
+      <button @click="goToLast" :disabled="boardStore.currentPage === boardStore.totalPages">
+        끝으로
+      </button>
     </div>
 
     <button class="write_btn" @click="goToWritePage">글쓰기</button>
   </div>
 </template>
-
 
 <style scoped>
 .board_header {
@@ -143,25 +150,27 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 40px;
+  padding-bottom: 20px;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .board_header h1 {
-  animation: fadeIn 0.8s ease-in-out;
+  font-size: 28px;
+
+  white-space: nowrap;
+  margin-right: 30px;
 }
 
 .search_box {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
   gap: 20px;
-  margin-bottom: 20px;
 }
 
 .category_dropdown {
-  padding: 12px 18px;
+  padding: 10px 14px;
   font-size: 14px;
-  border-radius: 999px;
+  border-radius: 8px;
   border: 1px solid #a1887f;
   background-color: #fdf6f1;
   color: #4e342e;
@@ -170,7 +179,6 @@ onMounted(async () => {
   background-position: right 12px center;
   background-size: 14px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(93, 64, 55, 0.1);
   transition: all 0.2s ease;
 }
 
@@ -192,7 +200,7 @@ onMounted(async () => {
 
 .search_input_wrap input {
   width: 100%;
-  height: 44px;
+  height: 37px;
   padding: 10px 16px 10px 44px;
   border: 1px solid #ccc;
   border-radius: 999px;
@@ -233,12 +241,12 @@ onMounted(async () => {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  animation: fadeSlideUp 0.6s ease-out;
+  animation: fadeSlideUp 0.5s ease-out;
 }
 
 .board_table th {
   background-color: #d7ccc8;
-  text-align: left;
+  text-align: center;
   padding: 10px 6px;
   border-bottom: 2px solid #a1887f;
   font-size: 15px;
@@ -258,19 +266,18 @@ onMounted(async () => {
 
 .write_btn {
   float: right;
-  background: #6d4c41;
-  color: white;
-  border: none;
+  color: var(--main-color-brown);
+  border: 1px solid var(--main-color-brown);
   padding: 8px 15px;
   border-radius: 4px;
   cursor: pointer;
   margin-top: 20px;
+  transition: all 0.3s;
 }
 
 .write_btn:hover {
-  background: #5d4037;
+  background: #efebe9;
 }
-
 .pagination {
   display: flex;
   justify-content: center;

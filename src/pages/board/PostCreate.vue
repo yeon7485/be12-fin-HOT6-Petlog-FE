@@ -4,7 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useBoardStore } from "/src/stores/useBoardStore";
 import { useUserStore } from "/src/stores/useUserStore";
 import { useCategoryStore } from "/src/stores/useCategoryStore";
-import PetCardModal from "/src/pages/board/components/PetCardModal.vue";
+import PetCardModal from "/src/pages/board/components/PetCard.vue";
 import PetCardListModal from "/src/pages/board/components/PetCardListModal.vue";
 import axios from "axios";
 
@@ -23,9 +23,7 @@ const boardTypes = [
   { value: "information", label: "정보 공유" },
 ];
 
-const categories = computed(() =>
-  categoryStore.boardCategories.map((c) => c.name)
-);
+const categories = computed(() => categoryStore.boardCategories.map((c) => c.name));
 
 const removePet = (idx) => {
   selectedPets.value = selectedPets.value.filter((p) => p.idx !== idx);
@@ -127,9 +125,7 @@ const handleSubmit = async () => {
     return;
   }
 
-  const confirmed = window.confirm(
-    isEdit ? "수정하시겠습니까?" : "등록하시겠습니까?"
-  );
+  const confirmed = window.confirm(isEdit ? "수정하시겠습니까?" : "등록하시겠습니까?");
   if (!confirmed) return;
 
   try {
@@ -197,8 +193,6 @@ const handleSubmit = async () => {
   }
 };
 
-
-
 const openPetCardModal = () => {
   isModalOpen.value = true;
 };
@@ -215,13 +209,9 @@ const selectPetCard = (pet) => {
 <template>
   <div class="container">
     <div class="board_select">
-      <label class="section_title">게시판 선택</label>
+      <label class="section_title">게시글 {{ isEdit ? "수정" : "작성" }}</label>
       <div class="radio_group">
-        <label
-          v-for="item in boardTypes"
-          :key="item.value"
-          class="radio_option"
-        >
+        <label v-for="item in boardTypes" :key="item.value" class="radio_option">
           <input
             type="radio"
             :value="item.value"
@@ -246,31 +236,19 @@ const selectPetCard = (pet) => {
 
     <div class="form_group">
       <label>제목</label>
-      <input
-        type="text"
-        v-model="form.title"
-        placeholder="제목을 입력해주세요."
-      />
+      <input type="text" v-model="form.title" placeholder="제목을 입력해주세요." />
     </div>
 
     <div class="form_group">
       <label>내용</label>
-      <textarea
-        v-model="form.content"
-        placeholder="내용을 입력해주세요."
-        rows="8"
-      />
+      <textarea v-model="form.content" placeholder="내용을 입력해주세요." rows="8" />
     </div>
 
     <div class="form_group">
       <label>사진 등록</label>
       <input type="file" multiple @change="handleFileChange" />
       <div v-if="previewImages.length > 0" class="image_preview">
-        <div
-          v-for="(img, index) in previewImages"
-          :key="index"
-          class="image-container"
-        >
+        <div v-for="(img, index) in previewImages" :key="index" class="image-container">
           <img :src="img" class="preview" />
           <img
             src="/src/assets/icons/delete.png"
@@ -290,11 +268,7 @@ const selectPetCard = (pet) => {
     <div v-if="selectedPets.length > 0" class="selected-pet-preview">
       <label>선택된 반려동물</label>
       <div class="pet-preview-list">
-        <div
-          v-for="pet in selectedPets"
-          :key="pet.idx"
-          class="pet-preview-item"
-        >
+        <div v-for="pet in selectedPets" :key="pet.idx" class="pet-preview-item">
           <PetCardModal
             :pet="{
               ...pet,
@@ -311,11 +285,7 @@ const selectPetCard = (pet) => {
       </div>
     </div>
 
-    <PetCardListModal
-      v-if="isModalOpen"
-      @close="isModalOpen = false"
-      @select="selectPetCard"
-    />
+    <PetCardListModal v-if="isModalOpen" @close="isModalOpen = false" @select="selectPetCard" />
 
     <div class="actions">
       <button @click="handleCancel" class="cancel">취소</button>
@@ -340,7 +310,7 @@ const selectPetCard = (pet) => {
 
 .section_title {
   font-weight: bold;
-  font-size: 30px;
+  font-size: 28px;
   margin-bottom: 40px;
   display: block;
 }
@@ -365,14 +335,14 @@ const selectPetCard = (pet) => {
 }
 
 .form_group {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   display: flex;
   flex-direction: column;
 }
 
 .form_group label {
-  margin-bottom: 13px; 
-  font-weight: bold;   
+  margin-bottom: 13px;
+  font-weight: bold;
   font-size: 15px;
 }
 
@@ -383,6 +353,7 @@ textarea {
   padding: 14px;
   border-radius: 4px;
   font-size: 15px;
+  resize: none;
 }
 
 select {
@@ -429,7 +400,7 @@ input[type="file"] {
 }
 
 .selected-pet-preview {
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .selected-pet-preview label {
@@ -453,42 +424,40 @@ input[type="file"] {
 }
 
 button {
-  padding: 10px 20px;
+  padding: 10px 17px;
   border-radius: 6px;
-  font-weight: bold;
   cursor: pointer;
+  transition: all 0.3s;
 }
 
 .cancel {
   background-color: white;
-  color: #963a3a;
-  border: 1px solid #963a3a;
+  color: var(--gray700);
+  border: 1px solid var(--gray700);
 }
 
 .cancel:hover {
-  background-color: #963a3a;
-  color: white;
+  background-color: var(--gray300);
 }
 
 .submit {
-  background-color: #6a0104;
+  background-color: var(--main-color-brown);
   color: white;
-  border: none;
 }
 
 .submit:hover {
-  background-color: #7a2b2b;
-  color: white;
+  background-color: var(--main-color-hover);
 }
 
 .petcard_btn {
-  padding: 4px 10px;
+  padding: 6px 8px;
   font-size: 14px;
   width: 90px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray400);
   background-color: white;
-  font-weight: bold;
   border-radius: 6px;
+  font-weight: normal;
+  color: var(--gray700);
   cursor: pointer;
 }
 

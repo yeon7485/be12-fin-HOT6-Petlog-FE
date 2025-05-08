@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useQuestionStore } from "/src/stores/useQuestionStore";
-import PetCardModal from "/src/pages/board/components/PetCardModal.vue";
+import PetCard from "/src/pages/board/components/PetCard.vue";
 import PetCardListModal from "/src/pages/board/components/PetCardListModal.vue";
 import { useUserStore } from "/src/stores/useUserStore";
 
@@ -40,7 +40,7 @@ onMounted(async () => {
     form.value.tags = data.tags.join(", ");
     form.value.image = data.image || "";
     selectedPets.value = data.petList || [];
-    
+
     if (data.imageUrls && data.imageUrls.length > 0) {
       previewImageUrls.value = [...data.imageUrls];
     }
@@ -68,11 +68,7 @@ const handleCancel = () => {
 };
 
 const handleSubmit = async () => {
-  if (
-    !window.confirm(
-      isEdit.value ? "질문을 수정하시겠습니까?" : "질문을 등록하시겠습니까?"
-    )
-  )
+  if (!window.confirm(isEdit.value ? "질문을 수정하시겠습니까?" : "질문을 등록하시겠습니까?"))
     return;
 
   const tagsArray = form.value.tags
@@ -112,7 +108,7 @@ const removeImage = (index) => {
   const removed = previewImageUrls.value.splice(index, 1)[0];
 
   if (removed?.startsWith("http")) {
-    removedImageUrls.value.push(removed); 
+    removedImageUrls.value.push(removed);
   }
 
   if (form.value.file) {
@@ -141,41 +137,23 @@ const removePet = (idx) => {
     <form @submit.prevent="handleSubmit" class="form">
       <div class="form_group">
         <label>제목</label>
-        <input
-          type="text"
-          v-model="form.qTitle"
-          placeholder="제목을 입력해주세요."
-          required
-        />
+        <input type="text" v-model="form.qTitle" placeholder="제목을 입력해주세요." required />
       </div>
 
       <div class="form_group">
         <label>내용</label>
-        <textarea
-          v-model="form.content"
-          placeholder="내용을 입력해주세요."
-          rows="10"
-          required
-        />
+        <textarea v-model="form.content" placeholder="내용을 입력해주세요." rows="10" required />
       </div>
 
       <div class="form_group">
         <label>해시태그</label>
-        <input
-          type="text"
-          v-model="form.tags"
-          placeholder="예) 강아지, 고양이 중성화"
-        />
+        <input type="text" v-model="form.tags" placeholder="예) 강아지, 고양이 중성화" />
       </div>
 
       <div class="form_group">
         <label>사진 등록</label>
         <div v-if="previewImageUrls.length" class="image-preview-wrapper">
-          <div
-            v-for="(img, index) in previewImageUrls"
-            :key="index"
-            class="image-container"
-          >
+          <div v-for="(img, index) in previewImageUrls" :key="index" class="image-container">
             <img :src="img" class="preview-image" />
             <img
               src="/src/assets/icons/delete.png"
@@ -190,20 +168,14 @@ const removePet = (idx) => {
 
       <div class="form_group">
         <label>반려동물 카드 등록</label>
-        <button type="button" class="petcard_btn" @click="selectPetCard">
-          카드 선택
-        </button>
+        <button type="button" class="petcard_btn" @click="selectPetCard">카드 선택</button>
       </div>
 
       <div v-if="selectedPets.length > 0" class="selected-pet-preview">
         <label>선택된 반려동물</label>
         <div class="pet-preview-list">
-          <div
-            v-for="pet in selectedPets"
-            :key="pet.idx"
-            class="pet-preview-item"
-          >
-            <PetCardModal
+          <div v-for="pet in selectedPets" :key="pet.idx" class="pet-preview-item">
+            <PetCard
               :pet="{
                 ...pet,
                 image: pet.profileImageUrl || '/default-profile.png',
@@ -219,16 +191,10 @@ const removePet = (idx) => {
         </div>
       </div>
 
-      <PetCardListModal
-        v-if="isModalOpen"
-        @close="isModalOpen = false"
-        @select="handleSelectPet"
-      />
+      <PetCardListModal v-if="isModalOpen" @close="isModalOpen = false" @select="handleSelectPet" />
 
       <div class="form_actions">
-        <button type="button" class="cancel_button" @click="handleCancel">
-          취소
-        </button>
+        <button type="button" class="cancel_button" @click="handleCancel">취소</button>
         <button type="submit" class="submit_button">
           {{ isEdit ? "수정" : "등록" }}
         </button>
@@ -250,13 +216,13 @@ const removePet = (idx) => {
 }
 
 .title {
-  font-size: 35px;
+  font-size: 28px;
   font-weight: bold;
   margin-bottom: 50px;
 }
 
 .form_group {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 label {
@@ -281,7 +247,10 @@ input[type="file"] {
 }
 
 textarea {
-  resize: vertical;
+  resize: none;
+  padding: 14px;
+  line-height: 140%;
+  height: 200px;
 }
 
 .form_actions {
@@ -292,36 +261,40 @@ textarea {
 }
 
 button {
-  padding: 10px 24px;
-  border-radius: 4px;
-  font-weight: bold;
+  padding: 10px 17px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: all 0.3s;
 }
 
 .cancel_button {
-  background-color: #fff;
-  color: #a14f4f;
-  border: 1px solid #a14f4f;
+  background-color: white;
+  color: var(--gray700);
+  border: 1px solid var(--gray700);
+}
+
+.cancel_button:hover {
+  background-color: var(--gray300);
 }
 
 .submit_button {
-  background-color: #6a0104;
-  color: #fff;
-  border: none;
+  background-color: var(--main-color-brown);
+  color: white;
 }
 
 .submit_button:hover {
-  background: #8b0000;
+  background-color: var(--main-color-hover);
 }
 
 .petcard_btn {
-  padding: 4px 10px;
+  padding: 6px 8px;
   font-size: 14px;
   width: 90px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray400);
   background-color: white;
-  font-weight: bold;
   border-radius: 6px;
+  font-weight: normal;
+  color: var(--gray700);
   cursor: pointer;
 }
 
@@ -356,11 +329,11 @@ button {
   width: 200px;
   max-height: 200px;
   object-fit: cover;
-  border: none;                
+  border: none;
   border-radius: 6px;
-  box-shadow: none;           
-  background: transparent;     
-  outline: none;               
+  box-shadow: none;
+  background: transparent;
+  outline: none;
 }
 
 .remove-icon {

@@ -1,32 +1,28 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits } from "vue";
 
 const props = defineProps({
   pet: {
     type: Object,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const emits = defineEmits(['click'])
+const emits = defineEmits(["click"]);
 
 const handleClick = () => {
-  emits('click', props.pet)
-}
+  emits("click", props.pet);
+};
 </script>
 
 <template>
   <div class="pet-card" @click="handleClick">
-    <img
-      :src="pet.image"
-      alt="반려동물 사진"
-      class="pet-image"
-    />
+    <img :src="pet.image" alt="반려동물 사진" class="pet-image" />
     <div class="pet-info-wrapper">
       <h3 class="pet-name">
         {{ pet.name }}
         <span :class="{ male: pet.gender === 'male', female: pet.gender === 'female' }">
-          {{ pet.gender === 'male' ? '♂' : '♀' }}
+          {{ pet.gender === "male" ? "♂" : "♀" }}
         </span>
       </h3>
       <p class="pet-info">{{ pet.breed }}</p>
@@ -37,8 +33,7 @@ const handleClick = () => {
 <style scoped>
 .pet-card {
   width: 100%;
-  max-width: 500px;
-  height: 140px;
+  height: 100px;
   background: #f8f1ea;
   border-radius: 12px;
   padding: 15px 20px;
@@ -56,9 +51,10 @@ const handleClick = () => {
 }
 
 .pet-image {
-  width: 90px;
-  height: 90px;
-  border-radius: 12px;
+  width: 50px;
+  height: 50px;
+  border-radius: 9999px;
+  border: 1px solid var(--gray300);
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -71,7 +67,7 @@ const handleClick = () => {
 }
 
 .pet-name {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   margin-bottom: 8px;
   display: flex;

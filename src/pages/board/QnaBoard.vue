@@ -79,11 +79,7 @@ onMounted(() => loadPage(1));
           />
         </div>
         <button class="write_button" @click="goToRegister">
-          <img
-            class="write_icon"
-            src="/src/assets/icons/write.png"
-            alt="글쓰기 아이콘"
-          />
+          <img class="write_icon" src="/src/assets/icons/write.svg" alt="글쓰기 아이콘" />
         </button>
       </div>
     </div>
@@ -120,10 +116,7 @@ onMounted(() => loadPage(1));
       >
         다음 ▶
       </button>
-      <button
-        @click="goToLast"
-        :disabled="questionStore.currentPage === questionStore.totalPages"
-      >
+      <button @click="goToLast" :disabled="questionStore.currentPage === questionStore.totalPages">
         끝으로
       </button>
     </div>
@@ -145,10 +138,11 @@ onMounted(() => loadPage(1));
 }
 
 .title {
-  font-size: 36px;
+  font-size: 28px;
   font-weight: 800;
   color: #333;
-  animation: fadeInUp 0.6s ease-in-out;
+  white-space: nowrap;
+  margin-right: 30px;
 }
 
 .search_write {
@@ -169,10 +163,6 @@ onMounted(() => loadPage(1));
   transition: all 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
-.search_box:focus-within {
-  background-color: #fff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
 
 .search_box input {
   border: none;
@@ -185,27 +175,27 @@ onMounted(() => loadPage(1));
 }
 
 .icon_img {
-  width: 20px;
-  height: 20px;
+  width: 17px;
+  height: 17px;
   cursor: pointer;
   animation: pulse 2s infinite ease-in-out;
-  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.2));
 }
 
 .write_button {
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 6px;
   transition: transform 0.2s ease;
+  margin-top: 5px;
 }
 .write_button:hover {
   transform: scale(1.15);
 }
 
 .write_icon {
-  width: 22px;
-  height: 22px;
+  width: 25px;
+  height: 25px;
 }
 
 .page {

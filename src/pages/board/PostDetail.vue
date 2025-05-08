@@ -5,7 +5,7 @@ import { useBoardStore } from "/src/stores/useBoardStore";
 import { useCommentStore } from "/src/stores/useCommentStore";
 import { useUserStore } from "/src/stores/useUserStore";
 import CommentCard from "/src/pages/board/components/CommentCard.vue";
-import PetCard from "/src/pages/board/components/PetCardModal.vue";
+import PetCard from "/src/pages/board/components/PetCard.vue";
 import PetCardDetail from "/src/pages/board/components/PetCardDetailModal.vue";
 
 const route = useRoute();
@@ -22,10 +22,7 @@ const selectedPetId = ref(null);
 const isPetModalOpen = ref(false);
 
 const isOwner = computed(
-  () =>
-    userStore.nickname &&
-    post.value?.writer &&
-    userStore.nickname === post.value.writer
+  () => userStore.nickname && post.value?.writer && userStore.nickname === post.value.writer
 );
 
 const openPetModal = (id) => {
@@ -81,16 +78,8 @@ const addComment = async () => {
           <span class="date">{{ post.createdAt }}</span>
         </div>
         <div class="icons" v-if="isOwner">
-          <img
-            src="/src/assets/icons/write.png"
-            class="icon_btn"
-            @click="goToModify"
-          />
-          <img
-            src="/src/assets/icons/x-button.png"
-            class="icon_btn"
-            @click="handleDelete"
-          />
+          <img src="/src/assets/icons/edit.svg" class="icon_btn" @click="goToModify" />
+          <img src="/src/assets/icons/x_button.svg" class="icon_btn delete" @click="handleDelete" />
         </div>
       </div>
 
@@ -98,12 +87,7 @@ const addComment = async () => {
 
       <div class="content_area">
         <div v-if="post.imageUrls?.length" class="image_gallery">
-          <img
-            v-for="(img, i) in post.imageUrls"
-            :key="i"
-            :src="img"
-            class="content_image"
-          />
+          <img v-for="(img, i) in post.imageUrls" :key="i" :src="img" class="content_image" />
         </div>
 
         <p class="description">
@@ -113,8 +97,6 @@ const addComment = async () => {
         <hr class="pet_section_divider" />
 
         <div v-if="post.petList?.length">
-          <h2 class="card">&lt;반려동물 카드&gt;</h2>
-
           <div class="pet_card_section">
             <h3 class="pet_card_title"></h3>
             <div class="pet_card_list">
@@ -136,7 +118,7 @@ const addComment = async () => {
 
   <div class="comment_section">
     <label class="comment_label">
-      <img class="label_icon" src="/src/assets/icons/write-letter.png" />
+      <img class="label_icon" src="/src/assets/icons/comment.png" />
       댓글
     </label>
 
@@ -148,13 +130,7 @@ const addComment = async () => {
         v-model="newComment"
         :disabled="!userStore.isLogin"
       />
-      <button
-        class="submit_btn"
-        @click="addComment"
-        :disabled="!userStore.isLogin"
-      >
-        등록
-      </button>
+      <button class="submit_btn" @click="addComment" :disabled="!userStore.isLogin">등록</button>
     </div>
 
     <CommentCard
@@ -166,11 +142,7 @@ const addComment = async () => {
     />
   </div>
 
-  <PetCardDetail
-    v-if="isPetModalOpen"
-    :pet-id="selectedPetId"
-    @close="isPetModalOpen = false"
-  />
+  <PetCardDetail v-if="isPetModalOpen" :pet-id="selectedPetId" @close="isPetModalOpen = false" />
 </template>
 
 <style scoped>
@@ -222,14 +194,20 @@ const addComment = async () => {
 }
 .icons {
   display: flex;
+  align-items: center;
   gap: 10px;
 }
 .icon_btn {
   width: 16px;
   height: 16px;
-  margin-left: 8px;
   cursor: pointer;
 }
+
+.icon_btn.delete {
+  width: 14px;
+  height: 14px;
+}
+
 .divider_line {
   border-top: 1px solid #e0e0e0;
   margin: 10px 0 20px;
@@ -283,22 +261,23 @@ const addComment = async () => {
 }
 .submit_btn {
   margin-left: 10px;
-  background: #6a0104;
+  background: var(--main-color-brown);
   color: white;
   border: none;
-  padding: 10px 16px;
+  padding: 10px 13px;
   border-radius: 6px;
   cursor: pointer;
-  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.3s;
 }
 .submit_btn:hover {
   background: #800000;
 }
 .label_icon {
-  width: 35px;
-  height: 35px;
-  margin-left: 3px;
+  width: 20px;
+  height: 20px;
   vertical-align: middle;
+  margin-right: 5px;
 }
 .pet_section_divider {
   border: none;
@@ -331,5 +310,4 @@ const addComment = async () => {
   box-shadow: none;
   background: transparent;
 }
-
 </style>

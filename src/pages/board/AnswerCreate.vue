@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAnswerStore } from "/src/stores/useAnswerStore";
 import { useQuestionStore } from "/src/stores/useQuestionStore";
-import PetCard from "/src/pages/board/components/PetCardModal.vue";
+import PetCard from "/src/pages/board/components/PetCard.vue";
 import PetCardDetail from "/src/pages/board/components/PetCardDetailModal.vue";
 import axios from "axios";
 
@@ -84,14 +84,16 @@ const handleCancel = () => {
 };
 
 const handleSubmit = async () => {
-  const confirmed = window.confirm(isEdit ? '답변을 수정하시겠습니까?' : '답변을 등록하시겠습니까?');
+  const confirmed = window.confirm(
+    isEdit ? "답변을 수정하시겠습니까?" : "답변을 등록하시겠습니까?"
+  );
   if (!confirmed) return;
 
   try {
     const formData = new FormData();
     const answerData = {
       content: content.value,
-      originalImageUrls: originalImageUrls.value, 
+      originalImageUrls: originalImageUrls.value,
     };
     const jsonBlob = new Blob([JSON.stringify(answerData)], {
       type: "application/json",
@@ -106,19 +108,18 @@ const handleSubmit = async () => {
       await axios.put(`/api/answer/update/${answerId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert('답변이 수정되었습니다.');
+      alert("답변이 수정되었습니다.");
     } else {
       await answerStore.registerAnswer(question.value.idx, content.value, files.value);
-      alert('답변이 등록되었습니다.');
+      alert("답변이 등록되었습니다.");
     }
 
     router.push(`/board/qna/${questionId}`);
   } catch (err) {
-    alert(isEdit ? '답변 수정에 실패하였습니다.' : '답변 등록에 실패하였습니다.');
+    alert(isEdit ? "답변 수정에 실패하였습니다." : "답변 등록에 실패하였습니다.");
     console.error(err);
   }
 };
-
 </script>
 
 <template>
@@ -126,11 +127,7 @@ const handleSubmit = async () => {
     <div v-if="question" class="container">
       <div class="post_box">
         <div class="post_title">
-          <img
-            class="icon_img"
-            src="/src/assets/icons/question.png"
-            alt="질문 아이콘"
-          />
+          <img class="icon_img" src="/src/assets/icons/question.png" alt="질문 아이콘" />
           <span class="text">{{ question.qTitle }}</span>
         </div>
 
@@ -138,9 +135,7 @@ const handleSubmit = async () => {
           <div class="user_info">
             <img
               class="profile_img"
-              :src="
-                question.profileImageUrl || '/src/assets/images/default.png'
-              "
+              :src="question.profileImageUrl || '/src/assets/images/default.png'"
               alt="프로필 이미지"
             />
             <span class="nickname">{{ question.writer }}</span>
@@ -152,10 +147,7 @@ const handleSubmit = async () => {
         <hr class="divider_line" />
 
         <div class="content_area">
-          <div
-            v-if="question.imageUrls && question.imageUrls.length"
-            class="image_preview_area"
-          >
+          <div v-if="question.imageUrls && question.imageUrls.length" class="image_preview_area">
             <img
               v-for="(img, index) in question.imageUrls"
               :key="index"
@@ -171,12 +163,7 @@ const handleSubmit = async () => {
             <span v-for="tag in question.tags" :key="tag"># {{ tag }}</span>
           </div>
 
-          <div
-            v-if="question.petList?.length"
-            class="pet_card_section"
-            style="margin-top: 20px"
-          >
-            <h2 class="card">&lt;반려동물 카드&gt;</h2>
+          <div v-if="question.petList?.length" class="pet_card_section" style="margin-top: 20px">
             <div class="pet_card_list">
               <PetCard
                 v-for="pet in question.petList"
@@ -199,21 +186,15 @@ const handleSubmit = async () => {
       />
 
       <div class="ai_link_bridge">
-        <img
-          src="/src/assets/icons/connect.png"
-          alt="AI 연결 아이콘"
-          class="bridge_icon"
-        />
+        <img src="/src/assets/icons/more.svg" alt="연결 아이콘" class="bridge_icon" />
       </div>
 
       <div class="answer_form">
         <div class="form_box">
-          <img
-            class="answer_icon"
-            src="/src/assets/icons/answerRegister.png"
-            alt="답변 아이콘"
-          />
-
+          <div class="answer_header">
+            <img class="answer_icon" src="/src/assets/icons/answerRegister.png" alt="답변 아이콘" />
+            <p>답변 달기</p>
+          </div>
           <textarea
             class="textarea"
             placeholder="내용을 입력해주세요."
@@ -263,7 +244,7 @@ const handleSubmit = async () => {
               {{ isEdit ? "수정 취소" : "취소" }}
             </button>
             <button class="btn submit" @click="handleSubmit">
-              {{ isEdit ? "수정 완료" : "답변 등록" }}
+              {{ isEdit ? "수정 완료" : "등록" }}
             </button>
           </div>
         </div>
@@ -284,7 +265,7 @@ const handleSubmit = async () => {
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 12px;
-  padding: 24px;
+  padding: 40px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   margin-bottom: 40px;
 }
@@ -297,8 +278,8 @@ const handleSubmit = async () => {
   margin-bottom: 20px;
 }
 .icon_img {
-  width: 40px;
-  height: 40px;
+  width: 27px;
+  height: 27px;
   margin-right: 12px;
 }
 .user_info_line {
@@ -390,19 +371,30 @@ const handleSubmit = async () => {
   flex-direction: column;
 }
 
-.answer_icon {
-  width: 40px;
-  height: 40px;
+.answer_header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 16px;
+}
+
+.answer_header > p {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.answer_icon {
+  width: 27px;
+  height: 27px;
 }
 
 .textarea {
   width: 100%;
   height: 150px;
-  padding: 12px;
-  font-size: 15px;
+  padding: 15px;
+  font-size: 14px;
   border: 1px solid #ccc;
-  border-radius: 10px;
+  border-radius: 8px;
   resize: none;
   margin-bottom: 20px;
   color: #333;
@@ -420,7 +412,7 @@ const handleSubmit = async () => {
 .file_label {
   font-weight: 600;
   color: #333;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
 }
 
 .file_input {
@@ -441,23 +433,26 @@ const handleSubmit = async () => {
 }
 
 .btn {
-  padding: 8px 16px;
+  padding: 8px 12px;
   font-size: 14px;
-  font-weight: 600;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  min-width: 80px;
+  transition: all 0.3s;
 }
 
 .btn.cancel {
-  background: #fff;
-  color: #800000;
-  border: 1px solid #800000;
+  background: white;
+  color: var(--gray700);
+  border: 1px solid var(--gray700);
+}
+
+.btn.cancel:hover {
+  background-color: var(--gray300);
 }
 
 .btn.submit {
-  background: #6a0104;
-  color: #fff;
+  background: var(--main-color-brown);
+  color: white;
   border: 1px solid #800000;
 }
 
@@ -493,8 +488,9 @@ const handleSubmit = async () => {
   align-items: center;
   margin: 20px 0;
 }
+
 .bridge_icon {
-  width: 40px;
+  width: 30px;
 }
 
 .pet_card_section {

@@ -1,5 +1,4 @@
-<script setup>
-</script>
+<script setup></script>
 
 <template>
   <div class="board_layout">
@@ -7,7 +6,9 @@
       <nav>
         <ul>
           <li><router-link to="/board/free" active-class="active">자유 게시판</router-link></li>
-          <li><router-link to="/board/information" active-class="active">정보 공유</router-link></li>
+          <li>
+            <router-link to="/board/information" active-class="active">정보 공유</router-link>
+          </li>
           <li><router-link to="/board/qna" active-class="active">Q&A</router-link></li>
         </ul>
       </nav>
@@ -22,18 +23,14 @@
 <style scoped>
 .board_layout {
   display: flex;
-  padding: 130px;
+  padding: 70px 15%;
   gap: 60px;
 }
 
-.board_layout {
-  display: flex;
-  padding: 130px;
-}
-
 .sidebar {
-  width: 160px;
-  height: 200px;;
+  width: 170px;
+  height: 200px;
+  min-width: 170px;
   background: #ffffff;
   padding: 30px 0;
   border: 1px solid #ddd;
@@ -42,40 +39,31 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
 }
 
 .sidebar ul {
   list-style: none;
   padding: 0;
   width: 100%;
-  gap: 25px;
+  gap: 30px;
   display: flex;
   flex-direction: column;
-}
-
-.sidebar li {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .sidebar a {
   text-decoration: none;
   color: #212121;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
-  width: 100%;
-  height: 35px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
-
 }
 
-
 .sidebar a.active {
-  color: #6A0104;
+  color: var(--main-color-brown);
   font-weight: 700;
 }
 

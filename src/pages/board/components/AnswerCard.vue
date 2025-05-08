@@ -32,13 +32,11 @@ const confirmAndSelect = async () => {
     alert("채택이 완료되었습니다.");
 
     emit("selected");
-
   } catch (e) {
     alert("채택 실패");
     console.error(e);
   }
 };
-
 
 const goToQuestionDetail = () => {
   router.push(`/board/qna/${props.questionIdx}`);
@@ -72,11 +70,7 @@ const goToQuestionDetail = () => {
       <div class="icons">
         <template v-if="answer.selected">
           <div class="selected_badge">
-            <img
-              src="/src/assets/icons/select.png"
-              class="badge_icon"
-              alt="채택 아이콘"
-            />
+            <img src="/src/assets/icons/check_circle.svg" class="badge_icon" alt="채택 아이콘" />
             <span class="selected_text">질문자가 채택한 답변</span>
           </div>
         </template>
@@ -92,13 +86,13 @@ const goToQuestionDetail = () => {
           "
         >
           <img
-            src="/src/assets/icons/write.png"
+            src="/src/assets/icons/edit.svg"
             class="icon_btn"
             alt="수정 아이콘"
             @click.stop="emit('modify', answer.idx)"
           />
           <img
-            src="/src/assets/icons/x-button.png"
+            src="/src/assets/icons/x_button.svg"
             class="icon_btn"
             alt="삭제 아이콘"
             @click.stop="emit('delete', answer.idx)"
@@ -142,7 +136,7 @@ const goToQuestionDetail = () => {
 .answer_card {
   background: #f6f6f6;
   border-radius: 12px;
-  padding: 18px;
+  padding: 20px 24px;
   margin-bottom: 16px;
 }
 .answer_card.selected {
@@ -197,6 +191,7 @@ const goToQuestionDetail = () => {
   flex-wrap: wrap;
   gap: 12px;
 }
+
 .answer_img {
   width: 100%;
   max-width: 120px;
@@ -204,21 +199,30 @@ const goToQuestionDetail = () => {
   margin-top: 10px;
   display: block;
 }
+
 .icons {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
+
 .icon_btn {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
 }
+
+.icon_btn:nth-child(2) {
+  width: 14px;
+  height: 14px;
+}
+
 .select_btn_area {
   display: flex;
   justify-content: flex-end;
   margin-top: 12px;
 }
+
 .select_btn {
   background: #6a0104;
   border: 2px solid #6a0104;

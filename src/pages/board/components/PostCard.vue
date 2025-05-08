@@ -1,17 +1,17 @@
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
 const props = defineProps({
   post: Object,
   boardType: String,
-  index: Number
-})
+  index: Number,
+});
 
-const router = useRouter()
+const router = useRouter();
 
 const goToDetail = () => {
-  router.push(`/board/${props.boardType}/post/${props.post.idx}`)
-}
+  router.push(`/board/${props.boardType}/post/${props.post.idx}`);
+};
 </script>
 
 <template>
@@ -19,16 +19,16 @@ const goToDetail = () => {
     <td>{{ index }}</td>
     <td>{{ post.category }}</td>
     <td>
-  <span class="post_title">
-    {{ post.title }}
-    <img
-      v-if="post.imageUrls && post.imageUrls.length > 0"
-      src="/src/assets/icons/image.png"
-      alt="image"
-      class="image_icon"
-    />
-  </span>
-</td>
+      <span class="post_title">
+        {{ post.title }}
+        <img
+          v-if="post.imageUrls && post.imageUrls.length > 0"
+          src="/src/assets/icons/image.png"
+          alt="image"
+          class="image_icon"
+        />
+      </span>
+    </td>
     <td>{{ post.writer }}</td>
     <td>{{ post.createdAt }}</td>
   </tr>
@@ -49,7 +49,7 @@ const goToDetail = () => {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
-  color: #5D4037;
+  color: #5d4037;
 }
 
 td:nth-child(3) {
@@ -59,11 +59,22 @@ td:nth-child(3) {
   white-space: nowrap;
 }
 
-td:nth-child(1) { width: 10%; }       
-td:nth-child(2) { width: 20%; }       
-td:nth-child(3) { width: 35%; }       
-td:nth-child(4) { width: 20%; }      
-td:nth-child(5) { width: 20%; }   
+td:nth-child(1) {
+  width: 10%;
+}
+td:nth-child(2) {
+  width: 20%;
+}
+td:nth-child(3) {
+  width: 35%;
+  text-align: left;
+}
+td:nth-child(4) {
+  width: 20%;
+}
+td:nth-child(5) {
+  width: 20%;
+}
 
 .image_icon {
   width: 10px;
@@ -73,13 +84,9 @@ td:nth-child(5) { width: 20%; }
 
 td {
   padding: 10px 6px;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid #d7ccc8;
   font-size: 14px;
-  color: #4E342E;
+  color: #4e342e;
 }
 </style>
-
-
-
-

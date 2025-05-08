@@ -53,10 +53,16 @@ const loadKakaoMap = (container) => {
         level: 3,
       });
 
+      const mapTypeControl = new kakao.maps.MapTypeControl();
+      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+      const zoomControl = new kakao.maps.ZoomControl();
+      map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
       infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
 
-      const imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png";
-      const imageSize = new kakao.maps.Size(30, 42);
+      const imageSrc = "/src/assets/icons/my_place.png";
+      const imageSize = new kakao.maps.Size(40, 40);
       const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
 
       const myMarker = new kakao.maps.Marker({
@@ -65,12 +71,6 @@ const loadKakaoMap = (container) => {
         title: "내 위치",
         image: markerImage,
       });
-
-      const myInfo = new kakao.maps.InfoWindow({
-        position: center,
-        content: '<div style="padding:4px 10px;font-size:13px;">📍 내 위치</div>',
-      });
-      myInfo.open(map, myMarker);
 
       searchPlaces();
     });
@@ -142,6 +142,16 @@ const clickPlace = (place, index) => {
   );
   infowindow.open(map, markers[index]);
 };
+
+const moveToMyLocation = () => {
+  const { kakao } = window;
+  if (myLat.value && myLng.value && map) {
+    const moveLatLon = new kakao.maps.LatLng(myLat.value, myLng.value);
+    map.panTo(moveLatLon);
+  } else {
+    alert("현재 위치를 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
+  }
+};
 </script>
 
 <template>
@@ -164,17 +174,16 @@ const clickPlace = (place, index) => {
           </li>
         </ul>
       </div>
-      <div class="map-box" ref="mapContainer"></div>
+      <div class="map-box" ref="mapContainer">
+        <button @click="moveToMyLocation" class="my-location-btn">
+          <img src="/src/assets/icons/my_place.png" alt="내 위치" />
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-:global(body) {
-  margin: 0;
-  padding: 0;
-}
-
 .page-container {
   max-width: 960px;
   margin: 0 auto;
@@ -182,14 +191,12 @@ const clickPlace = (place, index) => {
 }
 
 .title {
-  font-size: 32px;
-  margin: 0 0 24px 30px;
-  padding: 0;
-  text-align: left;
-  line-height: 1.2;
+  font-size: 28px;
+  margin-bottom: 30px;
 }
 
 .place {
+  font-size: 16px;
   margin-bottom: 15px;
 }
 
@@ -205,7 +212,7 @@ const clickPlace = (place, index) => {
 }
 
 .side {
-  width: 300px;
+  width: 270px;
   background: #f9f9f9;
   padding: 12px;
   overflow-y: auto;
@@ -220,7 +227,7 @@ const clickPlace = (place, index) => {
 }
 
 .search-bar input {
-  flex: 1;
+  width: 180px;
   padding: 6px;
   font-size: 14px;
   border: 1px solid #ccc;
@@ -230,15 +237,16 @@ const clickPlace = (place, index) => {
 .search-bar button {
   padding: 6px 10px;
   font-size: 14px;
-  background-color: #8a0206;
+  background-color: var(--main-color-brown);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .search-bar button:hover {
-  background-color: #6e0105;
+  background-color: var(--main-color-hover);
 }
 
 .places {
@@ -248,10 +256,10 @@ const clickPlace = (place, index) => {
 }
 
 .places li {
-  padding: 6px;
-  margin-bottom: 6px;
-  border-bottom: 1px solid #eee;
+  padding: 10px 5px;
+  border-bottom: 1px solid var(--gray300);
   cursor: pointer;
+  line-height: 130%;
 }
 
 .places li:hover {
@@ -259,7 +267,30 @@ const clickPlace = (place, index) => {
 }
 
 .map-box {
+  position: relative;
   flex: 1;
   height: 100%;
+}
+
+.my-location-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  padding: 10px 14px;
+  background-color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  transition: all 0.3s;
+}
+
+.my-location-btn > img {
+  width: 20px;
+  height: 20px;
+}
+
+.my-location-btn:hover {
+  background-color: var(--main-color-light);
 }
 </style>

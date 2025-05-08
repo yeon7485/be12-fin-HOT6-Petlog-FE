@@ -12,7 +12,9 @@
           <li><router-link to="/mypage/question" active-class="active">나의 질문</router-link></li>
           <li><router-link to="/mypage/answer" active-class="active">나의 답변</router-link></li>
           <li><router-link to="/mypage/post" active-class="active">내가 쓴 글</router-link></li>
-          <li><router-link to="/mypage/comment" active-class="active">내가 쓴 댓글</router-link></li>
+          <li>
+            <router-link to="/mypage/comment" active-class="active">내가 쓴 댓글</router-link>
+          </li>
         </ul>
       </nav>
     </aside>
@@ -28,13 +30,15 @@
 .mypage-container {
   display: flex;
   min-height: 100px;
-  padding: 80px;
   justify-content: space-between;
+  padding: 70px 15%;
+  gap: 60px;
 }
 
 .sidebar {
-  width: 180px;
+  width: 170px;
   height: 400px;
+  min-width: 170px;
   background: #ffffff;
   padding: 20px;
   border: 1px solid #ddd;
@@ -43,8 +47,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-right: 0px;
-  margin-left: 120px;
+  white-space: nowrap;
 }
 
 .sidebar ul {
@@ -67,7 +70,7 @@
 .sidebar a {
   text-decoration: none;
   color: var(--gray900, #212121);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   width: 100%;
   height: 35px;
@@ -84,7 +87,5 @@
 
 .content {
   flex-grow: 1;
-  margin-right: 150px;
-  margin-bottom: 60px;
 }
 </style>

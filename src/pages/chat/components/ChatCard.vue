@@ -22,86 +22,86 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="chat-card-wrapper" @click="handleChatRoomClick(room)">
-    <div class="chat-card">
+  <div class="chat-card" @click="handleChatRoomClick(room)">
+    <div class="chat-header">
       <div class="chat-title">
-        {{ room.title }}
-        <span v-if="room.isParticipating" class="participating-badge"
-          >참여중</span
-        >
-      </div>
-      <div class="chat-tags">
-        <span v-for="tag in room.hashtags" :key="tag">#{{ tag }}</span>
+        <h2>{{ room.title }}</h2>
+        <span v-if="room.isParticipating" class="participating-badge">참여중</span>
       </div>
       <div class="chat-participants">
-        <img src="../../../assets/images/fluent_people-28-filled.png" />
+        <img src="/src/assets/icons/people.svg" alt="people" />
         {{ room.participants }}명 참여 중
       </div>
     </div>
+    <div class="chat-tags">
+      <span v-for="tag in room.hashtags" :key="tag">#{{ tag }}</span>
+    </div>
   </div>
 
-  <ChatRoomInfoModal
-    v-if="showRoomModal"
-    :room="selectedRoom"
-    @close="showRoomModal = false"
-  />
+  <ChatRoomInfoModal v-if="showRoomModal" :room="selectedRoom" @close="showRoomModal = false" />
 </template>
 
 <style scoped>
 .chat-card {
-  width: 806px;
-  padding: 33px 36px;
+  width: 100%;
+  padding: 32px 36px;
   border-radius: 20px;
-  border: 1px solid #6a0104;
+  border: 1px solid var(--main-color-brown);
   background: #fff;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   box-sizing: border-box;
+  transition: all 0.3s;
+}
+
+.chat-card:hover {
+  scale: 1.03;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
 }
 
 .chat-title {
-  font-family: Inter;
-  font-size: 20px;
-  color: #000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
+.chat-title > h2 {
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .participating-badge {
-  margin-left: 8px;
-  padding: 2px 6px;
+  margin-top: 1px;
+  padding: 3px 6px;
   background-color: #e0f2f1;
   color: #00796b;
   border-radius: 12px;
   font-size: 11px;
-  font-weight: 500;
   border: 1px solid #00796b22;
 }
 .chat-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 22px;
-  /* margin-bottom: 8px; */
+  gap: 10px;
 }
 
 .chat-tags span {
-  color: #6a0104;
+  color: var(--main-color-brown);
   font-size: 14px;
 }
 
 .chat-participants {
   display: flex;
   align-items: center;
-  position: absolute;
-  right: 24px;
-  /* bottom: 16px; */
   font-size: 13px;
-  color: #555;
+  color: var(--gray700);
   gap: 4px;
 }
 </style>

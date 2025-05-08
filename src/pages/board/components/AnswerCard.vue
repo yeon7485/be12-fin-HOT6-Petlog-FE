@@ -25,11 +25,13 @@ const confirmAndSelect = async () => {
 
   try {
     await answerStore.selectAnswer(props.answer.idx);
+
     await questionStore.refreshQuestionStatus(props.questionIdx);
+    await answerStore.fetchAnswersByQuestionId(props.questionIdx);
 
     alert("채택이 완료되었습니다.");
+
     emit("selected");
-    router.push("/board/qna");
   } catch (e) {
     alert("채택 실패");
     console.error(e);
@@ -42,7 +44,11 @@ const goToQuestionDetail = () => {
 </script>
 
 <template>
-  <div class="answer_card" :class="{ selected: answer.selected }" @click="goToQuestionDetail">
+  <div
+    class="answer_card"
+    :class="{ selected: answer.selected }"
+    @click="goToQuestionDetail"
+  >
     <div class="user_header">
       <div class="left_info">
         <img
@@ -54,7 +60,9 @@ const goToQuestionDetail = () => {
           "
           alt="유저 이미지"
         />
-        <span class="nickname">{{ answer.userType === "AI" ? "ChatGPS" : answer.writer }}</span>
+        <span class="nickname">{{
+          answer.userType === "AI" ? "ChatGPS" : answer.writer
+        }}</span>
         <span class="divider">ㅣ</span>
         <span class="date">{{ answer.createdAt }}</span>
       </div>
@@ -72,7 +80,9 @@ const goToQuestionDetail = () => {
             answer.userType !== 'AI' &&
             answer.writer === userStore.nickname &&
             !answer.selected &&
-            !answerStore.answers.some((a) => a.selected && a.writer !== userStore.nickname)
+            !answerStore.answers.some(
+              (a) => a.selected && a.writer !== userStore.nickname
+            )
           "
         >
           <img
@@ -110,11 +120,14 @@ const goToQuestionDetail = () => {
         answer.userType !== 'AI' &&
         !answer.selected &&
         !answerStore.answers.some((a) => a.selected) &&
-        userStore.nickname !== answer.writer
+        userStore.nickname !== answer.writer &&
+        questionStore.selectedQuestion?.writer === userStore.nickname
       "
       class="select_btn_area"
     >
-      <button class="select_btn" @click.stop="confirmAndSelect">채택하기</button>
+      <button class="select_btn" @click.stop="confirmAndSelect">
+        채택하기
+      </button>
     </div>
   </div>
 </template>

@@ -13,13 +13,19 @@ const search = ref("");
 
 const loadPage = async (page) => {
   if (questionStore.isSearching) {
-    await questionStore.searchQuestions(questionStore.currentKeyword, page - 1, 5);
+    await questionStore.searchQuestions(
+      questionStore.currentKeyword,
+      page - 1,
+      5
+    );
   } else {
     await questionStore.fetchQuestions(page - 1, 5);
   }
 
   await Promise.all(
-    questionStore.questions.map((q) => answerStore.fetchAnswersByQuestionId(q.idx))
+    questionStore.questions.map((q) =>
+      answerStore.fetchAnswersByQuestionId(q.idx)
+    )
   );
 
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -35,7 +41,9 @@ const triggerSearch = async () => {
 
   await questionStore.searchQuestions(kw, 0, 5);
   await Promise.all(
-    questionStore.questions.map((q) => answerStore.fetchAnswersByQuestionId(q.idx))
+    questionStore.questions.map((q) =>
+      answerStore.fetchAnswersByQuestionId(q.idx)
+    )
   );
 };
 
@@ -79,17 +87,19 @@ onMounted(() => loadPage(1));
     <QuestionCard
       v-for="question in questionStore.questions"
       :key="question.idx"
-      :question="{
-        ...question,
-        answerCount: answerStore.answers.filter(
-          (a) => a.questionIdx === question.idx && a.userType !== 'AI'
-        ).length,
-      }"
+      :question="question"
     />
 
     <div v-if="questionStore.totalPages > 1" class="pagination">
-      <button @click="goToFirst" :disabled="questionStore.currentPage === 1">처음으로</button>
-      <button @click="goToPrevGroup" :disabled="questionStore.pageGroupStart === 1">◀ 이전</button>
+      <button @click="goToFirst" :disabled="questionStore.currentPage === 1">
+        처음으로
+      </button>
+      <button
+        @click="goToPrevGroup"
+        :disabled="questionStore.pageGroupStart === 1"
+      >
+        ◀ 이전
+      </button>
 
       <button
         v-for="page in questionStore.visiblePages"

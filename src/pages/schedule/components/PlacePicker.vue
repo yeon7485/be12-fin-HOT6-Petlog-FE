@@ -55,6 +55,12 @@ const loadKakaoMap = (container) => {
         level: 3,
       });
 
+      const mapTypeControl = new kakao.maps.MapTypeControl();
+      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+      const zoomControl = new kakao.maps.ZoomControl();
+      map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
       infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
 
       const imageSrc = "/src/assets/images/my_place.png";
@@ -69,30 +75,6 @@ const loadKakaoMap = (container) => {
       });
     });
   };
-};
-
-const setMapType = (maptype) => {
-  const roadmapControl = document.getElementById("btnRoadmap");
-  const skyviewControl = document.getElementById("btnSkyview");
-  if (maptype === "roadmap") {
-    map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
-    roadmapControl.className = "selected_btn";
-    skyviewControl.className = "btn";
-  } else {
-    map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
-    skyviewControl.className = "selected_btn";
-    roadmapControl.className = "btn";
-  }
-};
-
-// 지도 확대, 축소 컨트롤에서 확대 버튼을 누르면 호출되어 지도를 확대하는 함수입니다
-const zoomIn = () => {
-  map.setLevel(map.getLevel() - 1);
-};
-
-// 지도 확대, 축소 컨트롤에서 축소 버튼을 누르면 호출되어 지도를 확대하는 함수입니다
-const zoomOut = () => {
-  map.setLevel(map.getLevel() + 1);
 };
 
 const searchPlaces = () => {
@@ -185,21 +167,7 @@ const clickPlace = (place, index) => {
           </li>
         </ul>
       </div>
-      <div class="map-box" ref="mapContainer">
-        <div class="custom_typecontrol radius_border">
-          <span id="btnRoadmap" class="selected_btn" @click="setMapType('roadmap')">지도</span>
-          <span id="btnSkyview" class="btn" @click="setMapType('skyview')">스카이뷰</span>
-        </div>
-
-        <div class="custom_zoomcontrol radius_border">
-          <span @click="zoomIn">
-            <img src="/src/assets/icons/plus.png" alt="확대" />
-          </span>
-          <span @click="zoomOut">
-            <img src="/src/assets/icons/minus.png" alt="축소" />
-          </span>
-        </div>
-      </div>
+      <div class="map-box" ref="mapContainer"></div>
     </div>
   </div>
 </template>
@@ -274,58 +242,5 @@ const clickPlace = (place, index) => {
   flex: 1;
   height: 100%;
   position: relative;
-}
-
-.custom_typecontrol {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  z-index: 10;
-}
-
-.custom_typecontrol span {
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.custom_typecontrol .selected_btn {
-  background-color: #8a0206;
-  color: white;
-}
-
-.custom_typecontrol .btn {
-  background-color: white;
-  color: black;
-}
-
-.custom_zoomcontrol {
-  position: absolute;
-  top: 50px;
-  right: 10px;
-  display: flex;
-  flex-direction: column;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  z-index: 10;
-}
-
-.custom_zoomcontrol span {
-  width: 25px;
-  height: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.custom_zoomcontrol img {
-  width: 12px;
-  height: 12px;
 }
 </style>

@@ -59,9 +59,10 @@ export const useNotificationStore = defineStore("notification", () => {
 
   // WebSocket 연결 및 실시간 알림 수신
   const connectWebSocket = () => {
-    if (!currentUserId.value) return;
+    if (!currentUserId.value || stompClient.value) return;
+
     const client = new Client({
-      webSocketFactory: () => new SockJS("/api/ws"),
+      webSocketFactory: () => new SockJS("/ws"),
       reconnectDelay: 5000,
       onConnect: () => {
         client.subscribe(`/topic/alerts/${currentUserId.value}`, (msg) => {
@@ -69,7 +70,7 @@ export const useNotificationStore = defineStore("notification", () => {
           notifications.value.unshift({
             idx: data.idx,
             title: "[알림]",
-            content: `"${n.petName}"의 ${n.message}`,
+            content: `"${data.petName}"의 ${data.message}`,
             time: "방금 전",
             read: false, // 새로운 알림은 기본적으로 읽지 않은 상태
           });
@@ -79,6 +80,7 @@ export const useNotificationStore = defineStore("notification", () => {
         console.error("❌ WebSocket 오류:", frame);
       },
     });
+
     client.activate();
     stompClient.value = client;
   };

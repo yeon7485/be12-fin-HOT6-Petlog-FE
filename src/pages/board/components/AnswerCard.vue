@@ -1,10 +1,10 @@
 <script setup>
-import { useRouter } from 'vue-router'
-import { useAnswerStore } from '/src/stores/useAnswerStore'
-import { useQuestionStore } from '/src/stores/useQuestionStore'
-import { useUserStore } from '/src/stores/useUserStore'
+import { useRouter } from "vue-router";
+import { useAnswerStore } from "/src/stores/useAnswerStore";
+import { useQuestionStore } from "/src/stores/useQuestionStore";
+import { useUserStore } from "/src/stores/useUserStore";
 
-const emit = defineEmits(['modify', 'delete', 'select', 'selected'])
+const emit = defineEmits(["modify", "delete", "select", "selected"]);
 
 const props = defineProps({
   answer: Object,
@@ -12,45 +12,55 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-})
+});
 
-const router = useRouter()
-const answerStore = useAnswerStore()
-const questionStore = useQuestionStore()
-const userStore = useUserStore()
+const router = useRouter();
+const answerStore = useAnswerStore();
+const questionStore = useQuestionStore();
+const userStore = useUserStore();
 
 const confirmAndSelect = async () => {
-  const confirmed = window.confirm('이 답변을 채택하시겠습니까?')
-  if (!confirmed) return
+  const confirmed = window.confirm("이 답변을 채택하시겠습니까?");
+  if (!confirmed) return;
 
   try {
-    await answerStore.selectAnswer(props.answer.idx)
-    await questionStore.refreshQuestionStatus(props.questionIdx)
+    await answerStore.selectAnswer(props.answer.idx);
+    await questionStore.refreshQuestionStatus(props.questionIdx);
 
-    alert('채택이 완료되었습니다.')
-    emit('selected')
+    alert("채택이 완료되었습니다.");
+    emit("selected");
     router.push("/board/qna");
   } catch (e) {
-    alert('채택 실패')
-    console.error(e)
+    alert("채택 실패");
+    console.error(e);
   }
-}
+};
 
 const goToQuestionDetail = () => {
-  router.push(`/board/qna/${props.questionIdx}`)
-}
+  router.push(`/board/qna/${props.questionIdx}`);
+};
 </script>
 
 <template>
-  <div class="answer_card" :class="{ selected: answer.selected }" @click="goToQuestionDetail">
+  <div
+    class="answer_card"
+    :class="{ selected: answer.selected }"
+    @click="goToQuestionDetail"
+  >
     <div class="user_header">
       <div class="left_info">
         <img
           class="profile_img"
-          :src="answer.userType === 'AI' ? '/src/assets/icons/chatGPS.png' : (answer.profileImageUrl || '/src/assets/images/default.png')"
+          :src="
+            answer.userType === 'AI'
+              ? '/src/assets/icons/chatGPS.png'
+              : answer.profileImageUrl || '/src/assets/images/default.png'
+          "
           alt="유저 이미지"
         />
-        <span class="nickname">{{ answer.userType === 'AI' ? 'ChatGPS' : answer.writer }}</span>
+        <span class="nickname">{{
+          answer.userType === "AI" ? "ChatGPS" : answer.writer
+        }}</span>
         <span class="divider">ㅣ</span>
         <span class="date">{{ answer.createdAt }}</span>
       </div>
@@ -58,7 +68,11 @@ const goToQuestionDetail = () => {
       <div class="icons">
         <template v-if="answer.selected">
           <div class="selected_badge">
-            <img src="/src/assets/icons/select.png" class="badge_icon" alt="채택 아이콘" />
+            <img
+              src="/src/assets/icons/select.png"
+              class="badge_icon"
+              alt="채택 아이콘"
+            />
             <span class="selected_text">질문자가 채택한 답변</span>
           </div>
         </template>
@@ -68,7 +82,9 @@ const goToQuestionDetail = () => {
             answer.userType !== 'AI' &&
             answer.writer === userStore.nickname &&
             !answer.selected &&
-            !answerStore.answers.some(a => a.selected && a.writer !== userStore.nickname)
+            !answerStore.answers.some(
+              (a) => a.selected && a.writer !== userStore.nickname
+            )
           "
         >
           <img
@@ -105,12 +121,15 @@ const goToQuestionDetail = () => {
         userStore.isLogin &&
         answer.userType !== 'AI' &&
         !answer.selected &&
-        !answerStore.answers.some(a => a.selected) &&
-        userStore.nickname !== answer.writer
+        !answerStore.answers.some((a) => a.selected) &&
+        userStore.nickname !== answer.writer &&
+        questionStore.selectedQuestion?.writer === userStore.nickname
       "
       class="select_btn_area"
     >
-      <button class="select_btn" @click.stop="confirmAndSelect">채택하기</button>
+      <button class="select_btn" @click.stop="confirmAndSelect">
+        채택하기
+      </button>
     </div>
   </div>
 </template>

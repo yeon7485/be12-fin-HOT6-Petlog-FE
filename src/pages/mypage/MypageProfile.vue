@@ -144,51 +144,56 @@ const handleDeleteConfirm = async (enteredPassword) => {
 </script>
 
 <template>
-  <div class="mypage-profile">
-    <h2 class="title">내 정보</h2>
-  </div>
-
   <div class="container">
-    <div class="profile">
-      <label class="image-upload">
-        <input type="file" accept="image/*" @change="onFileChange" />
-        <img :src="profileImageUrl" alt="프로필 이미지" class="profile-img" />
-        <div class="camera-icon">📷</div>
-      </label>
+    <h2 class="title">내 정보</h2>
+    <div class="profile_wrapper">
+      <div class="photo_name_box">
+        <div class="profile">
+          <label class="image-upload">
+            <input type="file" accept="image/*" @change="onFileChange" />
+            <img :src="profileImageUrl" alt="프로필 이미지" class="profile-img" />
+            <div class="camera-icon">
+              <img src="/src/assets/icons/camera.svg" alt="카메라 아이콘" />
+            </div>
+          </label>
+          <button class="save-image-btn" @click="saveProfileImage">프로필 이미지 저장</button>
+        </div>
+
+        <!-- 닉네임 -->
+        <div class="name-section">
+          <span v-if="!editingNickname" class="name-text">{{ nickname }}</span>
+          <input
+            v-else
+            v-model="newNickname"
+            @keyup.enter="saveNickname"
+            @blur="saveNickname"
+            class="name-input"
+          />
+          <img src="/src/assets/icons/edit.svg" alt="수정 버튼" @click="toggleEditNickname" class="edit-btn"></img>
+        </div>
+      </div>
+      <!-- 이메일 -->
+      <div class="input-group">
+        <label>이메일</label>
+        <input v-model="email" readonly class="email-input" />
+      </div>
+
+      <!-- 로딩 중 -->
+      <div v-if="isLoading" class="loading">로딩 중...</div>
+
+      <!-- 비밀번호 설정 -->
+      <div class="input-group">
+      <label>비밀번호</label>
+      <button v-if="provider !== 'kakao'" class="password-btn" @click="togglePasswordModal">
+        비밀번호 설정
+      </button>
+
+      <button class="delete-link" @click="openDeleteModal">회원탈퇴</button>
     </div>
 
-    <!-- 프로필 이미지 저장 버튼 -->
-    <button class="save-image-btn" @click="saveProfileImage">프로필 이미지 저장</button>
+      <!-- 회원 탈퇴 -->
 
-    <!-- 닉네임 -->
-    <div class="name-section">
-      <span v-if="!editingNickname" class="name-text">{{ nickname }}</span>
-      <input
-        v-else
-        v-model="newNickname"
-        @keyup.enter="saveNickname"
-        @blur="saveNickname"
-        class="name-input"
-      />
-      <button @click="toggleEditNickname" class="edit-btn">✏️</button>
     </div>
-
-    <!-- 이메일 -->
-    <div class="input-group">
-      <label>이메일</label>
-      <input v-model="email" readonly class="email-input" />
-    </div>
-
-    <!-- 로딩 중 -->
-    <div v-if="isLoading" class="loading">로딩 중...</div>
-
-    <!-- 비밀번호 설정 -->
-    <button v-if="provider !== 'kakao'" class="password-btn" @click="togglePasswordModal">
-      비밀번호 설정
-    </button>
-
-    <!-- 회원 탈퇴 -->
-    <button class="delete-link" @click="openDeleteModal">회원탈퇴</button>
   </div>
 
   <!-- 비밀번호 변경 모달 -->
@@ -204,62 +209,89 @@ const handleDeleteConfirm = async (enteredPassword) => {
 
 <style scoped>
 .title {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: bold;
-  margin-left: 30%;
+  margin: 10px 0 20px;
 }
+
 .container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin: 30px auto 0;
   max-width: 800px;
-  background-color: #fff;
-  border-radius: 12px;
 }
+
+.profile_wrapper {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.photo_name_box {
+  align-self: center;
+  display: flex;
+  justify-content: space-around;
+  gap: 70px;
+  margin-bottom: 20px;
+}
+
 .profile {
   position: relative;
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
+
 .image-upload {
   position: relative;
   cursor: pointer;
 }
+
 .image-upload input {
   display: none;
 }
+
 .profile-img {
-  width: 150px;
-  height: 150px;
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
   border: 2px solid #ddd;
   object-fit: cover;
 }
+
 .camera-icon {
   position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background: #fff;
-  padding: 5px;
+  bottom: 0px;
+  right: 0px;
+  background: var(--gray300);
+  padding: 10px;
   border-radius: 50%;
-  font-size: 18px;
+  display: grid;
+  place-content: center;
 }
+
 .name-section {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 15px;
 }
+
 .name-text {
-  font-size: 20px;
+  width: 150px;
+  font-size:16px;
   font-weight: bold;
+  border-bottom: 1px solid var(--gray600);
+  padding: 0 10px 5px;
 }
+
 .name-input {
-  font-size: 20px;
+  width: 150px;
+  font-size: 16px;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
 .edit-btn {
   background: none;
   border: none;
@@ -267,61 +299,70 @@ const handleDeleteConfirm = async (enteredPassword) => {
   font-size: 20px;
   color: gray;
 }
+
 .input-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  margin: 0 60px 30px;
 }
+
 .input-group label {
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 5px;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
+
 .email-input {
-  font-size: 20px;
+  font-size: 16px;
   padding: 8px;
   width: 250px;
   border: 1px solid #ddd;
   border-radius: 4px;
   background: #f9f9f9;
   cursor: not-allowed;
+  color: var(--gray700);
 }
+
 .password-btn {
-  background: #a0522d;
+  width: 110px;
+  background: var(--main-color-brown);
   border: none;
   color: white;
   padding: 10px 15px;
-  font-size: 18px;
+  font-size: 14px;
   border-radius: 4px;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
+  transition: all .3s;
+  white-space: nowrap;
 }
 .password-btn:hover {
-  background: #ccc;
+  background: var(--main-color-hover);
 }
 .delete-link {
   color: red;
   text-decoration: none;
-  font-size: 16px;
-  background: none;
-  border: none;
+  font-size: 14px;
   cursor: pointer;
+  margin-top: 20px;
 }
+
 .delete-link:hover {
   text-decoration: underline;
 }
+
 .save-image-btn {
-  background: #a0522d;
-  color: white;
+  color: var(--main-color-brown);
   padding: 10px 15px;
-  font-size: 16px;
-  border: none;
+  font-size: 14px;
+  border: 1px solid var(--main-color-brown);
   border-radius: 4px;
   cursor: pointer;
   margin-top: 20px;
   margin-bottom: 20px;
+  transition: all 0.3s;
+  white-space: nowrap;
 }
 .save-image-btn:hover {
-  background: #a0522d;
+  background: var(--main-color-light);
 }
 </style>

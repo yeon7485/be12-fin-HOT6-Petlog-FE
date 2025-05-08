@@ -3,10 +3,13 @@ import { onMounted } from 'vue'
 import { useMypageCard } from '../../stores/useMypageCard'
 import { storeToRefs } from 'pinia'
 import CommentCard from '../board/components/CommentCard.vue'
+import { useRouter } from 'vue-router'
+
 
 // store 사용
 const store = useMypageCard()
 const { userComments } = storeToRefs(store) // 반응형 연결
+const router = useRouter()
 
 const getSessionUserIdx = () => {
   const user = JSON.parse(sessionStorage.getItem('user'))
@@ -26,7 +29,9 @@ const fetchComments = async () => {
     console.error('❌ 댓글 불러오기 실패', e)
   }
 }
-
+const handleCommentClick = (postIdx) => {
+  router.push({ path: `/board/boardType/post/${postIdx}` })  // 게시글 상세 페이지로 이동
+}
 onMounted(fetchComments)
 </script>
 
@@ -45,6 +50,7 @@ onMounted(fetchComments)
       :comment="comment"
       :post-idx="comment.postIdx"
       :is-my-page="true"
+       @click="handleCommentClick(comment.postIdx)"
     />
   </div>
 </template>

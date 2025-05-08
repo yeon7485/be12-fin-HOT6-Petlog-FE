@@ -25,16 +25,20 @@ const confirmAndSelect = async () => {
 
   try {
     await answerStore.selectAnswer(props.answer.idx);
+
     await questionStore.refreshQuestionStatus(props.questionIdx);
+    await answerStore.fetchAnswersByQuestionId(props.questionIdx);
 
     alert("채택이 완료되었습니다.");
+
     emit("selected");
-    router.push("/board/qna");
+
   } catch (e) {
     alert("채택 실패");
     console.error(e);
   }
 };
+
 
 const goToQuestionDetail = () => {
   router.push(`/board/qna/${props.questionIdx}`);

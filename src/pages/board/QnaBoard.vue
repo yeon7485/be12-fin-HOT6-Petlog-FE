@@ -13,14 +13,20 @@ const search = ref("");
 
 const loadPage = async (page) => {
   if (questionStore.isSearching) {
-    await questionStore.searchQuestions(questionStore.currentKeyword, page - 1, 5);
+    await questionStore.searchQuestions(
+      questionStore.currentKeyword,
+      page - 1,
+      5
+    );
   } else {
     await questionStore.fetchQuestions(page - 1, 5);
   }
 
-  await Promise.all(questionStore.questions.map(q =>
-    answerStore.fetchAnswersByQuestionId(q.idx)
-  ));
+  await Promise.all(
+    questionStore.questions.map((q) =>
+      answerStore.fetchAnswersByQuestionId(q.idx)
+    )
+  );
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
@@ -34,9 +40,11 @@ const triggerSearch = async () => {
   }
 
   await questionStore.searchQuestions(kw, 0, 5);
-  await Promise.all(questionStore.questions.map(q =>
-    answerStore.fetchAnswersByQuestionId(q.idx)
-  ));
+  await Promise.all(
+    questionStore.questions.map((q) =>
+      answerStore.fetchAnswersByQuestionId(q.idx)
+    )
+  );
 };
 
 const goToRegister = () => {
@@ -57,7 +65,12 @@ onMounted(() => loadPage(1));
       <h1 class="title">Q&amp;A</h1>
       <div class="search_write">
         <div class="search_box">
-          <img class="icon_img" src="/src/assets/icons/search.png" alt="검색 아이콘" @click="triggerSearch" />
+          <img
+            class="icon_img"
+            src="/src/assets/icons/search.png"
+            alt="검색 아이콘"
+            @click="triggerSearch"
+          />
           <input
             v-model="search"
             type="text"
@@ -66,7 +79,11 @@ onMounted(() => loadPage(1));
           />
         </div>
         <button class="write_button" @click="goToRegister">
-          <img class="write_icon" src="/src/assets/icons/write.png" alt="글쓰기 아이콘" />
+          <img
+            class="write_icon"
+            src="/src/assets/icons/write.png"
+            alt="글쓰기 아이콘"
+          />
         </button>
       </div>
     </div>
@@ -74,17 +91,19 @@ onMounted(() => loadPage(1));
     <QuestionCard
       v-for="question in questionStore.questions"
       :key="question.idx"
-      :question="{
-        ...question,
-        answerCount: answerStore.answers.filter(
-          (a) => a.questionIdx === question.idx && a.userType !== 'AI'
-        ).length,
-      }"
+      :question="question"
     />
 
     <div v-if="questionStore.totalPages > 1" class="pagination">
-      <button @click="goToFirst" :disabled="questionStore.currentPage === 1">처음으로</button>
-      <button @click="goToPrevGroup" :disabled="questionStore.pageGroupStart === 1">◀ 이전</button>
+      <button @click="goToFirst" :disabled="questionStore.currentPage === 1">
+        처음으로
+      </button>
+      <button
+        @click="goToPrevGroup"
+        :disabled="questionStore.pageGroupStart === 1"
+      >
+        ◀ 이전
+      </button>
 
       <button
         v-for="page in questionStore.visiblePages"
@@ -110,7 +129,6 @@ onMounted(() => loadPage(1));
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .qna_board {
@@ -230,18 +248,34 @@ onMounted(() => loadPage(1));
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 @keyframes fadeSlideUp {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
-  

@@ -137,7 +137,11 @@ export const useQuestionStore = defineStore("question", () => {
       const updated = await readQuestion(id);
       const index = questions.value.findIndex((q) => q.idx === id);
       if (index !== -1) {
-        questions.value[index] = updated;
+        const prev = questions.value[index];
+        questions.value[index] = {
+          ...updated,
+          answerCount: updated.answerCount ?? prev.answerCount, 
+        };
       }
       if (!selectedQuestion.value || selectedQuestion.value.idx === id) {
         selectedQuestion.value = updated;

@@ -6,13 +6,13 @@
         <div class="search-area">
           <!-- 검색창 -->
           <div class="search-input-wrapper">
-            <img src="../../assets/images/material-symbols_search.png" />
             <input
               class="search-box"
               v-model="searchInput"
               @keydown.enter="onSearchInput"
-              placeholder="채팅방 제목이나 #해시태그로 검색해보세요"
+              placeholder="제목이나 #해시태그로 검색해보세요"
             />
+            <img src="/src/assets/icons/search.svg" alt="search" />
           </div>
           <div class="selected-tags-wrapper" v-if="selectedTags.length">
             <span class="selected-tag" v-for="tag in selectedTags" :key="tag">
@@ -25,20 +25,20 @@
         <div class="chat-header-actions">
           <button
             class="chat-button"
-            :class="{ 'chat-button--group': !isMyRoomView }"
+            :class="{ 'chat-button--select': !isMyRoomView }"
             @click="showAllRooms"
           >
             그룹 채팅방
           </button>
           <button
             class="chat-button"
-            :class="{ 'chat-button--personal': isMyRoomView }"
+            :class="{ 'chat-button--select': isMyRoomView }"
             @click="showMyRooms"
           >
             내 채팅방
           </button>
-          <button class="chat-button chat-button--create" @click="openModal">
-            <img src="../../assets/images/iconoir_chat-plus-in.png" alt="채팅방 생성" />
+          <button class="chat-button--create" @click="openModal">
+            <img src="/src/assets/icons/chat_plus.svg" alt="채팅방 생성" />
           </button>
         </div>
       </div>
@@ -170,11 +170,12 @@ onMounted(() => {
 .chat-page {
   display: flex;
   justify-content: center;
-  padding: 40px 0;
+  margin: 40px 25%;
+  min-width: 500px;
 }
 
 .chat-content-wrapper {
-  width: 806px; /* ✅ chat-card와 동일한 기준 */
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -184,50 +185,54 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+  white-space: nowrap;
 }
 
 .chat-button {
-  padding: 8px 16px;
+  padding: 10px 14px;
   border-radius: 20px;
-  border: 1px solid #6a0104;
   font-size: 14px;
   cursor: pointer;
   background: white;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
 }
 
-.chat-button--group {
+.chat-button--select {
   background-color: #6a0104;
   color: white;
 }
 
-.chat-button--create {
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.chat-button--create > img {
+  width: 30px;
+  height: 30px;
+  margin-top: 2px;
+  transition: scale 0.3s;
+}
+
+.chat-button--create > img:hover {
+  scale: 1.1;
 }
 
 .search-input-wrapper {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  background-color: var(--gray200);
+  border-radius: 30px;
+  padding: 10px 16px;
 }
 
 .search-box {
-  width: 303px;
-  height: 39px;
-  border-radius: 30px;
-  background: #e9e9e9;
-  border: none;
-  padding: 0 16px;
+  width: 100%;
   font-size: 14px;
+  outline: none;
+  margin-right: 10px;
 }
 
 /* ✅ 검색창 + 태그 전체 묶는 영역 */
 .search-area {
-  flex: 1; /* 가로로 가능한 공간을 차지하되 */
-  max-width: 500px;
+  width: 350px;
+  min-width: 250px;
 }
 
 .selected-tags-wrapper {

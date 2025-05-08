@@ -37,7 +37,7 @@ const getMyLocation = () => {
 };
 
 const loadKakaoMap = (container) => {
-  const kakaoApiKey = import.meta.env.VITE_KAKAO_MAP_KEY;
+  const kakaoApiKey = window.ENV.VITE_KAKAO_MAP_KEY;
 
   const script = document.createElement("script");
   script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoApiKey}&libraries=services&autoload=false`;

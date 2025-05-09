@@ -6,7 +6,6 @@ import { Client } from "@stomp/stompjs";
 
 export const useChatStore = defineStore("chat", {
   state: () => ({
-    chatMessages: [],
     selectedRoom: null,
     chatRooms: [],
     unreadCount: 0,
@@ -123,17 +122,6 @@ export const useChatStore = defineStore("chat", {
       } catch (error) {
         console.error("참여 실패:", error);
         throw error; // 에러를 밖으로 던져서 UI에서 처리하게
-      }
-    },
-    async fetchMessages(roomId) {
-      try {
-        const { response } = await axios.get(
-          `/api/chatroom/${roomId}/messages`
-        );
-        this.chatMessages = response.data.result;
-        // console.log(chatMessages);
-      } catch (err) {
-        console.error("💥 메시지 불러오기 실패:", err);
       }
     },
 
@@ -284,11 +272,6 @@ export const useChatStore = defineStore("chat", {
 
     receiveMessage(msg) {
       this.messages.push(msg);
-    },
-
-    selectRoom(room) {
-      this.selectedRoom = room;
-      this.chatMessages = [];
     },
 
     resetUnread() {

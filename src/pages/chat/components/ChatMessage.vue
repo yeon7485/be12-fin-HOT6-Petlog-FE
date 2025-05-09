@@ -9,10 +9,7 @@
     <!-- ✅ 상대방 메시지일 경우 유저 정보 표시 -->
     <template v-if="!isMine">
       <div class="user-info">
-        <img
-          :src="message.profileImage || defaultProfile"
-          class="profile-img"
-        />
+        <img :src="message.profileImage" class="profile-img" />
         <div class="username">{{ message.nickname || "알 수 없음" }}</div>
       </div>
     </template>

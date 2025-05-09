@@ -4,7 +4,11 @@
       <!-- 채팅방 헤더 -->
       <ChatHeader :title="roomTitle" :showMenu="true" :roomIdx="chatroomIdx" />
 
-      <ChatMessages :messages="chatStore.messages" :currentUserId="currentUserId" />
+      <ChatMessages
+        :messages="chatStore.messages"
+        :currentUserId="currentUserId"
+        @load-previous="loadPreviousMessages"
+      />
 
       <!-- 입력 영역 -->
       <ChatInput @open-pet-modal="isModalOpen = true" />
@@ -51,7 +55,6 @@ const chatroomIdx = route.params.chatroomIdx;
 const currentUserId = userStore.idx; // 실제론 로그인된 유저 ID
 const sendPetMessage = (pet) => {
   try {
-    console.log(pet);
     chatStore.sendMessage(
       {
         idx: pet.idx,
@@ -69,6 +72,10 @@ const sendPetMessage = (pet) => {
   } catch (e) {
     alert("반려동물 카드 전송에 실패했습니다.");
   }
+};
+const loadPreviousMessages = async () => {
+  const oldestId = chatStore.messages[0]?.idx;
+  await chatStore.loadMessages(chatroomIdx, oldestId);
 };
 onMounted(() => {
   console.log(currentUserId);
@@ -114,6 +121,7 @@ const roomTitle = computed(() => chatStore.chatRoomInfo?.title || "채팅방");
 
 /* 채팅 박스 전체 */
 .chatroom {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;

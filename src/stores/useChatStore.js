@@ -6,7 +6,6 @@ import { Client } from "@stomp/stompjs";
 
 export const useChatStore = defineStore("chat", {
   state: () => ({
-    chatMessages: [],
     selectedRoom: null,
     chatRooms: [],
     unreadCount: 0,
@@ -40,11 +39,24 @@ export const useChatStore = defineStore("chat", {
       await axios.delete(`/api/chat/chatroom/${roomIdx}/leave`);
     },
 
-    async loadMessages(roomId) {
+    async loadMessages(roomId, lastMessageId = null) {
       try {
-        const res = await axios.get(`/api/chat/chatroom/${roomId}/chat`);
-        this.messages = res.data.result;
-        // console.log("📥 초기 메시지 로딩 완료:", res.data.result);
+        const res = await axios.get(`/api/chat/chatroom/${roomId}/chat`, {
+          params: lastMessageId ? { lastMessageId } : {},
+        });
+
+        const newMessages = res.data.result.content;
+
+        if (lastMessageId) {
+          // 스크롤 업: 기존 메시지 앞에 추가
+          this.messages = [...newMessages, ...this.messages];
+        } else {
+          // 최초 로딩: 새로 세팅
+          this.messages = newMessages;
+        }
+
+        // 📌 필요시 hasNext 여부도 저장해서 무한스크롤 종료 판단 가능
+        this.hasMoreMessages = newMessages.length > 0;
       } catch (e) {
         console.error("❌ 메시지 로딩 실패:", e);
       }
@@ -110,17 +122,6 @@ export const useChatStore = defineStore("chat", {
       } catch (error) {
         console.error("참여 실패:", error);
         throw error; // 에러를 밖으로 던져서 UI에서 처리하게
-      }
-    },
-    async fetchMessages(roomId) {
-      try {
-        const { response } = await axios.get(
-          `/api/chatroom/${roomId}/messages`
-        );
-        this.chatMessages = response.data.result;
-        // console.log(chatMessages);
-      } catch (err) {
-        console.error("💥 메시지 불러오기 실패:", err);
       }
     },
 
@@ -271,11 +272,6 @@ export const useChatStore = defineStore("chat", {
 
     receiveMessage(msg) {
       this.messages.push(msg);
-    },
-
-    selectRoom(room) {
-      this.selectedRoom = room;
-      this.chatMessages = [];
     },
 
     resetUnread() {

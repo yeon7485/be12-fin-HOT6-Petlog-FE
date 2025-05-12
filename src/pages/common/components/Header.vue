@@ -1,113 +1,132 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { useUserStore } from "../../../stores/useUserStore";
-import { useNotificationStore } from "../../../stores/useNoticeStore";
+import { useUserStore } from "../../../stores/useUserStore.js";
+import { useNotificationStore } from "../../../stores/useNoticeStore.js";
 import NoticeDropdown from "./NoticeDropdown.vue";
-import { watch } from 'vue';
-
+import axios from "axios";
 
 const router = useRouter();
 const userStore = useUserStore();
 const store = useNotificationStore();
 
-// 알림 배지 상태 (읽지 않은 알림 수)
-const unreadNotifications = ref(0);
-const nickname = computed(() => userStore.nickname);
-
-const toHome = () => router.push("/");
 const dropdownOpen = ref(false);
 const alertOpen = ref(false);
+const isLoading = ref(true);
+const dropdownRef = ref(null);
 
-// 알림 아이콘 클릭 시 드롭다운 토글
-const toggleDropdown = () => (dropdownOpen.value = !dropdownOpen.value);
-const toggleAlert = () => (alertOpen.value = !alertOpen.value);
+// 로그인 상태, 닉네임
+const isLoggedIn = computed(() => userStore.isLogin);
+const nickname = computed(() => userStore.nickname);
 
-const goToMyPage = () => {
-  if (userStore.type === "ADMIN") {
-    router.push("/admin");
-  } else {
-    router.push("/mypage");
+// ✅ 서버에서 가져온 읽지 않은 알림 개수 사용
+const unreadNotifications = computed(() => store.unreadNotifications);
+
+// 홈으로 이동
+const toHome = () => router.push("/");
+
+// 외부 클릭 시 드롭다운 닫기
+const handleOutsideClick = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    dropdownOpen.value = false;
+    alertOpen.value = false;
   }
 };
 
+// 드롭다운 토글
+const toggleDropdown = () => {
+  dropdownOpen.value = !dropdownOpen.value;
+};
+
+// 알림 아이콘 클릭 시 열기 및 읽음 처리
+const handleAlertClick = async () => {
+  alertOpen.value = !alertOpen.value;
+
+  if (alertOpen.value) {
+    try {
+      const unread = store.notifications.filter((n) => !n.read);
+      for (const n of unread) {
+        await store.markAsRead(n.idx); // 서버에 읽음 처리
+      }
+
+      await store.fetchNotificationsFromServer();       // 알림 목록 동기화
+      await store.fetchUnreadCountFromServer();         // ✅ 알림 수 동기화
+    } catch (err) {
+      console.error("❌ 알림 읽음 처리 실패:", err);
+    }
+  }
+};
+
+// 마이페이지 이동
+const goToMyPage = () => {
+  router.push(userStore.type === "ADMIN" ? "/admin" : "/mypage");
+};
+
+// 로그아웃 처리
 const logout = async () => {
   const result = await userStore.logout();
   if (result.isSuccess) {
     alert("로그아웃 되었습니다.");
-    if (router.currentRoute.value.path === "/") {
-      window.location.reload();
-    } else {
-      router.push("/");
-    }
+    router.push("/");
+    if (router.currentRoute.value.path === "/") window.location.reload();
   } else {
     alert("로그아웃 실패");
   }
 };
 
-const isLoggedIn = computed(() => userStore.isLogin);
-const isLoading = ref(true);
-
-// WebSocket 연결 및 알림 수 동기화
-onMounted(async () => {
-  await userStore.loginCheck();
-  isLoading.value = false;
-  store.connectWebSocket();
-  store.fetchNotificationsFromServer(); // 서버에서 알림 목록 로딩
-});
-
+// 알림 항목 클릭
 const handleClick = async (n) => {
-  n.read = true; // 로컬 상태에서 읽음 처리
-  unreadNotifications.value = store.notifications.filter((n) => !n.read).length; // 배지 갱신
-
-  try {
-    // 서버에 읽음 상태 반영
-    await store.markAsRead(n.idx);
-
+  if (!n.read) {
+    try {
+      await store.markAsRead(n.idx); // 서버에 읽음 처리
+      alert(`${n.title}\n\n${n.content}`);
+      await store.fetchNotificationsFromServer(); // 다시 fetch
+      await store.fetchUnreadCountFromServer();   // ✅ 수량도 동기화
+    } catch (err) {
+      console.error("❌ 알림 읽음 처리 실패:", err);
+    }
+  } else {
     alert(`${n.title}\n\n${n.content}`);
-  } catch (err) {
-    console.error("❌ 알림 읽음 처리 실패:", err);
   }
 };
 
 // 알림 삭제
 const deleteNotification = async (idx, index) => {
-  console.log("🧪 삭제 요청: ", idx); // 여기서 undefined 뜨면 문제 발생 위치 확정
   try {
     await axios.delete(`/api/notification/${idx}`);
     store.removeNotification(index);
+    await store.fetchUnreadCountFromServer(); // 삭제 후 수량 갱신
   } catch (err) {
     console.error("❌ 알림 삭제 실패:", err);
   }
 };
 
-// 읽지 않은 알림 수 계산
-store.$subscribe(() => {
-  unreadNotifications.value = store.notifications.filter((n) => !n.read).length;
-})
+onMounted(async () => {
+  await userStore.loginCheck();
+  isLoading.value = false;
 
-watch(
-  () => userStore.nickname,
-  (newNickname, oldNickname) => {
-    console.log('닉네임 변경 감지:', oldNickname, '->', newNickname);
-  
-  }
-);
+  store.connectWebSocket?.(); // 소켓 연결
+  await store.fetchNotificationsFromServer();      // 전체 알림
+  await store.fetchUnreadCountFromServer();        // ✅ 서버 기준 안읽은 개수
+  document.addEventListener("click", handleOutsideClick);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleOutsideClick);
+});
 </script>
 
 <template>
-  <header v-if="!isLoading" class="header">
+  <header v-if="!isLoading" class="header" ref="dropdownRef">
     <div class="header_container">
       <div class="header_box">
         <img src="/src/assets/images/logo.png" alt="logo" class="logo_img" @click="toHome" />
-
         <div class="menu_box">
           <a href="/schedule" class="menu">일정</a>
           <a href="/place" class="menu">지도</a>
           <a href="/board" class="menu">게시판</a>
           <a href="/chat" class="menu">채팅</a>
         </div>
-
         <div class="user_box">
           <template v-if="!isLoggedIn">
             <router-link to="/user/signup" class="signup">회원가입</router-link>
@@ -116,20 +135,16 @@ watch(
           </template>
 
           <template v-else>
-            <!-- 알림 아이콘 클릭 시 드롭다운 토글 -->
-            <div class="alert-wrapper" @click="toggleAlert">
+            <div class="alert-wrapper" @click="handleAlertClick">
               <div class="alart-icon-container">
                 <img src="/src/assets/icons/alart.png" alt="alart" class="alart_icon" />
-                <!-- 미확인 알림 배지 -->
                 <span v-if="unreadNotifications > 0" class="badge">{{ unreadNotifications }}</span>
               </div>
               <NoticeDropdown v-if="alertOpen" class="notice_dropdown" />
             </div>
 
             <div class="nickname_wrapper" @click="toggleDropdown">
-              <span :class="['nickname', { active: dropdownOpen }]"
-                >  {{ nickname }} 님</span
-              >
+              <span :class="['nickname', { active: dropdownOpen }]">{{ nickname }} 님</span>
               <div v-if="dropdownOpen" class="dropdown">
                 <div class="dropdown_item" @click="goToMyPage">마이페이지</div>
                 <div class="dropdown_item" @click="logout">로그아웃</div>
@@ -220,6 +235,7 @@ watch(
   width: 360px;
   padding: 12px 0;
 }
+
 .nickname_wrapper {
   position: relative;
   cursor: pointer;
@@ -229,6 +245,7 @@ watch(
   color: black;
   transition: color 0.3s;
 }
+
 .nickname:hover {
   color: #8b4513;
 }
@@ -275,18 +292,19 @@ watch(
   text-decoration: none;
   color: inherit;
 }
+
 .badge {
   position: absolute;
-  top: -7px; /* 배지 위치를 좀 더 위로 올려서 아이콘과 겹치지 않게 설정 */
-  right: -7px; /* 배지 위치를 오른쪽으로 살짝 이동 */
+  top: -7px;
+  right: -7px;
   background-color: red;
   color: white;
-  border-radius: 50%; /* 원형으로 만들기 */
-  padding: 2px 5px; /* 크기를 더 줄이기 위해 패딩을 최소화 */
-  font-size: 11px; /* 글자 크기 더 줄임 */
-  min-width: 14px; /* 배지의 최소 너비 */
-  height: 14px; /* 배지 높이 조정 */
-  text-align: center; /* 텍스트 가운데 정렬 */
-  line-height: 14px; /* 텍스트 세로 정렬 */
+  border-radius: 50%;
+  padding: 2px 5px;
+  font-size: 11px;
+  min-width: 14px;
+  height: 14px;
+  text-align: center;
+  line-height: 14px;
 }
 </style>

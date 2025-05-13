@@ -7,8 +7,21 @@
     <aside class="sidebar">
       <nav>
         <ul>
-          <li><router-link to="/admin/profile" active-class="active">내 정보</router-link></li>
-          <li><router-link to="/admin/category" active-class="active">카테고리 관리</router-link></li>
+          <li>
+            <router-link to="/admin/profile" active-class="active">
+              내 정보
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/admin/category" active-class="active">
+              카테고리 관리
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/admin/event" active-class="active">
+              이벤트 채팅방 관리
+            </router-link>
+          </li>
         </ul>
       </nav>
     </aside>
@@ -25,12 +38,12 @@
   display: flex;
   min-height: 100px;
   padding: 80px;
-  justify-content: space-between;
+  box-sizing: border-box;
 }
 
 .sidebar {
-  width: 180px;
-  height: 200px;
+  width: 200px;
+  flex-shrink: 0; /* 고정 크기 */
   background: #ffffff;
   padding: 20px;
   border: 1px solid #ddd;
@@ -38,9 +51,39 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin-right: 0px;
   margin-left: 120px;
+  box-sizing: border-box;
+  min-height: 100px;
+}
+
+.content {
+  flex: 1; /* 남은 영역만 차지하게 */
+  padding: 20px;
+  box-sizing: border-box;
+  max-width: calc(100% - 320px); /* 사이드바+마진 고려 */
+  overflow-x: hidden; /* 혹시 모를 확장 방지 */
+}
+
+.sidebar a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 35px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
+  white-space: nowrap; /* ← 줄바꿈 방지 */
+  box-sizing: border-box;
+  text-decoration: none;
+  color: var(--gray900, #212121);
+  border-radius: 8px;
+  transition: font-weight 0.2s;
+}
+
+.sidebar a.active {
+  color: var(--main-color-brown);
+  font-weight: 700;
 }
 
 .sidebar ul {
@@ -50,7 +93,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
   gap: 25px;
 }
 
@@ -58,29 +100,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.sidebar a {
-  text-decoration: none;
-  color: var(--gray900, #212121);
-  font-size: 20px;
-  font-weight: 500;
   width: 100%;
-  height: 35px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
 }
 
-.sidebar a.active {
-  color: var(--main-color-brown);
-  font-weight: 700;
-}
 
-.content {
-  flex-grow: 1;
-  padding: 20px;
-  margin-right: 30%;
-}
 </style>

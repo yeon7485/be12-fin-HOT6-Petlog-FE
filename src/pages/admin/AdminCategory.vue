@@ -19,9 +19,8 @@ const handleClick = (category) => {
 </script>
 
 <template>
-  <h2 class="title">카테고리 목록</h2>
   <div class="container">
-    
+    <h2 class="title">카테고리 목록</h2>
     <div class="category-list">
       <div
         v-for="category in categories"
@@ -38,46 +37,50 @@ const handleClick = (category) => {
 
 <style scoped>
 .container {
-  width: 400px;
-  margin: 0px auto;
+  max-width: 600px;
   font-family: 'Arial', sans-serif;
-  position: relative;
-  margin-left: 40%;
+  margin-left: 0;         /* ← margin-left 제거 */
+  padding-left: 40px;     /* ← 대신 padding 사용 (사이드바 침범 X) */
 }
+
 .title {
   font-size: 32px;
   font-weight: bold;
-  top: 20px;
-  left: 20px;
   margin-bottom: 30px;
-  margin-left: 40%;
+  text-align: left;
 }
+
 .category-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px; /* 항목 간 여백 증가 */
   margin-top: 30px;
 }
+
 .category-item {
   display: flex;
   align-items: center;
-  width: 100%;
-  padding: 16px;
+  padding: 14px 20px;
   border: 2px solid #ddd;
   border-radius: 10px;
   background: #fff;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
 }
+
 .category-item:hover {
-  background: #f8f8f8;
+  background: #f9f9f9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
+
 .icon {
   font-size: 22px;
-  margin-right: 15px;
+  margin-right: 12px; /* 아이콘과 텍스트 사이 여백 */
 }
+
 .text {
   font-size: 18px;
   font-weight: 600;
+  line-height: 1.4;
 }
 </style>

@@ -6,7 +6,7 @@ const emit = defineEmits(['close', 'submit'])
 const form = reactive({
   title: '',
   dateTime: '',
-  maxPeople: null,
+  maxParticipants: '',
 })
 
 const close = () => emit('close')
@@ -33,7 +33,7 @@ const submit = () => emit('submit', { ...form })
           <div>
             <label>인원 설정</label>
             <div class="people-input">
-              <input v-model.number="form.maxPeople" type="number" min="1" />
+              <input v-model.number="form.maxParticipants" type="number" min="1" />
               <span class="unit">명</span>
             </div>
           </div>

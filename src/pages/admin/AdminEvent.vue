@@ -22,7 +22,7 @@ const handleSubmit = async (form) => {
     title: form.title,
     hashtags: ['이벤트'],
     startDateTime: form.dateTime,
-    maxPeople: form.maxPeople,
+    maxParticipants: form.maxParticipants,
   };
 
   await store.createEventChatRoom(payload);
@@ -33,6 +33,7 @@ const handleSubmit = async (form) => {
 onMounted(() => {
   fetchRooms();
 });
+
 </script>
 
 <template>
@@ -43,7 +44,6 @@ onMounted(() => {
         <button class="add-button" @click="showModal = true">+</button>
       </div>
 
-      <!-- AdminEventBox에서 채팅방 목록을 표시 -->
       <AdminEventBox />
     </div>
   </div>

@@ -1,15 +1,16 @@
 <script setup>
 import { computed } from 'vue';
-import { useAdminStore } from '../../../stores/useAdminStore.js'; // Pinia store
+import { useRouter } from 'vue-router';  // vue-router import
+import { useAdminStore } from '../../../stores/useAdminStore.js';  // Pinia store
 
 const store = useAdminStore(); // Pinia store 사용
+const router = useRouter(); // useRouter 훅 사용
 
 // 채팅방 목록을 그대로 가져옴
 const rooms = computed(() => store.adminChatRooms);
 
 const currentTime = new Date();
 
-// 상태 계산 (오픈 전, 진행 중)
 const eventStatus = (startDateTime, currentPeople, maxParticipants) => {
   const startDate = new Date(startDateTime);
   if (currentTime < startDate) {
@@ -19,7 +20,6 @@ const eventStatus = (startDateTime, currentPeople, maxParticipants) => {
   }
 };
 
-// 날짜 포맷: 월/일 시:분 형식으로 표시 (초는 제외)
 const formattedDate = (startDateTime) => {
   const startDate = new Date(startDateTime);
   const month = startDate.getMonth() + 1;
@@ -28,20 +28,38 @@ const formattedDate = (startDateTime) => {
   const minutes = startDate.getMinutes();
   return `${month}/${day} ${hours}:${minutes < 10 ? '0' + minutes : minutes}`;
 };
+
+const handleChatRoomClick = (room) => {
+  const startDate = new Date(room.startDateTime);
+  if (currentTime < startDate) {
+    alert('채팅방은 시작 시간이 되어야 입장 가능합니다.');
+    return;
+  }
+  if (room.isParticipating) {
+    router.push(`/chatroom/${room.idx}`);
+  } else {
+    selectedRoom.value = room;
+    showRoomModal.value = true;
+  }
+};
 </script>
 
 <template>
   <div class="chatroom-list">
-    <!-- 채팅방이 없으면 "채팅방이 없습니다." 메시지 표시 -->
     <div v-if="rooms.length === 0" class="no-room">채팅방이 없습니다.</div>
-
-    <!-- 반복문을 사용하여 채팅방 목록 표시 -->
-    <div v-for="room in rooms" :key="room.idx" class="event-card">
+    <div 
+      v-for="room in rooms" 
+      :key="room.idx" 
+      class="event-card" 
+      @click="handleChatRoomClick(room)"
+    >
       <div class="left">
         <div class="meta">
-          <!-- 날짜 및 시간 간결하게 표시 -->
           <span class="time">{{ formattedDate(room.startDateTime) }}</span>
-          <span class="status">{{ eventStatus(room.startDateTime, room.participants, room.maxParticipants) }}</span>
+          <!-- status 색상 변경 -->
+          <span :class="{'status-active': eventStatus(room.startDateTime, room.participants, room.maxParticipants) === '진행 중'}" class="status">
+            {{ eventStatus(room.startDateTime, room.participants, room.maxParticipants) }}
+          </span>
         </div>
         <div class="title">{{ room.title }}</div>
       </div>
@@ -95,6 +113,11 @@ const formattedDate = (startDateTime) => {
   padding: 2px 6px;
   border-radius: 10px;
   color: #333;
+}
+
+.status-active {
+  background-color: #388e3c; /* '진행 중'일 때는 녹색 배경 */
+  color: white;  /* 텍스트 색상 변경 */
 }
 
 .title {

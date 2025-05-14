@@ -30,6 +30,7 @@ import AnswerCreate from "../pages/board/AnswerCreate.vue";
 import Admin from "../pages/admin/Admin.vue";
 import AdminProfile from "../pages/admin/AdminProfile.vue";
 import AdminCategory from "../pages/admin/AdminCategory.vue";
+import AdminEvent from "../pages/admin/AdminEvent.vue";
 import ScheduleCategory from "../pages/admin/ScheduleCategory.vue";
 import UpdateScheduleCategory from "../pages/admin/ModifyScheduleCategory.vue";
 import Record from "../pages/admin/RecordCategory.vue";
@@ -179,6 +180,7 @@ const routes = [
     children: [
       { path: "profile", component: AdminProfile },
       { path: "category", component: AdminCategory },
+      { path: "event", component: AdminEvent },
       { path: "category/schedule", component: ScheduleCategory },
       { path: "category/schedule/fix", component: UpdateScheduleCategory },
       { path: "category/record", component: Record },

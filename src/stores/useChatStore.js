@@ -62,7 +62,7 @@ export const useChatStore = defineStore("chat", {
       }
     },
     connectStomp(roomId, onConnectedCallback) {
-      const socket = new SockJS("/api/ws");
+      const socket = new SockJS("/ws");
 
       this.stompClient = new Client({
         webSocketFactory: () => socket,

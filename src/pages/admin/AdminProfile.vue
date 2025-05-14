@@ -57,7 +57,6 @@ const restoreUser = (userId) => {
   background-color: #fff;
   border-radius: 12px;
   position: relative;
-  margin-left: 10%;
 }
 
 .btn {

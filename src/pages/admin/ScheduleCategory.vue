@@ -130,7 +130,6 @@ const confirmDelete = async (index) => {
   padding: 20px;
   background-color: #f9f9f9;
   max-width: 700px;
-  margin-left: 35%;
 }
 .header {
   display: flex;

@@ -40,7 +40,7 @@ onMounted(() => {
   <div class="page-wrapper">
     <div class="main">
       <div class="header">
-        <h2>이벤트 채팅방</h2>
+        <h2 class="title">이벤트 채팅방</h2>
         <button class="add-button" @click="showModal = true">+</button>
       </div>
 
@@ -56,7 +56,6 @@ onMounted(() => {
 .page-wrapper {
   display: flex;
   justify-content: center;
-  padding: 40px 0;
 }
 
 .main {
@@ -93,5 +92,10 @@ onMounted(() => {
   font-size: 16px;
   text-align: center;
   padding: 40px 0;
+}
+.title{
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
 }
 </style>

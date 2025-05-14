@@ -37,13 +37,15 @@
 .admin-container {
   display: flex;
   min-height: 100px;
-  padding: 80px;
-  box-sizing: border-box;
+  justify-content: space-between;
+  padding: 70px 15%;
+  gap: 60px;
 }
 
 .sidebar {
-  width: 200px;
-  flex-shrink: 0; /* 고정 크기 */
+  width: 170px;
+  height: 300px;
+  min-width: 170px;
   background: #ffffff;
   padding: 20px;
   border: 1px solid #ddd;
@@ -51,9 +53,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-left: 120px;
-  box-sizing: border-box;
-  min-height: 100px;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .content {

@@ -1,16 +1,14 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
-import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
+import { computed, ref, watch } from "vue";
+import { useUserStore } from "../stores/useUserStore"; // 사용자 스토어
 import axios from "axios";
 
 export const useNotificationStore = defineStore("notification", () => {
+  const userStore = useUserStore();
+  const isLoggedIn = computed(() => userStore.isLogin); // 로그인 여부 감지
   const notifications = ref([]); // 알림 리스트
-  const stompClient = ref(null); // WebSocket 클라이언트
+  const currentUserId = ref(null); // 로그인된 유저 ID
   const unreadNotifications = ref(0); // 읽지 않은 알림 수
-
-  const storedUser = JSON.parse(sessionStorage.getItem("user") || "{}");
-  const currentUserId = ref(storedUser.idx || null); // 로그인된 유저 ID
 
   // 시간 포맷 함수
   const formatTime = (sentAt) => {
@@ -28,7 +26,7 @@ export const useNotificationStore = defineStore("notification", () => {
 
   // ✅ 서버에서 알림 전체 불러오기
   const fetchNotificationsFromServer = async () => {
-    if (!currentUserId.value) return;
+    if (!currentUserId.value) return;  // 로그인하지 않으면 요청하지 않음
     try {
       const res = await axios.get(`/api/notification/user/${currentUserId.value}`);
       notifications.value = res.data.map((n) => ({
@@ -46,6 +44,7 @@ export const useNotificationStore = defineStore("notification", () => {
 
   // ✅ 안 읽은 알림 개수만 서버에서 가져오기
   const fetchUnreadCountFromServer = async () => {
+    if (!currentUserId.value) return;  // 로그인하지 않으면 요청하지 않음
     try {
       const res = await axios.get(`/api/notification/user/unread-count`);
       unreadNotifications.value = res.data;
@@ -55,92 +54,23 @@ export const useNotificationStore = defineStore("notification", () => {
     }
   };
 
-  // 알림 삭제
-  const deleteNotification = async (notificationIdx, index) => {
-    try {
-      await axios.delete(`/api/notification/${notificationIdx}`);
-      removeNotification(index);
-    } catch (err) {
-      console.error("❌ 알림 삭제 실패:", err);
+  // 로그인 상태 변화에 따라 알림 처리
+  watch(isLoggedIn, (newValue) => {
+    if (newValue) {
+      currentUserId.value = userStore.idx;  // 로그인한 유저의 ID
+      fetchNotificationsFromServer();  // 알림 불러오기
+      fetchUnreadCountFromServer();    // 읽지 않은 알림 수 가져오기
+    } else {
+      currentUserId.value = null;  // 로그아웃 시 ID 초기화
+      notifications.value = [];  // 알림 리스트 초기화
+      unreadNotifications.value = 0; // 읽지 않은 알림 수 초기화
     }
-  };
-
-  // WebSocket 연결 및 실시간 알림 수신
-  const connectWebSocket = () => {
-    if (!currentUserId.value || stompClient.value) return;
-
-    const client = new Client({
-      webSocketFactory: () => new SockJS("/ws"),
-      reconnectDelay: 5000,
-      onConnect: () => {
-        client.subscribe(`/topic/alerts/${currentUserId.value}`, (msg) => {
-          const data = JSON.parse(msg.body);
-          notifications.value.unshift({
-            idx: data.idx,
-            title: "[알림]",
-            content: `"${data.petName}"의 ${data.message}`,
-            time: "방금 전",
-            scheduleId: data.scheduleId,
-            read: false,
-          });
-
-          // ✅ 새 알림이므로 수동으로 +1
-          unreadNotifications.value += 1;
-          localStorage.setItem("unreadNotifications", unreadNotifications.value);
-        });
-      },
-      onStompError: (frame) => {
-        console.error("❌ WebSocket 오류:", frame);
-      },
-    });
-
-    client.activate();
-    stompClient.value = client;
-  };
-
-  // 알림 삭제 (UI에서만 제거)
-  const removeNotification = (index) => {
-    notifications.value.splice(index, 1);
-  };
-
-  // 알림 읽음 처리
-  const markAsRead = async (notificationId) => {
-    try {
-      await axios.patch(`/api/notification/${notificationId}/read`);
-
-      const index = notifications.value.findIndex((n) => n.idx === notificationId);
-      if (index !== -1) {
-        notifications.value[index] = {
-          ...notifications.value[index],
-          read: true,
-        };
-      }
-
-      // ✅ 서버에서 최신 unread count 재동기화
-      await fetchUnreadCountFromServer();
-    } catch (err) {
-      console.error("❌ 알림 읽음 처리 실패:", err);
-    }
-  };
-
-  // 페이지 이동 시 로컬 값으로 초기 설정
-  const loadUnreadNotifications = () => {
-    const storedUnread = localStorage.getItem("unreadNotifications");
-    if (storedUnread) {
-      unreadNotifications.value = parseInt(storedUnread);
-    }
-  };
+  });
 
   return {
     notifications,
-    currentUserId,
-    unreadNotifications,
     fetchNotificationsFromServer,
-    fetchUnreadCountFromServer, // ✅ 새로 추가된 메서드
-    deleteNotification,
-    removeNotification,
-    connectWebSocket,
-    markAsRead,
-    loadUnreadNotifications,
+    fetchUnreadCountFromServer,
+    unreadNotifications,
   };
 });

@@ -156,7 +156,6 @@ onMounted(async () => {
 
 .board_header h1 {
   font-size: 28px;
-
   white-space: nowrap;
   margin-right: 30px;
 }
@@ -201,7 +200,7 @@ onMounted(async () => {
 .search_input_wrap input {
   width: 100%;
   height: 37px;
-  padding: 10px 16px 10px 44px;
+  padding: 8px 16px 8px 44px;
   border: 1px solid #ccc;
   border-radius: 999px;
   font-size: 14px;
@@ -273,11 +272,13 @@ onMounted(async () => {
   cursor: pointer;
   margin-top: 20px;
   transition: all 0.3s;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .write_btn:hover {
   background: #efebe9;
 }
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -323,3 +324,4 @@ onMounted(async () => {
   }
 }
 </style>
+

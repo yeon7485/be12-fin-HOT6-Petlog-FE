@@ -273,6 +273,7 @@ onMounted(async () => {
   cursor: pointer;
   margin-top: 20px;
   transition: all 0.3s;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .write_btn:hover {

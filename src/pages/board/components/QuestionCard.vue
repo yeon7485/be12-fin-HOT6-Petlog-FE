@@ -25,7 +25,7 @@ defineProps({ question: Object });
         </div>
 
         <router-link :to="`/board/qna/${question.idx}`" class="post_title">
-          {{ question.qtitle }}
+          {{ question.qTitle }}
           <img
             v-if="question.imageUrls && question.imageUrls.length > 0"
             src="/src/assets/icons/image.png"

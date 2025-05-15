@@ -128,6 +128,20 @@ export const useScheduleStore = defineStore("schedule", {
       }
     },
 
+    async deleteSchedule(petIdx, scheduleIdx) {
+      try {
+        const response = await axios.delete(`/api/schedule/pet/${petIdx}/schedule/${scheduleIdx}`);
+        
+        // 삭제 후 로컬 상태 갱신: plans에서 해당 항목 제거
+        this.plans = this.plans.filter(plan => plan.idx !== scheduleIdx);
+    
+        return response.data;
+      } catch (err) {
+        alert("일정 삭제에 실패했습니다.");
+        console.error(err);
+      }
+    },
+
     async loadTodaySchedules() {
       const today = new Date();
       const year = today.getFullYear();

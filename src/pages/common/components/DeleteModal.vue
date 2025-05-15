@@ -13,7 +13,7 @@ const delteItem = reactive({});
 Object.assign(delteItem, props.item);
 
 const handleDeleteClick = async () => {
-  await scheduleStore.deleteSchedule(delteItem.idx, delteItem.petIdx);
+  await scheduleStore.deleteSchedule(delteItem.petIdx, delteItem.idx);
   // item 삭제
   deleteSuccess.value = true;
 };

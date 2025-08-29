@@ -126,8 +126,6 @@
 
 #### [3. WBS](https://docs.google.com/spreadsheets/d/10GJK2OFHPAkFplNyjtBtaEh8kxCxARNC_aAOHAJr77M/edit?usp=sharing)
 
-#### [4. 화면설계서 바로가기](https://www.figma.com/design/7sBqcCVXnFPHhrHAJN9N9l/Petlog?node-id=0-1&t=6T5v5WcuWWnwHpGS-1)
-
 <br>
 
 ## 🦔 주요 기능 시연

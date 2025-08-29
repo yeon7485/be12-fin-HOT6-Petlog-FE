@@ -21,7 +21,6 @@
 ### 목차
 
 - [🐶 기술 스택](#-기술-스택)
-- [🐱 펫로그 데모 사이트 링크](#-펫로그-데모-사이트-바로가기)
 - [🐹 펫로그 서비스 소개](#-펫로그-서비스-소개)
 - [🐦 프론트엔드 프로젝트 목표](#-프론트엔드-프로젝트-목표)
 - [🐟 프로젝트 설계](#-프로젝트-설계)
@@ -67,32 +66,6 @@
 ![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white)
 ![Discord](https://img.shields.io/badge/discord-326CE5?style=for-the-badge&logo=discord&logoColor=white)
 
-<br><br>
-
-## 🐱 펫로그 데모 사이트 바로가기
-
-👉 **[펫로그 사이트 바로가기](https://www.petlog.kro.kr)**  
-> 실제 서비스처럼 이용해보세요!
-
----
-
-### 🧪 테스트 계정 정보
-
-#### 👤 일반 사용자
-- **유저1**  
-  📨 ID: `test01@test.com`  
-  🔑 PW: `qwer1234!`
-
-- **유저2**  
-  📨 ID: `test02@test.com`  
-  🔑 PW: `qwer1234!`
-
-#### 🛠️ 관리자
-- **관리자 계정**  
-  📨 ID: `admin@test.com`  
-  🔑 PW: `qwer1234!`
-
----
 <br>
 
 ## 🐹 펫로그 서비스 소개
